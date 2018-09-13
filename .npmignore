@@ -6,8 +6,8 @@ node_modules
 #/scripts
 
 *.log*
-examples/
-exsrc/
+example/
+expsrc/
 src/
 dist/
 .editorconfig
