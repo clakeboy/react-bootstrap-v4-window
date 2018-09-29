@@ -5,6 +5,7 @@ import './css/Window.less';
 import ReactDOM from "react-dom";
 import Drag from './Drag';
 import IconButton from "./IconButton";
+import {GetDomXY} from "./Common";
 
 class Window extends React.PureComponent {
     constructor(props) {
@@ -62,6 +63,7 @@ class Window extends React.PureComponent {
         this.dom.style.top = 0;
         this.dom.style.left = 0;
         this.dom.classList.add('d-none');
+        this.setActive(false);
         if (this.parent) {
             this.parent.removeWindowOpens(this.props.name);
         }
@@ -69,6 +71,18 @@ class Window extends React.PureComponent {
 
     setIndex(index) {
         this.dom.style.zIndex = index;
+    }
+
+    setActive(active) {
+        if (active) {
+            this.dom.classList.add('ck-window-active');
+        } else {
+            this.dom.classList.remove('ck-window-active');
+        }
+    }
+
+    getPosition() {
+        return GetDomXY(this.dom);
     }
 
     maxHandler = (e)=>{
