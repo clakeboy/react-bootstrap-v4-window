@@ -24,6 +24,7 @@ import ReactBootstrap4,{
 import {
     Window
 } from '../../src/index';
+import windowList from './window/windows';
 import WindowGroup from "../../src/WindowGroup";
 import TopMenu from "../../src/TopMenu";
 
@@ -139,8 +140,29 @@ class Main extends React.Component {
                                 <Menu.Item field="test">Test</Menu.Item>
                             </Menu>
                         </TopMenu.Item>
-                        <TopMenu.Item text='Other'/>
+                        <TopMenu.Item text='ABI'>
+                            <Menu onClick={(key)=>{
+                                this.manage.open(key);
+                            }}>
+                                {windowList.map((item)=>{
+                                    return <Menu.Item field={item.name}>{item.title}</Menu.Item>
+                                })}
+                            </Menu>
+                        </TopMenu.Item>
                     </TopMenu>
+                    <div className='border d-flex flex-column' style={{width:'300px',height:'200px'}}>
+                        <div className='bg-secondary flex-grow-1 d-flex flex-column'>
+                            <div className='bg-primary p-2'>
+                                1
+                            </div>
+                            <div className='bg-success flex-grow-1'>
+                                2
+                            </div>
+                        </div>
+                        <div className='bg-info p-2'>
+
+                        </div>
+                    </div>
                 </Card>
                 <WindowGroup ref={c=>this.manage=c}>
                     <Window name='f_aes_query' marginTop={25} title='Query Customer' width='867px' height='444px' x={'40px'} y={'55px'} backColor={'#f3f3f4'}>
@@ -152,9 +174,14 @@ class Main extends React.Component {
                     <Window name='a_efc_console' marginTop={25} title='ETC Project  Convert Console' width='600px' height='536px' backColor={'#f3f3f4'}>
                         <LoaderComponent loadPath='/window/AEfcConsole.jsx' parent={this} import={GetComponent}/>
                     </Window>
-                    <Window name='test' marginTop={25} title='ETC Project  Convert Console' width='600px' height='536px' backColor={'#f3f3f4'}>
-
+                    <Window name='test' marginTop={25} title='Test CTable' width='700px' height='500px' backColor={'#f3f3f4'}>
+                        <LoaderComponent loadPath='/test/CTableTest' parent={this} import={GetComponent}/>
                     </Window>
+                    {windowList.map((item)=>{
+                        return (<Window name={item.name} marginTop={25} title={item.title} width={item.width} height={item.height} backColor={'#f3f3f4'}>
+                            <LoaderComponent loadPath={`/window/${item.uname}.jsx`} import={GetComponent}/>
+                        </Window>)
+                    })}
                 </WindowGroup>
             </Container>
         );
