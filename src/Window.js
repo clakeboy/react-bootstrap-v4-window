@@ -12,11 +12,15 @@ class Window extends React.PureComponent {
         super(props);
         this.parent = this.props.parent || null;
         this.data = null;
+        this.evts = {};
+        this.is_before = false;
+        this.is_max = false;
     }
 
     componentDidMount() {
         this.drag = new Drag(this.dragDom,this.domHeader,{
             start:()=>{
+                if (this.is_max) return;
                 this.dragDom.style.top = this.dom.style.top;
                 this.dragDom.style.left = this.dom.style.left;
                 this.dragDom.classList.remove('d-none');
@@ -57,7 +61,17 @@ class Window extends React.PureComponent {
         this.dom.style.top = (option.y+this.props.marginTop)+'px';
         this.dom.style.left = option.x+'px';
         this.dom.classList.remove('d-none');
+        this.showHandler(null);
     }
+
+    close = () => {
+        if (this.is_before) {
+            this.beforeCloseHandler(this.hide);
+            return;
+        }
+        this.hide();
+        this.closeHandler();
+    };
 
     hide = ()=>{
         this.dom.style.top = 0;
@@ -67,6 +81,7 @@ class Window extends React.PureComponent {
         if (this.parent) {
             this.parent.removeWindowOpens(this.props.name);
         }
+        this.is_max = false;
     };
 
     setIndex(index) {
@@ -86,8 +101,34 @@ class Window extends React.PureComponent {
     }
 
     maxHandler = (e)=>{
-
+        this.trigger(EVT_MAX_WINDOW,e)
     };
+
+    showHandler = (e)=>{
+        this.trigger(EVT_SHOW,e);
+    };
+
+    closeHandler = (e)=>{
+        this.trigger(EVT_CLOSE,e);
+    };
+
+    beforeCloseHandler = (e)=>{
+        this.trigger(EVT_BEFORE_CLOSE,e);
+    };
+
+    on(fn_name,fn) {
+        this.evts[fn_name] = fn;
+    }
+
+    off(fn_name) {
+        this.evts[fn_name] = undefined;
+    }
+
+    trigger(fn_name,val) {
+        if (typeof this.evts[fn_name] === 'function') {
+            this.evts[fn_name](val);
+        }
+    }
 
     getClasses() {
         let base = 'card ck-window shadow d-none';
@@ -130,11 +171,12 @@ class Window extends React.PureComponent {
                         <div className='window-btn'>
                             <IconButton className='mr-1' iconType='regular' icon='window-minimize'/>
                             <IconButton className='mr-1' iconType='regular' icon='window-maximize' onClick={this.maxHandler}/>
-                            <IconButton icon='window-close' onClick={this.hide}/>
+                            <IconButton icon='window-close' onClick={this.close}/>
                         </div>
                     </div>
                     <div className="card-body">
-                        {this.props.children}
+                        {/*{this.props.children}*/}
+                        {this.renderContent()}
                     </div>
                 </div>
                 <div ref={c=>this.dragDom=c} className='ck-window-drag-box d-none border border-secondary' style={this.getStyles(true)}/>
@@ -144,6 +186,12 @@ class Window extends React.PureComponent {
         return ReactDOM.createPortal(
             content,document.body
         );
+    }
+
+    renderContent() {
+        return React.Children.map(this.props.children,(child)=>{
+            return React.cloneElement(child,{...child.props,parent:this});
+        })
     }
 }
 
@@ -163,7 +211,16 @@ Window.defaultProps = {
     marginTop: 0
 };
 
-Window.EVT_RESIZE = 'resize';
-Window.EVT_MAXWINDOW = 'max_window';
+const EVT_RESIZE = 'resize';
+const EVT_MAX_WINDOW = 'max_window';
+const EVT_SHOW = 'show';
+const EVT_CLOSE = 'close';
+const EVT_BEFORE_CLOSE = 'before_close';
+
+Window.EVT_RESIZE = EVT_RESIZE;
+Window.EVT_MAXWINDOW = EVT_MAX_WINDOW;
+Window.EVT_SHOW = EVT_SHOW;
+Window.EVT_CLOSE = EVT_CLOSE;
+Window.EVT_BEFORE_CLOSE = EVT_BEFORE_CLOSE;
 
 export default Window;

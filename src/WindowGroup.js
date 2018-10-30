@@ -91,7 +91,7 @@ class WindowGroup extends React.Component {
 
     close(name) {
         if (this.windows[name]) {
-            this.windows[name].hide();
+            this.windows[name].close();
         }
     }
 
@@ -100,7 +100,7 @@ class WindowGroup extends React.Component {
             let item = this.windowList[name];
             item.props.parent = this;
             item.props.ref = c=>this.windows[name]=c;
-            return React.cloneElement(item,item.props,item.props.children);
+            return React.cloneElement(item,item.props);
         });
     }
 

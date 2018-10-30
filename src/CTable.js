@@ -176,9 +176,11 @@ class CTable extends React.Component {
             base.position = 'absolute';
             base.top      = this.props.y;
             base.left     = this.props.x;
-            if (this.props.position) {
-                base.right = this.props.x;
-                base.bottom = this.props.x;
+            if (typeof this.props.position === 'object') {
+                base.top = this.props.position.top || this.props.y;
+                base.left = this.props.position.left || this.props.x;
+                base.right = this.props.position.right;
+                base.bottom = this.props.position.bottom;
                 base.width = undefined;
                 base.height = undefined;
             }
@@ -379,6 +381,7 @@ CTable.propTypes = {
     width      : PropTypes.string,
     height     : PropTypes.string,
     foot       : PropTypes.bool,
+    position   : PropTypes.object,
 };
 
 CTable.defaultProps = {

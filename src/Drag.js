@@ -67,8 +67,8 @@ export default class Drag {
 
         this.domX = parseInt(this.dragDom.style.left);
         this.domY = parseInt(this.dragDom.style.top);
-        this.dragX = parseInt(e.clientX);
-        this.dragY = parseInt(e.clientY);
+        this.dragX = parseInt(e.pageX);
+        this.dragY = parseInt(e.pageY);
 
         window.addEventListener('mousemove',this.moveDrag,false);
         window.addEventListener('mouseup',this.overDrag,false);
