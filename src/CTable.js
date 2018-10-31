@@ -13,6 +13,8 @@ class CTable extends React.Component {
         super(props);
         this.state = {
             data  : this.props.data,
+            dataCount : this.props.dataCount,
+            page: 1,
             select: this.props.select,
         };
 
@@ -29,7 +31,20 @@ class CTable extends React.Component {
 
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (this.state.data !== nextProps.data) {
+            this.select_all = false;
+            this.selectRows = {};
+            this.setState({
+                data: nextProps.data,
+                dataCount : nextProps.dataCount,
+                page: nextProps.page,
+            });
+        }
+    }
+
     shouldComponentUpdate(nextProps, nextState) {
+        console.log(nextProps,nextState);
         return nextState.data !== this.state.data || nextState.tree !== this.state.tree;
     }
 
@@ -88,6 +103,12 @@ class CTable extends React.Component {
 
     scrollHandler = (e)=>{
         this.tableHeader.style.transform = `translateX(-${e.currentTarget.scrollLeft}px)`;
+    };
+
+    selectPageHandler = (page)=>{
+        if (typeof this.props.onSelectPage === 'function') {
+            this.props.onSelectPage(page);
+        }
     };
 
     selectAll = (e) => {
@@ -345,7 +366,10 @@ class CTable extends React.Component {
         }
         return (
             <div>
-                <Pagination current={1} size='sm' count={this.state.data.length}/>
+                <Pagination current={this.state.page} count={this.state.dataCount} size='sm'
+                            onSelect={this.selectPageHandler}
+                            number={this.props.showNumbers}
+                            showPages={this.props.showPages}/>
             </div>
         )
     }
@@ -357,6 +381,7 @@ CTable.propTypes = {
     headClass  : PropTypes.string,
     data       : PropTypes.array,
     dataCount  : PropTypes.number,
+    page       : PropTypes.number,
     select     : PropTypes.bool,
     header     : PropTypes.bool,
     center     : PropTypes.bool,
@@ -382,6 +407,9 @@ CTable.propTypes = {
     height     : PropTypes.string,
     foot       : PropTypes.bool,
     position   : PropTypes.object,
+    showPages  : PropTypes.number,
+    showNumbers : PropTypes.number,
+    onSelectPage: PropTypes.func,
 };
 
 CTable.defaultProps = {
