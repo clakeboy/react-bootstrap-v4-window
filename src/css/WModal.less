@@ -1,0 +1,50 @@
+.wmodal-main {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  font-size: .75rem;
+  .modal {
+    position: absolute!important;
+  }
+  .modal-backdrop {
+    position: absolute!important;
+  }
+  .ck-modal-shadow {
+    filter: none;
+  }
+}
+
+.wmodal-sm {
+  .modal-header {
+    padding: .3rem .5rem!important;
+  }
+
+  .modal-footer {
+    border-top:none;
+    padding: .5rem .5rem!important;
+  }
+
+  .modal-dialog {
+
+  }
+}
+
+.wmodal-fade {
+  .modal-dialog {
+    opacity: 0;
+    margin-top: -1rem;
+    transition: margin-top 150ms linear,opacity 150ms linear;
+  }
+
+  .ck-modal-shadow {
+    opacity: 0;
+    transition: opacity 150ms linear;
+  }
+
+  .modal-show {
+    opacity: .5!important;
+  }
+}

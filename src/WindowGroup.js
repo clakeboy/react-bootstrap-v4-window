@@ -31,9 +31,10 @@ class WindowGroup extends React.Component {
 
     /**
      * open window
-     * @param name
+     * @param name string
+     * @param params object
      */
-    open(name) {
+    open(name,params) {
         if (this.currentActive) {
             this.windows[this.currentActive].setActive(false);
             this.currentActive = name;
@@ -45,7 +46,7 @@ class WindowGroup extends React.Component {
 
         if (this.windowList[name]) {
             if (this.state.showWindows.indexOf(name) !== -1) {
-                this.show(name);
+                this.show(name,params);
                 return;
             }
             let showWindows = this.state.showWindows;
@@ -53,16 +54,16 @@ class WindowGroup extends React.Component {
             this.setState({
                 showWindows: showWindows,
             },()=>{
-                this.show(name);
+                this.show(name,params);
             });
         }
     }
 
-    show(name) {
-        console.log(this.opens);
+    show(name,params) {
         let option = {
             x:this.opens.length*20+10,
             y:this.opens.length*20+10,
+            params:params
         };
         this.windows[name].show(option);
         this.opens.push(name);

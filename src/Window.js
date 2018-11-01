@@ -57,7 +57,7 @@ class Window extends React.PureComponent {
             x:20,
             y:20
         };
-        this.data = option.data || null;
+        this.params = option.params || null;
         this.dom.style.top = (option.y+this.props.marginTop)+'px';
         this.dom.style.left = option.x+'px';
         this.dom.classList.remove('d-none');

@@ -131,7 +131,7 @@ class Main extends React.Component {
                         <div className='ck-top-menu-item'><Icon icon='copyright'/></div>
                         <TopMenu.Item text='Main'>
                             <Menu onClick={(key)=>{
-                                this.manage.open(key);
+                                this.manage.open(key,{id:12});
                             }}>
                                 <Menu.Item field="a_efc_console">Convert Console</Menu.Item>
                                 <Menu.Item step/>
@@ -165,6 +165,7 @@ class Main extends React.Component {
                     </div>
                 </Card>
                 <WindowGroup ref={c=>this.manage=c}>
+
                     <Window name='f_aes_query' marginTop={25} title='Query Customer' width='867px' height='444px' x={'40px'} y={'55px'} backColor={'#f3f3f4'}>
                         <LoaderComponent loadPath='/window/FAesQuery.jsx' parent={this} import={GetComponent}/>
                     </Window>
