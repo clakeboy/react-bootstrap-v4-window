@@ -31,6 +31,8 @@ class CTableTest extends React.Component {
             //传送的窗体参数
             this.params = this.window.params;
         }
+
+        this.id = 1;
     }
 
     componentDidMount() {
@@ -68,6 +70,8 @@ class CTableTest extends React.Component {
             content:'Alert message',
             fade:true
         });
+        this.id ++;
+        this.manage.open('f_abha_house_review',{id:this.id});
     };
 
     render() {

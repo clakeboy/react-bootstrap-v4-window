@@ -41,6 +41,9 @@ class WindowGroup extends React.Component {
         }
         if (this.opens.indexOf(name) !== -1) {
             this.changeWindowIndex(name);
+            this.windows[name].show({
+                params:params
+            });
             return;
         }
 

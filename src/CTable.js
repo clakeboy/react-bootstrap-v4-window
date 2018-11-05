@@ -12,10 +12,10 @@ class CTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data  : this.props.data,
-            dataCount : this.props.dataCount,
-            page: 1,
-            select: this.props.select,
+            data     : this.props.data,
+            dataCount: this.props.dataCount,
+            page     : 1,
+            select   : this.props.select,
         };
 
         this.select_all = false;
@@ -36,15 +36,15 @@ class CTable extends React.Component {
             this.select_all = false;
             this.selectRows = {};
             this.setState({
-                data: nextProps.data,
-                dataCount : nextProps.dataCount,
-                page: nextProps.page,
+                data     : nextProps.data,
+                dataCount: nextProps.dataCount,
+                page     : nextProps.page,
             });
         }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.log(nextProps,nextState);
+        console.log(nextProps, nextState);
         return nextState.data !== this.state.data || nextState.tree !== this.state.tree;
     }
 
@@ -101,11 +101,11 @@ class CTable extends React.Component {
         }
     };
 
-    scrollHandler = (e)=>{
+    scrollHandler = (e) => {
         this.tableHeader.style.transform = `translateX(-${e.currentTarget.scrollLeft}px)`;
     };
 
-    selectPageHandler = (page)=>{
+    selectPageHandler = (page) => {
         if (typeof this.props.onSelectPage === 'function') {
             this.props.onSelectPage(page);
         }
@@ -170,13 +170,17 @@ class CTable extends React.Component {
         if (this.props.responsive) {
             base = classNames(base, 'table-responsive');
         }
+        //nowrap
+        if (this.props.noWrap) {
+            base = classNames(base, 'ck-ctable-nowrap');
+        }
         return base;
     }
 
     getMainClasses() {
         let base = 'ck-ctable-main d-flex flex-column';
         if (this.props.bordered) {
-            base = classNames(base,'border');
+            base = classNames(base, 'border');
         }
         return classNames(base, this.props.className);
     }
@@ -198,11 +202,11 @@ class CTable extends React.Component {
             base.top      = this.props.y;
             base.left     = this.props.x;
             if (typeof this.props.position === 'object') {
-                base.top = this.props.position.top || this.props.y;
-                base.left = this.props.position.left || this.props.x;
-                base.right = this.props.position.right;
+                base.top    = this.props.position.top || this.props.y;
+                base.left   = this.props.position.left || this.props.x;
+                base.right  = this.props.position.right;
                 base.bottom = this.props.position.bottom;
-                base.width = undefined;
+                base.width  = undefined;
                 base.height = undefined;
             }
         }
@@ -248,7 +252,7 @@ class CTable extends React.Component {
 
     renderHeader() {
         return (
-            <div ref={c=>this.tableHeader=c}>
+            <div ref={c => this.tableHeader = c}>
                 <table className={this.getClasses()} style={this.getTableStyles()}>
                     <thead className={this.getHeaderClasses()}>
                     <tr>
@@ -306,13 +310,14 @@ class CTable extends React.Component {
             <React.Fragment>
                 <tr className={this.props.onClick ? 'click-row' : null} onClick={this.clickHandler(row, i)}>
                     {this.state.select ?
-                        <th width='20px'><input type='checkbox' ref={'row_' + i} onChange={this.changeHandler(row, i)}/></th> : null}
+                        <th width='20px'><input type='checkbox' ref={'row_' + i} onChange={this.changeHandler(row, i)}/>
+                        </th> : null}
                     {React.Children.map(this.props.children, (item, key) => {
                         if (!item || item.props.hide) {
                             return null;
                         }
                         //set style
-                        let style={...this.props.columnStyle};
+                        let style = {...this.props.columnStyle};
 
                         style.textAlign = item.props.align || this.props.align;
                         if (item.props.width) {
@@ -376,40 +381,41 @@ class CTable extends React.Component {
 }
 
 CTable.propTypes = {
-    theme      : PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']),
-    headerTheme: PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']),
-    headClass  : PropTypes.string,
-    data       : PropTypes.array,
-    dataCount  : PropTypes.number,
-    page       : PropTypes.number,
-    select     : PropTypes.bool,
-    header     : PropTypes.bool,
-    center     : PropTypes.bool,
-    currentPage: PropTypes.number,
-    striped    : PropTypes.bool,
-    bordered   : PropTypes.bool,
-    hover      : PropTypes.bool,
-    sm         : PropTypes.bool,
-    fontSm     : PropTypes.bool,
-    responsive : PropTypes.bool,
-    align      : PropTypes.string,
-    tree       : PropTypes.string,
-    onClickTree: PropTypes.func,
-    onClick    : PropTypes.func,
-    onCheck    : PropTypes.func,
-    move       : PropTypes.bool,
-    onRefresh  : PropTypes.func,
-    refreshText: PropTypes.string,
-    absolute   : PropTypes.bool,
-    x          : PropTypes.string,
-    y          : PropTypes.string,
-    width      : PropTypes.string,
-    height     : PropTypes.string,
-    foot       : PropTypes.bool,
-    position   : PropTypes.object,
-    showPages  : PropTypes.number,
+    theme       : PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']),
+    headerTheme : PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']),
+    headClass   : PropTypes.string,
+    data        : PropTypes.array,
+    dataCount   : PropTypes.number,
+    page        : PropTypes.number,
+    select      : PropTypes.bool,
+    header      : PropTypes.bool,
+    center      : PropTypes.bool,
+    currentPage : PropTypes.number,
+    striped     : PropTypes.bool,
+    bordered    : PropTypes.bool,
+    hover       : PropTypes.bool,
+    sm          : PropTypes.bool,
+    fontSm      : PropTypes.bool,
+    responsive  : PropTypes.bool,
+    align       : PropTypes.string,
+    tree        : PropTypes.string,
+    onClickTree : PropTypes.func,
+    onClick     : PropTypes.func,
+    onCheck     : PropTypes.func,
+    move        : PropTypes.bool,
+    onRefresh   : PropTypes.func,
+    refreshText : PropTypes.string,
+    absolute    : PropTypes.bool,
+    x           : PropTypes.string,
+    y           : PropTypes.string,
+    width       : PropTypes.string,
+    height      : PropTypes.string,
+    foot        : PropTypes.bool,
+    position    : PropTypes.object,
+    showPages   : PropTypes.number,
     showNumbers : PropTypes.number,
     onSelectPage: PropTypes.func,
+    noWrap      : PropTypes.bool
 };
 
 CTable.defaultProps = {
@@ -425,6 +431,7 @@ CTable.defaultProps = {
     sm         : true,
     fontSm     : true,
     headerTheme: 'light',
+    noWrap     : true
 };
 
 export default CTable;

@@ -36,3 +36,15 @@
 .ck-ctable-header {
   border-bottom: none!important;
 }
+
+.ck-ctable-nowrap {
+  th {
+    white-space: nowrap!important;
+  }
+
+  td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
