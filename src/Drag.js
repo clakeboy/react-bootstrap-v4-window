@@ -24,6 +24,12 @@ export default class Drag {
         this.x = 0;
         this.y = 0;
 
+        this.setDragDom(dragDom);
+        this.setEventDom(eventDom);
+        this.initEvents(events||{});
+    }
+
+    setDragDom(dragDom) {
         if (dragDom instanceof HTMLElement) {
             this.dragDom = dragDom;
         } else if (typeof dragDom === "string") {
@@ -31,18 +37,18 @@ export default class Drag {
         } else {
             throw "dragDom must be selector string or HTMLElement object";
         }
+    }
 
+    setEventDom(eventDom) {
         if (eventDom instanceof HTMLElement) {
             this.eventDom = eventDom;
         } else if (typeof eventDom === 'string') {
             this.eventDom = document.querySelector(eventDom);
         } else {
-            this.eventDom = dragDom;
+            this.eventDom = this.dragDom;
         }
 
-        this.eventDom = eventDom || dragDom;
-        this.initEvents(events||{});
-        this.bindEvents()
+        this.bindEvents();
     }
 
     initEvents(events) {
@@ -60,8 +66,9 @@ export default class Drag {
     }
 
     beginDrag = (e) => {
+        this.eventDom = e.currentTarget;
         // e.preventDefault();
-        if (!this._evtStart()) {
+        if (!this._evtStart(this.dragDom,this.eventDom,e)) {
             return false;
         }
 
@@ -78,7 +85,7 @@ export default class Drag {
         move.x = (this.domX + (parseInt(e.pageX) - this.dragX));
         move.y = (this.domY + (parseInt(e.pageY) - this.dragY));
         if (typeof this._evtMove === "function") {
-            this._evtMove(move)
+            this._evtMove(move,this.dragDom,this.eventDom,e)
         }
         this.dragDom.style.top = move.y + 'px';
         this.dragDom.style.left = move.x + 'px';
@@ -87,7 +94,7 @@ export default class Drag {
     overDrag = (e)=>{
         window.removeEventListener('mousemove',this.moveDrag);
         window.removeEventListener('mouseup',this.overDrag);
-        this._evtEnd();
+        this._evtEnd(this.dragDom,this.eventDom,e);
     };
 }
 

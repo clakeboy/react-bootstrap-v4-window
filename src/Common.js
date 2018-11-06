@@ -90,18 +90,17 @@ export var LoadScript = {
 /**
  * get html dom element position
  * @param e
- * @returns {{}}
+ * @param parent
+ * @returns {{top: number, left: number, height: number, width: number}}
  * @constructor
  */
-export var GetDomXY = (e) => {
-    let parent = arguments[1]?arguments[1]:undefined;
+export var GetDomXY = (e,parent) => {
     let t = {
         top:e.offsetTop,
         left:e.offsetLeft,
         height:e.clientHeight,
         width:e.clientWidth
     };
-
     let scrollTop = 0;
     let scrollLeft = 0;
     let topScroll = 0;

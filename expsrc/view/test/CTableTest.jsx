@@ -41,11 +41,16 @@ class CTableTest extends React.Component {
         console.log(this.params);
         this.window.on(Window.EVT_SHOW,this.showHandler);
         this.window.on(Window.EVT_CLOSE,this.closeHandler);
+        this.getData()
+    }
+
+    getData() {
         this.modal.loading('loading');
+        this.id++;
         setTimeout(()=>{
             let data = [];
             for (let i=0;i<5;i++) {
-                data.push({'id': i+1, 'name': 'Clake'+i});
+                data.push({'id': i+1, 'name': 'Clake'+this.id});
             }
             this.setState({
                 table_data:data,
@@ -53,11 +58,11 @@ class CTableTest extends React.Component {
                 data_count:data.length
             });
             this.modal.alert('loading ssussce');
-        },1000)
+        },200)
     }
 
     showHandler = ()=>{
-        this.modal.alert('打开窗口');
+        this.getData();
     };
 
     closeHandler = ()=>{
@@ -82,14 +87,14 @@ class CTableTest extends React.Component {
                     right:'10px',
                     left:'10px',
                     bottom:'10px'
-                }} absolute={true} y={'100px'} x={'10px'} width='250px' height='300px' bordered={true}
+                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='300px' bordered={true}
                         onSelectPage={(page)=>{
                             console.log(page);
                         }}
                         page={this.state.page}
                         dataCount={this.state.data_count}
                         data={this.state.table_data}>
-                    <TableHeader field='id' text='ID' width='100px'/>
+                    <TableHeader onSort={(field,sort)=>{console.log(field,sort)}} field='id' text='ID' width='100px'/>
                     <TableHeader field='name' text='Name' width='200px'/>
                 </CTable>
                 <WModal ref={c=>this.modal=c} fade/>

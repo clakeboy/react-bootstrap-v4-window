@@ -7,6 +7,11 @@
   }
   thead th {
     border-bottom: none !important;
+    position: relative;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
   .pagination-sm {
     margin-bottom: 0 !important;
@@ -18,6 +23,11 @@
       padding: .1rem .25rem!important;
     }
   }
+  table {
+    background-color: white;
+    max-width: none;
+    table-layout: fixed;
+  }
 }
 
 .ck-ctable-body {
@@ -27,10 +37,6 @@
   .rows {
     overflow: auto;
   }
-  table {
-    background-color: white;
-    max-width: none;
-  }
 }
 
 .ck-ctable-header {
@@ -39,6 +45,7 @@
 
 .ck-ctable-nowrap {
   th {
+    overflow: hidden;
     white-space: nowrap!important;
   }
 
@@ -47,4 +54,25 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+}
+
+.ck-column-split {
+  position: absolute;
+  height: 100%;
+  width: 5px;
+  right: -1px;
+  top:0;
+  cursor: move;
+  &:hover {
+    background-color: #C5C5C5;
+  }
+}
+
+.ck-split {
+  position: absolute;
+  height: 100%;
+  width: 5px;
+  opacity: .5;
+  top: 0;
+  background-color: #1c1c1c;
 }

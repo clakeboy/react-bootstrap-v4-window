@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import common from './Common';
+import common, {GetDomXY} from './Common';
 import {
     Icon,
     Pagination
 } from '@clake/react-bootstrap4';
 import './css/CTable.less';
+import Drag from "./Drag";
 
 class CTable extends React.Component {
     constructor(props) {
@@ -18,6 +19,8 @@ class CTable extends React.Component {
             select   : this.props.select,
         };
 
+        this.domId = 'table-' + common.RandomString(16);
+
         this.select_all = false;
 
         this.selectRows = {};
@@ -25,10 +28,12 @@ class CTable extends React.Component {
         this.sortList = {};
 
         this.initTableWidth();
+
+        this.headerSplits = [];
     }
 
     componentDidMount() {
-
+        this.bindSplit();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -44,7 +49,6 @@ class CTable extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.log(nextProps, nextState);
         return nextState.data !== this.state.data || nextState.tree !== this.state.tree;
     }
 
@@ -139,6 +143,46 @@ class CTable extends React.Component {
                 this.refs['row_' + i].setChecked(true);
             }
         });
+    }
+
+    bindSplit() {
+        if (this.props.move) {
+            this.headerSplits.forEach((split) => {
+                if (!this.drag) {
+                    this.dragColumnLeft = 0;
+                    this.dragWidth      = 0;
+                    this.drag           = new Drag(this.split, split, {
+                        start: (dragDom, eventDom) => {
+                            let xy              = GetDomXY(eventDom, this.mainDom);
+                            this.dragWidth      = parseInt(eventDom.parentNode.style.width);
+                            dragDom.style.left  = xy.left + 'px';
+                            this.dragColumnLeft = xy.left;
+                            dragDom.classList.remove('d-none');
+                            return true;
+                        },
+                        move : (move, dragDom, eventDom) => {
+                            if (this.dragWidth + (move.x - this.dragColumnLeft) < 50) {
+                                move.x = this.dragColumnLeft - this.dragWidth + 50;
+                            }
+                        },
+                        end  : (dragDom, eventDom) => {
+                            dragDom.classList.add('d-none');
+                            let column_key              = eventDom.dataset.key;
+                            let diff                    = parseInt(dragDom.style.left) - this.dragColumnLeft;
+                            this.width                  = (parseInt(this.width) + diff) + 'px';
+                            this.table_head.style.width = this.width;
+                            this.table_body.style.width = this.width;
+                            document.querySelectorAll(`#${column_key}`).forEach((item) => {
+                                item.style.width = `${this.dragWidth + diff}px`;
+                            });
+                            return true;
+                        }
+                    });
+                } else {
+                    this.drag.setEventDom(split);
+                }
+            });
+        }
     }
 
     getClasses() {
@@ -240,12 +284,13 @@ class CTable extends React.Component {
 
     render() {
         return (
-            <div className={this.getMainClasses()} style={this.getStyles()}>
+            <div ref={c => this.mainDom = c} className={this.getMainClasses()} style={this.getStyles()}>
                 <div className={this.getBodyClasses()}>
                     {this.renderHeader()}
                     {this.renderRows()}
                 </div>
                 {this.renderFoot()}
+                <div ref={c => this.split = c} className='ck-split d-none'/>
             </div>
         );
     }
@@ -253,7 +298,7 @@ class CTable extends React.Component {
     renderHeader() {
         return (
             <div ref={c => this.tableHeader = c}>
-                <table className={this.getClasses()} style={this.getTableStyles()}>
+                <table ref={c => this.table_head = c} id={`table-head-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <thead className={this.getHeaderClasses()}>
                     <tr>
                         {this.state.select ?
@@ -275,12 +320,13 @@ class CTable extends React.Component {
                                 sort_icon = 'sort-alpha-' + (this.sortList[item.props.field] === 'asc' ? 'down' : 'up');
                             }
                             return (
-                                <th data-key={'head_' + key} style={style}>
+                                <th id={this.domId + '-' + key} data-key={'head_' + key} style={style}>
                                     {item.props.onSort ? <a href='javascript://'
                                                             onClick={this.sortHandler(item.props.field, item.props.onSort)}>
                                         {item.props.text}{'\u0020'}
                                         <Icon icon={sort_icon}/></a> : item.props.text}
-                                    {this.props.move ? <span className='column-split'/> : null}
+                                    {this.props.move ?
+                                        <span ref={c => this.headerSplits.push(c)} data-key={this.domId + '-' + key} className='ck-column-split'/> : null}
                                 </th>
                             );
                         })}
@@ -294,7 +340,7 @@ class CTable extends React.Component {
     renderRows() {
         return (
             <div className='flex-grow-1 rows' onScroll={this.scrollHandler}>
-                <table className={this.getClasses()} style={this.getTableStyles()}>
+                <table ref={c => this.table_body = c} id={`table-body-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
                     {this.state.data.map((row, i) => {
                         return this.renderRow(row, i);
@@ -349,14 +395,14 @@ class CTable extends React.Component {
 
                         if (item.props.children) {
                             return (
-                                <td className={item.props.className} style={{'text-align': align}} key={'col_' + key}>{parent}{tree}{React.cloneElement(item, {
+                                <td id={this.domId + '-' + key} className={item.props.className} style={{'text-align': align}} key={'col_' + key}>{parent}{tree}{React.cloneElement(item, {
                                     text : item.props.text,
                                     row  : row,
                                     value: row[item.props.field]
                                 })}</td>
                             );
                         } else {
-                            return <td style={style} key={'col_' + key}>{parent}{tree}{item.props.onFormat ? item.props.onFormat(row[item.props.field], row) : row[item.props.field]}</td>;
+                            return <td id={this.domId + '-' + key} style={style} key={'col_' + key}>{parent}{tree}{item.props.onFormat ? item.props.onFormat(row[item.props.field], row) : row[item.props.field]}</td>;
                         }
                     })}
                 </tr>
@@ -431,7 +477,9 @@ CTable.defaultProps = {
     sm         : true,
     fontSm     : true,
     headerTheme: 'light',
-    noWrap     : true
+    noWrap     : true,
+    bordered   : true,
+    move       : true
 };
 
 export default CTable;

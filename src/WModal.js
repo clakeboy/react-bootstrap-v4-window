@@ -305,7 +305,8 @@ WModal.propTypes = {
 
 WModal.defaultProps = {
     center:false,
-    width: '300px'
+    width: '300px',
+    fade:true,
 };
 
 export default WModal;
