@@ -2,10 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import './css/TopMenu.less';
+import common from "./Common";
 
 class TopMenu extends React.PureComponent {
     constructor(props) {
         super(props);
+        this.cur_active = null;
+        this.is_active = false;
     }
 
     componentDidMount() {
@@ -53,6 +56,7 @@ class Item extends React.PureComponent {
     constructor(props) {
         super(props);
         this.parent = this.props.parent || null;
+        this.domId = 'topmenu-item-' + common.RandomString(16);
     }
 
     componentDidMount() {
@@ -67,6 +71,7 @@ class Item extends React.PureComponent {
                 this.menu.show({evt:e,type:'dom-bottom',data:''});
             }
         }
+
     };
 
     getClasses() {
@@ -75,9 +80,17 @@ class Item extends React.PureComponent {
         return classNames(base,this.props.className);
     }
 
+    changeActive = (e) => {
+        if (this.parent.is_active) {
+            this.clickHandler(e);
+        }
+    };
+
     render() {
         return (
-            <div className={this.getClasses()} onClick={this.clickHandler}>
+            <div id={this.domId} className={this.getClasses()}
+                 onMouseOver={this.changeActive}
+                 onClick={this.clickHandler}>
                 {this.props.text}
                 {React.Children.map(this.props.children,(item)=>{
                     item.props.parent = this;

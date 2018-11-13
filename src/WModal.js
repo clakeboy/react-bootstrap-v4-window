@@ -24,7 +24,8 @@ class WModal extends React.Component {
             type:ModalAlert,
             center:this.props.center,
             fade:this.props.fade,
-            show:false
+            show:false,
+            header:true
         };
         //modal type
         this.modalType = ModalAlert;
@@ -115,7 +116,8 @@ class WModal extends React.Component {
             isCloseBtn:true,
             type:ModalAlert,
             center:opt.center||this.props.center,
-            fade:opt.fade||this.props.fade
+            fade:opt.fade||this.props.fade,
+            header: typeof opt.header === 'undefined' ? true:opt.header
         },()=>{
             this.open({
                 backdrop:'static',
@@ -143,7 +145,8 @@ class WModal extends React.Component {
             isCloseBtn:true,
             type:ModalConfirm,
             center:opt.center||this.props.center,
-            fade:opt.fade||this.props.fade
+            fade:opt.fade||this.props.fade,
+            header: typeof opt.header === 'undefined' ? true:opt.header
         },()=>{
             this.open({
                 backdrop:'static',
@@ -169,7 +172,37 @@ class WModal extends React.Component {
             isCloseBtn:false,
             type:ModalLoading,
             center:opt.center||this.props.center,
-            fade:false
+            fade:this.props.fade,
+            header: opt.header||false,
+        },()=>{
+            this.open({
+                backdrop:'static',
+                keyboard:false,
+            });
+        });
+    }
+
+    /**
+     * modal view method
+     * opt example
+     * {
+     *      title:'',
+     *      content:flex,
+     *      [callback:func]
+     * }
+     * @param opt
+     */
+    view(opt) {
+        this.callback = opt.callback||null;
+        this.modalType = ModalView;
+        this.setState({
+            title:opt.title||'提示',
+            content:opt.content||'',
+            isCloseBtn:true,
+            type:ModalView,
+            center:opt.center||this.props.center,
+            fade:opt.fade||this.props.fade,
+            header: typeof opt.header === 'undefined' ? true:opt.header
         },()=>{
             this.open({
                 backdrop:'static',
@@ -264,20 +297,20 @@ class WModal extends React.Component {
     render() {
         let modalIndex = {zIndex:BaseModal+this.offsetIndex+2};
         let shadowIndex = {zIndex:BaseModal+this.offsetIndex+1};
-        let content =  (
+        return (
             <div ref={c=>this._main=c} className={this.getMainClasses()}>
                 <div ref={c=>this._shadow=c} className={this.getShadowClasses()} style={shadowIndex} id={`${this.domId}-shadow`}/>
                 <div className={this.getClasses()} style={modalIndex} tabIndex="-1" id={this.domId} role="dialog">
                     <div ref={c=>this._dialog=c} className={this.getDialogClasses()} style={{maxWidth:this.props.width}} role="document">
                         <div className="modal-content">
-                            <div className="modal-header">
+                            {this.state.header?<div className="modal-header">
                                 <h5 className="modal-title">{this.state.title}</h5>
                                 {this.state.isCloseBtn?<button type="button" className="close" onClick={()=>{
                                     this.close();
                                 }}>
                                     <span aria-hidden="true">&times;</span>
                                 </button>:null}
-                            </div>
+                            </div>:null}
                             <div className="modal-body">
                                 {this.state.type === ModalLoading?<React.Fragment>
                                     <Load/>&nbsp;&nbsp;&nbsp;{this.state.content}
@@ -289,8 +322,6 @@ class WModal extends React.Component {
                 </div>
             </div>
         );
-
-        return content;
     }
 }
 

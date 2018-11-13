@@ -4,7 +4,10 @@ import classNames from 'classnames/bind';
 import common, {GetDomXY} from './Common';
 import {
     Icon,
-    Pagination
+    Pagination,
+    Menu,
+    Input,
+    Button
 } from '@clake/react-bootstrap4';
 import './css/CTable.less';
 import Drag from "./Drag";
@@ -17,19 +20,28 @@ class CTable extends React.Component {
             dataCount: this.props.dataCount,
             page     : 1,
             select   : this.props.select,
+            filter : {
+                start: '',
+                end: '',
+                contain: ''
+            }
         };
 
         this.domId = 'table-' + common.RandomString(16);
 
         this.select_all = false;
-
         this.selectRows = {};
 
+        this.headerSplits = [];
+
         this.sortList = {};
+        this.is_sort = typeof this.props.onSort === 'function' || this.props.menu;
+        this.current_sort = null;
+
+        this.filter_type = null;
+        this.filter_text = null;
 
         this.initTableWidth();
-
-        this.headerSplits = [];
     }
 
     componentDidMount() {
@@ -49,6 +61,9 @@ class CTable extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        if (this.state.filter !== nextState.filter) {
+            return true;
+        }
         return nextState.data !== this.state.data || nextState.tree !== this.state.tree;
     }
 
@@ -92,21 +107,97 @@ class CTable extends React.Component {
         }
     }
 
-    sortHandler(field, callback) {
-        return (e) => {
-            let dom       = e.currentTarget;
-            let sort_type = dom.dataset.sort || 'asc';
-            callback(field, sort_type);
-            dom.dataset.sort     = sort_type === 'asc' ? 'desc' : 'asc';
-            this.sortList[field] = sort_type;
-            let child            = dom.querySelector('i');
-            child.classList.remove('fa-sort', 'fa-sort-alpha-up', 'fa-sort-alpha-down');
-            child.classList.add('fa-sort-alpha-' + (sort_type === 'asc' ? 'down' : 'up'));
-        }
+    sortHandler = (e) => {
+        let dom       = e.currentTarget;
+        let sort_type = dom.dataset.sort || 'asc';
+        this.changeSort(dom,sort_type)
     };
+
+    changeSort(dom,sort_type) {
+        if (!dom) {
+            return
+        }
+
+        if (typeof this.props.onSort === 'function') {
+            this.props.onSort(dom.dataset.field,sort_type);
+        }
+
+        if (this.current_sort && this.current_sort !== dom.dataset.field) {
+            let prv = document.querySelector(`#${this.domId}-sort-${this.current_sort}`);
+            prv.dataset.sort = 'asc';
+            prv.classList.add('ck-ctable-sort');
+            let prv_child = prv.querySelector('i');
+            prv_child.classList.remove('fa-sort', 'fa-sort-alpha-up', 'fa-sort-alpha-down');
+            prv_child.classList.add('fa-sort');
+        }
+        this.current_sort = dom.dataset.field;
+        dom.dataset.sort     = sort_type === 'asc' ? 'desc' : 'asc';
+        dom.classList.remove('ck-ctable-sort');
+        this.sortList[dom.dataset.field] = sort_type;
+        let child            = dom.querySelector('i');
+        child.classList.remove('fa-sort', 'fa-sort-alpha-up', 'fa-sort-alpha-down');
+        child.classList.add('fa-sort-alpha-' + (sort_type === 'asc' ? 'down' : 'up'));
+    }
 
     scrollHandler = (e) => {
         this.tableHeader.style.transform = `translateX(-${e.currentTarget.scrollLeft}px)`;
+    };
+
+    menuContextHandler = (e) => {
+        e.preventDefault();
+        let data = {
+            field: e.target.dataset.field || '',
+            data : this.state.data[e.target.dataset.row]
+        };
+        this.mainMenu.show({evt: e, type: 'mouse', data: data});
+    };
+
+    menuClickHandler = (field, data) => {
+        switch (field) {
+            case "asc":
+                this.changeSort(document.querySelector(`#${this.domId}-sort-${data.field}`),'asc');
+                break;
+            case "desc":
+                this.changeSort(document.querySelector(`#${this.domId}-sort-${data.field}`),'desc');
+                break;
+        }
+    };
+
+    filterHandler(text,field,type) {
+        this.filter_text = text;
+        this.filter_type = type;
+        this.filter_field = field;
+        if (typeof this.props.onFilter === 'function') {
+            this.props.onFilter(text,field,type);
+        }
+        this.mainMenu.hide();
+    }
+
+    clearFilter() {
+        this.filter_text = '';
+        this.filter_type = '';
+        let field = this.filter_field;
+        this.filter_field = '';
+        this.setState({
+            filter: {
+                start: '',
+                end: '',
+                contain: ''
+            }
+        });
+        if (typeof this.props.onFilter === 'function') {
+            this.props.onFilter('',field,'clear');
+        }
+    }
+
+    filterChangeHandler(field) {
+        return (val)=>{
+            let filter = this.state.filter;
+            filter[field] = val;
+            this.setState({
+                filter:filter
+            })
+        }
     };
 
     selectPageHandler = (page) => {
@@ -155,8 +246,8 @@ class CTable extends React.Component {
                         start: (dragDom, eventDom) => {
                             let xy              = GetDomXY(eventDom, this.mainDom);
                             this.dragWidth      = parseInt(eventDom.parentNode.style.width);
-                            dragDom.style.left  = xy.left + 'px';
-                            this.dragColumnLeft = xy.left;
+                            this.dragColumnLeft = (xy.left - this.table_rows.scrollLeft);
+                            dragDom.style.left  = this.dragColumnLeft + 'px';
                             dragDom.classList.remove('d-none');
                             return true;
                         },
@@ -321,8 +412,9 @@ class CTable extends React.Component {
                             }
                             return (
                                 <th id={this.domId + '-' + key} data-key={'head_' + key} style={style}>
-                                    {item.props.onSort ? <a href='javascript://'
-                                                            onClick={this.sortHandler(item.props.field, item.props.onSort)}>
+                                    {this.is_sort ? <a className='ck-ctable-sort' href='javascript://' id={`${this.domId}-sort-${item.props.field}`}
+                                                       data-field={item.props.field}
+                                                       onClick={this.sortHandler}>
                                         {item.props.text}{'\u0020'}
                                         <Icon icon={sort_icon}/></a> : item.props.text}
                                     {this.props.move ?
@@ -339,7 +431,7 @@ class CTable extends React.Component {
 
     renderRows() {
         return (
-            <div className='flex-grow-1 rows' onScroll={this.scrollHandler}>
+            <div ref={c=>this.table_rows=c} className='flex-grow-1 rows' onScroll={this.scrollHandler} onContextMenu={this.menuContextHandler}>
                 <table ref={c => this.table_body = c} id={`table-body-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
                     {this.state.data.map((row, i) => {
@@ -347,6 +439,7 @@ class CTable extends React.Component {
                     })}
                     </tbody>
                 </table>
+                {this.props.menu ? this.renderMenu() : null}
             </div>
         )
     }
@@ -395,14 +488,17 @@ class CTable extends React.Component {
 
                         if (item.props.children) {
                             return (
-                                <td id={this.domId + '-' + key} className={item.props.className} style={{'text-align': align}} key={'col_' + key}>{parent}{tree}{React.cloneElement(item, {
+                                <td id={this.domId + '-' + key} data-row={`${i}`} data-field={item.props.field}
+                                    className={item.props.className} style={{'text-align': align}}
+                                    key={'col_' + key}>{parent}{tree}{React.cloneElement(item, {
                                     text : item.props.text,
                                     row  : row,
                                     value: row[item.props.field]
                                 })}</td>
                             );
                         } else {
-                            return <td id={this.domId + '-' + key} style={style} key={'col_' + key}>{parent}{tree}{item.props.onFormat ? item.props.onFormat(row[item.props.field], row) : row[item.props.field]}</td>;
+                            return <td id={this.domId + '-' + key} data-field={item.props.field}
+                                       style={style} data-row={`${i}`}>{parent}{tree}{item.props.onFormat ? item.props.onFormat(row[item.props.field], row) : row[item.props.field]}</td>;
                         }
                     })}
                 </tr>
@@ -424,7 +520,65 @@ class CTable extends React.Component {
             </div>
         )
     }
+
+    renderMenu() {
+        return (
+            <Menu ref={c => this.mainMenu = c} onClick={this.menuClickHandler}>
+                <Menu.Item field="copy" onClick={() => {
+                    document.execCommand("copy");
+                }}>Copy</Menu.Item>
+                <Menu.Item step/>
+                <Menu.Item field='select_filter' onClick={(e, field, data) => {
+                    let select = document.getSelection();
+                    console.log(select.toString(),data);
+                    this.filterHandler(select.toString(),data.field,'contain');
+                }}>Filter By Selection</Menu.Item>
+                <Menu.Item field='clear_filter' onClick={() => {
+                    this.clearFilter();
+                }}>Clear Filter</Menu.Item>
+                <Menu.Item step/>
+                <Menu.Item field="filter">
+                    <span className='mr-1' style={inputStyle}>Start With</span>
+                    <Input className='mr-1' size='xs' width='120px'
+                           data={this.state.filter.start}
+                           onChange={this.filterChangeHandler('start')}
+                           onMouseDown={stopEvent}/>
+                    <Button size='xs' onMouseDown={stopEvent} onClick={(e)=>{
+                        this.filterHandler(this.state.filter.start,this.mainMenu.data.field,'start');
+                    }} icon='search'/>
+                </Menu.Item>
+                <Menu.Item field="filter">
+                    <span className='mr-1' style={inputStyle}>End With</span>
+                    <Input className='mr-1' size='xs' width='120px'
+                           data={this.state.filter.end}
+                           onChange={this.filterChangeHandler('end')}
+                           onMouseDown={stopEvent}/>
+                    <Button size='xs' onMouseDown={stopEvent} onClick={(e)=>{
+                        this.filterHandler(this.state.filter.end,this.mainMenu.data.field,'end');
+                    }} icon='search'/>
+                </Menu.Item>
+                <Menu.Item field="filter">
+                    <span className='mr-1' style={inputStyle}>Contain with</span>
+                    <Input className='mr-1' size='xs' width='120px'
+                           data={this.state.filter.contain}
+                           onChange={this.filterChangeHandler('contain')}
+                           onMouseDown={stopEvent}/>
+                    <Button size='xs' onMouseDown={stopEvent} onClick={(e)=>{
+                        this.filterHandler(this.state.filter.contain,this.mainMenu.data.field,'contain');
+                    }} icon='search'/>
+                </Menu.Item>
+                <Menu.Item step/>
+                <Menu.Item field="asc">Sort Ascending</Menu.Item>
+                <Menu.Item field="desc">Sort Descending</Menu.Item>
+            </Menu>
+        )
+    }
 }
+
+const inputStyle = {width:'80px'};
+const stopEvent = function(e){
+    e.stopPropagation();
+};
 
 CTable.propTypes = {
     theme       : PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']),
@@ -448,6 +602,8 @@ CTable.propTypes = {
     onClickTree : PropTypes.func,
     onClick     : PropTypes.func,
     onCheck     : PropTypes.func,
+    onFilter    : PropTypes.func,
+    onSort      : PropTypes.func,
     move        : PropTypes.bool,
     onRefresh   : PropTypes.func,
     refreshText : PropTypes.string,
@@ -461,7 +617,8 @@ CTable.propTypes = {
     showPages   : PropTypes.number,
     showNumbers : PropTypes.number,
     onSelectPage: PropTypes.func,
-    noWrap      : PropTypes.bool
+    noWrap      : PropTypes.bool,
+    menu        : PropTypes.bool,
 };
 
 CTable.defaultProps = {
@@ -479,7 +636,8 @@ CTable.defaultProps = {
     headerTheme: 'light',
     noWrap     : true,
     bordered   : true,
-    move       : true
+    move       : true,
+    menu       : true,
 };
 
 export default CTable;

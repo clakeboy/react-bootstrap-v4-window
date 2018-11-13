@@ -58,9 +58,8 @@ class Window extends React.PureComponent {
             y:20
         };
         this.params = option.params || null;
-        this.dom.style.top = (option.y+this.props.marginTop)+'px';
-        this.dom.style.left = option.x+'px';
         this.dom.classList.remove('d-none');
+        this.move(option.x,option.y);
         this.showHandler(null);
     }
 
@@ -83,6 +82,11 @@ class Window extends React.PureComponent {
         }
         this.is_max = false;
     };
+
+    move(x,y) {
+        this.dom.style.top = (y+this.props.marginTop)+'px';
+        this.dom.style.left = x+'px';
+    }
 
     setIndex(index) {
         this.dom.style.zIndex = index;

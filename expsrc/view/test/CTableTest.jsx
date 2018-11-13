@@ -13,6 +13,7 @@ import {
     TableHeader,
     Button
 } from '@clake/react-bootstrap4';
+import {RandomString} from "../../../src/Common";
 
 class CTableTest extends React.Component {
     constructor(props) {
@@ -32,6 +33,8 @@ class CTableTest extends React.Component {
             this.params = this.window.params;
         }
 
+        this.org_data;
+
         this.id = 1;
     }
 
@@ -50,8 +53,9 @@ class CTableTest extends React.Component {
         setTimeout(()=>{
             let data = [];
             for (let i=0;i<5;i++) {
-                data.push({'id': i+1, 'name': 'Clake'+this.id});
+                data.push({'id': i+1, 'name': `${this.id}-${RandomString(32)}`});
             }
+            this.org_data = data.slice(0);
             this.setState({
                 table_data:data,
                 page:1,
@@ -79,6 +83,48 @@ class CTableTest extends React.Component {
         this.manage.open('f_abha_house_review',{id:this.id});
     };
 
+    sortHandler = (field,sort_type)=>{
+        let desc = sort_type === 'desc';
+        let data = this.state.table_data.slice(0);
+        data.sort((a,b)=>{
+            if (a[field] > b[field]) return desc?-1:1;
+            if (a[field] < b[field]) return desc?1:-1;
+            if (a[field] === b[field]) return 0;
+        });
+        this.setState({table_data:data})
+    };
+
+    filterHandler = (text,field,type)=>{
+        console.log(text,field,type);
+        let reg;
+        switch (type) {
+            case "start":
+                reg = new RegExp(`^${text}`);
+                break;
+            case "end":
+                reg = new RegExp(`${text}$`);
+                break;
+            case "clear":
+                this.setState({
+                    table_data:this.org_data.slice(0)
+                });
+                return;
+            default:
+                reg = new RegExp(`${text}`);
+        }
+        let data = this.state.table_data.slice(0);
+        let filter = [];
+        data.forEach((item)=>{
+            if (reg.test(item[field])) {
+                filter.push(item);
+            }
+        });
+
+        this.setState({
+            table_data: filter
+        });
+    };
+
     render() {
         return (
             <React.Fragment>
@@ -93,8 +139,10 @@ class CTableTest extends React.Component {
                         }}
                         page={this.state.page}
                         dataCount={this.state.data_count}
-                        data={this.state.table_data}>
-                    <TableHeader onSort={(field,sort)=>{console.log(field,sort)}} field='id' text='ID' width='100px'/>
+                        data={this.state.table_data}
+                        onFilter={this.filterHandler}
+                        onSort={this.sortHandler}>
+                    <TableHeader field='id' text='ID' width='100px'/>
                     <TableHeader field='name' text='Name' width='200px'/>
                 </CTable>
                 <WModal ref={c=>this.modal=c} fade/>
