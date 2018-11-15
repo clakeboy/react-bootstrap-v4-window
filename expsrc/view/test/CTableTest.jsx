@@ -141,7 +141,9 @@ class CTableTest extends React.Component {
                         dataCount={this.state.data_count}
                         data={this.state.table_data}
                         onFilter={this.filterHandler}
-                        onSort={this.sortHandler}>
+                        onSort={this.sortHandler}
+                        total={{id:10}}
+                >
                     <TableHeader field='id' text='ID' width='100px'/>
                     <TableHeader field='name' text='Name' width='200px'/>
                 </CTable>

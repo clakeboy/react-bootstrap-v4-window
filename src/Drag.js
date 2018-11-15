@@ -66,17 +66,27 @@ export default class Drag {
     }
 
     beginDrag = (e) => {
+        if (e.button !== 0) {
+            return false;
+        }
         this.eventDom = e.currentTarget;
         // e.preventDefault();
+        window.addEventListener('mousemove',this.startMove,false);
+    };
+
+    startMove = (e)=> {
+        if (e.buttons !== 1) {
+            window.removeEventListener('mousemove',this.startMove,false);
+            return false;
+        }
+        window.removeEventListener('mousemove',this.startMove,false);
         if (!this._evtStart(this.dragDom,this.eventDom,e)) {
             return false;
         }
-
         this.domX = parseInt(this.dragDom.style.left);
         this.domY = parseInt(this.dragDom.style.top);
         this.dragX = parseInt(e.pageX);
         this.dragY = parseInt(e.pageY);
-
         window.addEventListener('mousemove',this.moveDrag,false);
         window.addEventListener('mouseup',this.overDrag,false);
     };

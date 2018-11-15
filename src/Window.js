@@ -15,6 +15,7 @@ class Window extends React.PureComponent {
         this.evts = {};
         this.is_before = false;
         this.is_max = false;
+        this.max_position = {};
     }
 
     componentDidMount() {
@@ -68,6 +69,7 @@ class Window extends React.PureComponent {
             this.beforeCloseHandler(this.hide);
             return;
         }
+        this.max(false);
         this.hide();
         this.closeHandler();
     };
@@ -88,6 +90,30 @@ class Window extends React.PureComponent {
         this.dom.style.left = x+'px';
     }
 
+    max(flag) {
+        if (flag) {
+            this.max_position.y = this.dom.style.top;
+            this.max_position.x = this.dom.style.left;
+            this.max_position.width = this.dom.style.width;
+            this.max_position.height = this.dom.style.height;
+            this.dom.style.top = this.props.marginTop+'px';
+            this.dom.style.left = '0';
+            this.dom.style.right = '0';
+            this.dom.style.bottom = '0';
+            this.dom.style.width = 'unset';
+            this.dom.style.height = 'unset';
+            this.is_max = true;
+        } else {
+            this.dom.style.width = this.max_position.width;
+            this.dom.style.height = this.max_position.height;
+            this.dom.style.top = this.max_position.y;
+            this.dom.style.left = this.max_position.x;
+            this.dom.style.right = 'unset';
+            this.dom.style.bottom = 'unset';
+            this.is_max = false;
+        }
+    }
+
     setIndex(index) {
         this.dom.style.zIndex = index;
     }
@@ -105,7 +131,8 @@ class Window extends React.PureComponent {
     }
 
     maxHandler = (e)=>{
-        this.trigger(EVT_MAX_WINDOW,e)
+        this.trigger(EVT_MAX_WINDOW,e);
+        this.max(!this.is_max);
     };
 
     showHandler = (e)=>{
@@ -170,10 +197,10 @@ class Window extends React.PureComponent {
         let content = (
             <React.Fragment>
                 <div ref={c=>this.dom=c} className={this.getClasses()} style={this.getStyles()}>
-                    <div ref={c=>this.domHeader=c} className='card-header'>
+                    <div ref={c=>this.domHeader=c} onDoubleClick={this.maxHandler} className='card-header'>
                         {this.props.title}
                         <div className='window-btn'>
-                            <IconButton className='mr-1' iconType='regular' icon='window-minimize'/>
+                            {/*<IconButton className='mr-1' iconType='regular' icon='window-minimize'/>*/}
                             <IconButton className='mr-1' iconType='regular' icon='window-maximize' onClick={this.maxHandler}/>
                             <IconButton icon='window-close' onClick={this.close}/>
                         </div>
