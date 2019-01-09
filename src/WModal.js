@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import common from './Common';
 import {
     Button,
-    Load
+    Load,
+    Common
 } from '@clake/react-bootstrap4';
 import './css/WModal.less';
 
@@ -32,7 +32,7 @@ class WModal extends React.Component {
         //alert confirm callback function
         this.callback = null;
 
-        this.domId = 'modal-'+common.RandomString(16);
+        this.domId = 'modal-'+Common.RandomString(16);
         if (this.props.id) {
             this.domId = this.props.id;
         }

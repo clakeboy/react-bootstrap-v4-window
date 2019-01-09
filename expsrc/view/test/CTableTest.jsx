@@ -11,9 +11,9 @@ import {
 } from '../../../src/index';
 import {
     TableHeader,
-    Button
+    Button,
+    Common
 } from '@clake/react-bootstrap4';
-import {RandomString} from "../../../src/Common";
 
 class CTableTest extends React.Component {
     constructor(props) {
@@ -53,7 +53,7 @@ class CTableTest extends React.Component {
         setTimeout(()=>{
             let data = [];
             for (let i=0;i<5;i++) {
-                data.push({'id': i+1, 'name': `${this.id}-${RandomString(32)}`});
+                data.push({'id': i+1, 'name': `${this.id}-${Common.RandomString(32)}`});
             }
             this.org_data = data.slice(0);
             this.setState({
@@ -70,7 +70,7 @@ class CTableTest extends React.Component {
     };
 
     closeHandler = ()=>{
-        this.modal.alert('关闭窗口');
+        console.log('关闭窗体');
     };
 
     clickHandler = ()=>{
@@ -125,15 +125,20 @@ class CTableTest extends React.Component {
         });
     };
 
+    testHandler = ()=>{
+        console.log(this.edit_table.getEditRows());
+    };
+
     render() {
         return (
             <React.Fragment>
                 <Button absolute y='10px' x='10px' size='sm' onClick={this.clickHandler}>Alert</Button>
+                <Button absolute y='10px' x='110px' size='sm' onClick={this.testHandler}>Get Edit Data</Button>
                 <CTable position={{
                     right:'10px',
                     left:'10px',
-                    bottom:'10px'
-                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='300px' bordered={true}
+                    top:'50px',
+                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true}
                         onSelectPage={(page)=>{
                             console.log(page);
                         }}
@@ -144,7 +149,28 @@ class CTableTest extends React.Component {
                         onSort={this.sortHandler}
                         total={{id:10}}
                 >
-                    <TableHeader field='id' text='ID' width='100px'/>
+                    <TableHeader field='id' text='ID' width='100px' onDoubleClick={(row)=>{
+                        console.log(row);
+                    }}/>
+                    <TableHeader field='name' text='Name' width='200px'/>
+                </CTable>
+                <CTable ref={c=>this.edit_table=c} position={{
+                    right:'10px',
+                    left:'10px',
+                    top:'260px',
+                    bottom:'10px',
+                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true}
+                        data={this.state.table_data}
+
+                        edit
+                        foot={false}
+                >
+                    <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
+                        console.log(row);
+                    }}/>
+                    <TableHeader field='price' text='Price' width='100px' align='right' onDoubleClick={(row)=>{
+                        console.log(row);
+                    }}/>
                     <TableHeader field='name' text='Name' width='200px'/>
                 </CTable>
                 <WModal ref={c=>this.modal=c} fade/>

@@ -20,7 +20,7 @@ import ReactBootstrap4,{
     Card,
     LoaderComponent,
     Menu
-} from '@clake/react-bootstrap4';
+} from '../../../react-bootstrap-v4/src/index';
 import {
     Window
 } from '../../src/index';

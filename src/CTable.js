@@ -1,22 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import common, {GetDomXY} from './Common';
 import {
     Icon,
     Pagination,
     Menu,
     Input,
-    Button
+    Button,
+    Common
 } from '@clake/react-bootstrap4';
 import './css/CTable.less';
 import Drag from "./Drag";
+import CTableInput from "./CTableInput";
 
 class CTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data     : this.props.data,
+            data     : this.props.data || [],
             dataCount: this.props.dataCount,
             page     : 1,
             select   : this.props.select,
@@ -28,7 +29,9 @@ class CTable extends React.Component {
             }
         };
 
-        this.domId = 'table-' + common.RandomString(16);
+        this.originalData = this.state.data.slice(0);
+
+        this.domId = 'table-' + Common.RandomString(16);
 
         this.select_all = false;
         this.selectRows = {};
@@ -42,7 +45,11 @@ class CTable extends React.Component {
         this.filter_type = null;
         this.filter_text = null;
 
+        this.editRows = [];
+
         this.initTableWidth();
+
+        this.cacheRow = {};
     }
 
     componentDidMount() {
@@ -53,6 +60,10 @@ class CTable extends React.Component {
         if (this.state.data !== nextProps.data) {
             this.select_all = false;
             this.selectRows = {};
+            if (this.props.edit) {
+                this.editRows = [];
+                this.originalData = Common.Clone(nextProps.data);
+            }
             this.setState({
                 data     : nextProps.data,
                 dataCount: nextProps.dataCount,
@@ -65,7 +76,7 @@ class CTable extends React.Component {
         if (this.state.filter !== nextState.filter) {
             return true;
         }
-        return nextState.data !== this.state.data || nextState.tree !== this.state.tree;
+        return nextState.data !== this.state.data;
     }
 
     initTableWidth() {
@@ -108,6 +119,9 @@ class CTable extends React.Component {
         }
     }
 
+    /**
+     * sort
+     */
     sortHandler = (e) => {
         let dom       = e.currentTarget;
         let sort_type = dom.dataset.sort || 'asc';
@@ -119,18 +133,7 @@ class CTable extends React.Component {
             return
         }
 
-        if (typeof this.props.onSort === 'function') {
-            this.props.onSort(dom.dataset.field, sort_type);
-        }
-
-        if (this.current_sort && this.current_sort !== dom.dataset.field) {
-            let prv          = document.querySelector(`#${this.domId}-sort-${this.current_sort}`);
-            prv.dataset.sort = 'asc';
-            prv.classList.add('ck-ctable-sort');
-            let prv_child = prv.querySelector('i');
-            prv_child.classList.remove('fa-sort', 'fa-sort-alpha-up', 'fa-sort-alpha-down');
-            prv_child.classList.add('fa-sort');
-        }
+        this.clearSort();
         this.current_sort = dom.dataset.field;
         dom.dataset.sort  = sort_type === 'asc' ? 'desc' : 'asc';
         dom.classList.remove('ck-ctable-sort');
@@ -138,11 +141,46 @@ class CTable extends React.Component {
         let child                        = dom.querySelector('i');
         child.classList.remove('fa-sort', 'fa-sort-alpha-up', 'fa-sort-alpha-down');
         child.classList.add('fa-sort-alpha-' + (sort_type === 'asc' ? 'down' : 'up'));
+        if (typeof this.props.onSort === 'function') {
+            this.props.onSort(dom.dataset.field, sort_type);
+        } else {
+            // this.localSort(dom.dataset.field,sort_type)
+        }
     }
 
+    clearSort() {
+        if (this.current_sort) {
+            let prv          = document.querySelector(`#${this.domId}-sort-${this.current_sort}`);
+            prv.dataset.sort = 'asc';
+            prv.classList.add('ck-ctable-sort');
+            let prv_child = prv.querySelector('i');
+            prv_child.classList.remove('fa-sort', 'fa-sort-alpha-up', 'fa-sort-alpha-down');
+            prv_child.classList.add('fa-sort');
+            this.sortList[this.current_sort] = null;
+            this.current_sort = null;
+        }
+    }
+
+    localSort(field,sort_type) {
+        let desc = sort_type === 'desc';
+        let data = this.originalData.slice(0);
+        data.sort((a,b)=>{
+            if (a[field] > b[field]) return desc?-1:1;
+            if (a[field] < b[field]) return desc?1:-1;
+            if (a[field] === b[field]) return 0;
+        });
+        this.setState({data:data});
+    }
+
+    /**
+     * scroll header and total foot
+     * @param e
+     */
     scrollHandler = (e) => {
         this.tableHeader.style.transform = `translateX(-${e.currentTarget.scrollLeft}px)`;
+        // this.tableHeader.scrollLeft = e.currentTarget.scrollLeft;
         if (this.tableTotal) {
+            // this.tableTotal.scrollLeft = e.currentTarget.scrollLeft;
             this.tableTotal.style.transform = `translateX(-${e.currentTarget.scrollLeft}px)`;
         }
     };
@@ -151,7 +189,8 @@ class CTable extends React.Component {
         e.preventDefault();
         let data = {
             field: e.target.dataset.field || '',
-            data : this.state.data[e.target.dataset.row]
+            data : this.state.data[e.target.dataset.row],
+            index: e.target.dataset.row
         };
         this.mainMenu.show({evt: e, type: 'mouse', data: data});
     };
@@ -164,8 +203,17 @@ class CTable extends React.Component {
             case "desc":
                 this.changeSort(document.querySelector(`#${this.domId}-sort-${data.field}`), 'desc');
                 break;
+            case "delete_row":
+                this.deleteRowHandler(parseInt(this.mainMenu.data.index));
+                break;
         }
     };
+    /**
+     * filter
+     * */
+    localFilter() {
+
+    }
 
     filterHandler(text, field, type) {
         this.filter_text  = text;
@@ -189,6 +237,7 @@ class CTable extends React.Component {
         this.filter_type  = '';
         let field         = this.filter_field;
         this.filter_field = '';
+        this.clearSort();
         this.setState({
             filter: {
                 start  : '',
@@ -217,9 +266,75 @@ class CTable extends React.Component {
         }
     };
 
+    /**
+     * edit mode
+     */
+    addNewHandler = (e) => {
+        let data = this.state.data.slice(0);
+        data.push(Object.assign({},this.cacheRow));
+        this.editRows.push(data.length-1);
+        this.setState({
+            data: data
+        }, () => {
+            document.querySelector(`#${this.domId}-edit`).previousElementSibling.querySelector('input:not([disabled])').focus()
+        })
+    };
+
+    editHandler = (e,val)=>{
+        let index = parseInt(e.target.dataset.row);
+        let field = e.target.dataset.field;
+        if (this.editRows.indexOf(index) === -1) {
+            this.editRows.push(index);
+            let data = this.state.data.slice(0);
+            data[index][field] = val;
+            this.setState({data:data})
+        } else {
+            this.state.data[index][field] = val;
+        }
+    };
+
+    getEditRows() {
+        let list = [];
+        for (let row of this.editRows) {
+            list.push(this.state.data[row]);
+        }
+        return list;
+    }
+
+    deleteRowHandler(row_index) {
+        if (row_index < 0 || row_index >= this.state.data.length) {
+            return
+        }
+        if (typeof this.props.onDelete === 'function') {
+            this.props.onDelete(this.state.data[row_index],row_index);
+        } else {
+            this.deleteRow(row_index)
+        }
+    }
+
+    deleteRow(row_index) {
+        if (row_index < 0 || row_index >= this.state.data.length) {
+            return
+        }
+        let data = this.state.data.slice(0);
+        data.splice(row_index, 1);
+        if (this.editRows.indexOf(row_index) !== -1) {
+            this.editRows.splice(this.editRows.indexOf(row_index),1);
+        }
+        this.editRows.forEach((item,index)=>{
+            if (item > row_index) {
+                this.editRows[index] = item - 1;
+            }
+        });
+
+        this.setState({data: data});
+    }
+
+    //****************************
+
     selectAll = (e) => {
         this.select_all = e.target.checked;
-        common.map(this.refs, (item) => {
+        Common.map(this.refs, (item) => {
             item.checked = this.select_all;
         });
     };
@@ -229,7 +344,7 @@ class CTable extends React.Component {
      * @returns {*}
      */
     getSelectRows() {
-        return common.map(this.selectRows, (item) => {
+        return Common.map(this.selectRows, (item) => {
             return item;
         });
     }
@@ -255,7 +370,7 @@ class CTable extends React.Component {
                     this.dragWidth      = 0;
                     this.drag           = new Drag(this.split, split, {
                         start: (dragDom, eventDom) => {
-                            let xy              = GetDomXY(eventDom, this.mainDom);
+                            let xy              = Common.GetDomXY(eventDom, this.mainDom);
                             this.dragWidth      = parseInt(eventDom.parentNode.style.width);
                             this.dragColumnLeft = (xy.left - this.table_rows.scrollLeft);
                             dragDom.style.left  = this.dragColumnLeft + 'px';
@@ -293,7 +408,7 @@ class CTable extends React.Component {
     getClasses() {
         let base = 'table ck-table';
         //striped
-        if (this.props.striped) {
+        if (this.props.striped && !this.props.edit) {
             base = classNames(base, 'table-striped');
         }
         //theme
@@ -355,12 +470,16 @@ class CTable extends React.Component {
                 base.left   = this.props.position.left || this.props.x;
                 base.right  = this.props.position.right || 'unset';
                 base.bottom = this.props.position.bottom || 'unset';
-                base.width  = 'unset';
-                base.height = 'unset';
+                if (this.props.position.left && this.props.position.right) {
+                    base.width = 'unset';
+                }
+                if (this.props.position.top && this.props.position.bottom) {
+                    base.height = 'unset';
+                }
             }
         }
 
-        return common.extend(base, this.props.style)
+        return Common.extend(base, this.props.style)
     }
 
     getHeaderClasses() {
@@ -408,15 +527,17 @@ class CTable extends React.Component {
                     <thead className={this.getHeaderClasses()}>
                     <tr>
                         {this.state.select ?
-                            <th width='20px'><input type='checkbox' onChange={this.selectAll}/>
+                            <th width='20px'>
+                                {this.props.edit?<Icon icon='list'/>:<input type='checkbox' onChange={this.selectAll}/>}
                             </th> : null}
                         {React.Children.map(this.props.children, (item, key) => {
+                            this.cacheRow[item.props.field] = '';
                             if (!item || item.props.hide) {
                                 return null;
                             }
-                            let align = item.props.align || this.props.align;
+                            // let align = item.props.align || this.props.align;
                             let style = {
-                                'textAlign': align
+                                'textAlign': 'center'
                             };
                             if (item.props.width) {
                                 style.width = item.props.width;
@@ -451,8 +572,12 @@ class CTable extends React.Component {
                 <table ref={c => this.table_body = c} id={`table-body-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
                     {this.state.data.map((row, i) => {
+                        if (this.props.edit) {
+                            return this.renderEditRow(row, i)
+                        }
                         return this.renderRow(row, i);
                     })}
+                    {this.props.edit ? this.renderEditAddRow() : null}
                     </tbody>
                 </table>
                 {this.props.menu ? this.renderMenu() : null}
@@ -478,49 +603,114 @@ class CTable extends React.Component {
                         if (item.props.width) {
                             style.width = item.props.width;
                         }
-                        //set tree
-                        let tree, parent;
-                        if (item.props.tree) {
-                            if (parentRow) {
-                                parent = <span className='mr-4'/>
-                            }
-                            tree = <Icon data-open='close' onClick={() => {
-                                if (typeof this.props.onClickTree === 'function') {
-                                    this.props.onClickTree(row, (data) => {
-                                        if (!data) {
-                                            return
-                                        }
-                                        let tree        = this.state.tree;
-                                        tree[i]         = data;
-                                        this.state.tree = null;
-                                        this.setState({
-                                            tree: tree
-                                        })
-                                    });
-                                }
-
-                            }} className='mr-1 text-primary' icon='plus-square' iconType='regular'/>
-                        }
 
                         if (item.props.children) {
                             return (
                                 <td id={this.domId + '-' + key} data-row={`${i}`} data-field={item.props.field}
                                     className={item.props.className} style={{'text-align': align}}
-                                    key={'col_' + key}>{parent}{tree}{React.cloneElement(item, {
+                                    key={'col_' + key}>{React.cloneElement(item, {
                                     text : item.props.text,
                                     row  : row,
                                     value: row[item.props.field]
                                 })}</td>
                             );
                         } else {
-                            return <td id={this.domId + '-' + key} data-field={item.props.field}
-                                       style={style} data-row={`${i}`}>{parent}{tree}{item.props.onFormat ? item.props.onFormat(row[item.props.field], row) : row[item.props.field]}</td>;
+                            return <td id={this.domId + '-' + key}
+                                       data-field={item.props.field}
+                                       style={style}
+                                       onClick={(e) => {
+                                           if (typeof item.props.onClick === 'function') {
+                                               item.props.onClick(row);
+                                           }
+                                       }}
+                                       onDoubleClick={(e) => {
+                                           if (typeof item.props.onDoubleClick === 'function') {
+                                               item.props.onDoubleClick(row);
+                                           }
+                                       }}
+                                       data-row={`${i}`}>{item.props.onFormat ? item.props.onFormat(row[item.props.field], row) : row[item.props.field]}</td>;
                         }
                     })}
                 </tr>
-                {this.props.tree ? this.renderTreeRow(row, i) : null}
             </React.Fragment>
         );
+    }
+
+    renderEditRow(row, i) {
+        return (
+            <React.Fragment>
+                <tr className={this.props.onClick ? 'click-row' : null} onClick={this.clickHandler(row, i)}>
+                    {this.state.select ?
+                        <th width='20px'>
+                            {this.editRows.indexOf(i) === -1 ? null:<Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className='text-danger'/>}
+                        </th> : null}
+                    {React.Children.map(this.props.children, (item, key) => {
+                        if (!item || item.props.hide) {
+                            return null;
+                        }
+                        //set style
+                        let style = {...this.props.columnStyle};
+
+                        style.textAlign = item.props.align || this.props.align;
+                        if (item.props.width) {
+                            style.width = item.props.width;
+                        }
+                        return (
+                            <td className={item.props.disabled ? 'disabled' : ''} id={this.domId + '-' + key}
+                                data-field={item.props.field}
+                                style={style}
+                                onClick={(e) => {
+                                    if (typeof item.props.onClick === 'function') {
+                                        item.props.onClick(row);
+                                    }
+                                }}
+                                onDoubleClick={(e) => {
+                                    if (typeof item.props.onDoubleClick === 'function') {
+                                        item.props.onDoubleClick(row);
+                                    }
+                                }}
+                                data-row={`${i}`}>
+                                {this.renderEditComponent(item.props, row, i)}
+                            </td>
+                        );
+                    })}
+                </tr>
+            </React.Fragment>
+        );
+    }
+
+    renderEditAddRow() {
+        return (
+            <tr id={this.domId + '-edit'}>
+                {this.state.select ?
+                    <th width='20px'><Icon icon='chevron-circle-right'/></th> : null}
+                {React.Children.map(this.props.children, (item, key) => {
+                    if (!item || item.props.hide) {
+                        return null;
+                    }
+                    return (
+                        <td>
+                            <CTableInput onFocus={this.addNewHandler}/>
+                        </td>
+                    );
+                })}
+            </tr>
+        )
+    }
+
+    renderEditComponent(item, row, i) {
+        switch (item.type) {
+            case "combo":
+                break;
+            case "calendar":
+                break;
+            case "checkbox":
+                break;
+            default:
+                return (
+                    <CTableInput onChange={this.editHandler} data-row={i} data-field={item.field} data={row[item.field]} align={item.align} disabled={item.disabled}/>
+                )
+        }
     }
 
     renderFoot() {
@@ -548,7 +738,7 @@ class CTable extends React.Component {
                     <tbody>
                     <tr>
                         {this.state.select ?
-                            <td width='20px'/> : null}
+                            <td width='20px'><Icon icon='chart-line'/></td> : null}
                         {React.Children.map(this.props.children, (item, key) => {
                             if (!item || item.props.hide) {
                                 return null;
@@ -579,6 +769,9 @@ class CTable extends React.Component {
                 <Menu.Item field="copy" onClick={() => {
                     document.execCommand("copy");
                 }}>Copy</Menu.Item>
+                <Menu.Item field="cut" onClick={() => {
+                    document.execCommand("cut");
+                }}>Cut</Menu.Item>
                 <Menu.Item step/>
                 <Menu.Item field='select_filter' onClick={(e, field, data) => {
                     let select = document.getSelection();
@@ -586,7 +779,7 @@ class CTable extends React.Component {
                 }}>Filter By Selection</Menu.Item>
                 <Menu.Item field='clear_filter' onClick={() => {
                     this.clearFilter();
-                }}>Clear Filter</Menu.Item>
+                }}>Clear Filter / Sort</Menu.Item>
                 <Menu.Item step/>
                 <Menu.Item field="filter">
                     <span className='mr-1' style={inputStyle}>Start With</span>
@@ -633,6 +826,8 @@ class CTable extends React.Component {
                 <Menu.Item step/>
                 <Menu.Item field="asc">Sort Ascending</Menu.Item>
                 <Menu.Item field="desc">Sort Descending</Menu.Item>
+                {this.props.edit?<Menu.Item step/>:null}
+                {this.props.edit?<Menu.Item field="delete_row" >Delete Row</Menu.Item>:null}
             </Menu>
         )
     }
@@ -683,6 +878,8 @@ CTable.propTypes = {
     noWrap      : PropTypes.bool,
     menu        : PropTypes.bool,
     total       : PropTypes.object,
+    edit        : PropTypes.bool,
+    onDelete: PropTypes.func,
 };
 
 CTable.defaultProps = {

@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames/bind';
 
 const defIndex = 100;
 
@@ -91,6 +89,11 @@ class WindowGroup extends React.Component {
         this.opens.forEach((key,index)=>{
             this.windows[key].setIndex(defIndex+index);
         });
+        // let showWindows = this.state.showWindows.slice(0);
+        // showWindows.splice(showWindows.indexOf(name),1);
+        // this.setState({
+        //     showWindows: showWindows,
+        // });
     }
 
     close(name) {

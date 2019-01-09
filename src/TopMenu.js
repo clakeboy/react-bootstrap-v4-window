@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import './css/TopMenu.less';
-import common from "./Common";
-
+import {
+    Common
+} from '@clake/react-bootstrap4';
 class TopMenu extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -36,7 +37,7 @@ class TopMenu extends React.PureComponent {
             <div className={this.getClasses()}>
                 {React.Children.map(this.props.children,(item)=>{
                     item.props.parent = this;
-                    return item;
+                    return React.cloneElement(item,item.props);
                 })}
             </div>
         );
@@ -56,7 +57,7 @@ class Item extends React.PureComponent {
     constructor(props) {
         super(props);
         this.parent = this.props.parent || null;
-        this.domId = 'topmenu-item-' + common.RandomString(16);
+        this.domId = 'topmenu-item-' + Common.RandomString(16);
     }
 
     componentDidMount() {
@@ -68,10 +69,18 @@ class Item extends React.PureComponent {
             this.props.onClick(this.props.name);
         } else {
             if (this.menu) {
-                this.menu.show({evt:e,type:'dom-bottom',data:''});
+                this.parent.is_active = true;
+                this.parent.cur_active = this.dom;
+                this.parent.cur_menu = this.menu;
+                this.dom.classList.add('active');
+                this.menu.show({
+                    evt:e,
+                    type:'dom-bottom',
+                    data:'',
+                    close:this.closeHandler
+                });
             }
         }
-
     };
 
     getClasses() {
@@ -82,13 +91,31 @@ class Item extends React.PureComponent {
 
     changeActive = (e) => {
         if (this.parent.is_active) {
+            if (this.parent.cur_active === this.dom) return;
+            if (this.parent.cur_active) {
+                this.parent.cur_active.classList.remove('active');
+                this.parent.cur_menu.hide();
+            }
             this.clickHandler(e);
+        }
+    };
+
+    closeHandler = (e)=>{
+        // console.log(e);
+        // // console.log('close');
+        // console.log(this.props.text);
+        if (e) {
+            if (this.parent.cur_active) {
+                this.parent.cur_active.classList.remove('active');
+                this.parent.is_active = false;
+                this.parent.cur_menu = null;
+            }
         }
     };
 
     render() {
         return (
-            <div id={this.domId} className={this.getClasses()}
+            <div ref={c=>this.dom=c} id={this.domId} className={this.getClasses()}
                  onMouseOver={this.changeActive}
                  onClick={this.clickHandler}>
                 {this.props.text}
@@ -97,7 +124,8 @@ class Item extends React.PureComponent {
                     item.props.ref = (c)=>{
                         this.menu = c;
                     };
-                    return React.cloneElement(item,item.props,item.props.children);
+                    return React.cloneElement(item,item.props);
+                    // return item;
                 })}
             </div>
         );

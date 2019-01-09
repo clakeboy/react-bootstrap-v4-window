@@ -5,8 +5,9 @@ import './css/Window.less';
 import ReactDOM from "react-dom";
 import Drag from './Drag';
 import IconButton from "./IconButton";
-import {GetDomXY} from "./Common";
-
+import {
+    Common
+} from '@clake/react-bootstrap4';
 class Window extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -79,10 +80,10 @@ class Window extends React.PureComponent {
         this.dom.style.left = 0;
         this.dom.classList.add('d-none');
         this.setActive(false);
+        this.is_max = false;
         if (this.parent) {
             this.parent.removeWindowOpens(this.props.name);
         }
-        this.is_max = false;
     };
 
     move(x,y) {
@@ -127,7 +128,7 @@ class Window extends React.PureComponent {
     }
 
     getPosition() {
-        return GetDomXY(this.dom);
+        return Common.GetDomXY(this.dom);
     }
 
     maxHandler = (e)=>{
