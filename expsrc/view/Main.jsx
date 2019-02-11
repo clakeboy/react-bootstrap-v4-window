@@ -24,7 +24,7 @@ import ReactBootstrap4,{
 import {
     Window
 } from '../../src/index';
-import windowList from './window/windows';
+// import windowList from './window/windows';
 import WindowGroup from "../../src/WindowGroup";
 import TopMenu from "../../src/TopMenu";
 
@@ -178,11 +178,11 @@ class Main extends React.Component {
                     <Window name='test' marginTop={25} title='Test CTable' width='700px' height='500px' backColor={'#f3f3f4'}>
                         <LoaderComponent loadPath='/test/CTableTest' parent={this} import={GetComponent}/>
                     </Window>
-                    {windowList.map((item)=>{
-                        return (<Window name={item.name} marginTop={25} title={item.title} width={item.width} height={item.height} backColor={'#f3f3f4'}>
-                            <LoaderComponent loadPath={`/window/${item.uname}.jsx`} import={GetComponent}/>
-                        </Window>)
-                    })}
+                    {/*{windowList.map((item)=>{*/}
+                        {/*return (<Window name={item.name} marginTop={25} title={item.title} width={item.width} height={item.height} backColor={'#f3f3f4'}>*/}
+                            {/*<LoaderComponent loadPath={`/window/${item.uname}.jsx`} import={GetComponent}/>*/}
+                        {/*</Window>)*/}
+                    {/*})}*/}
                 </WindowGroup>
             </Container>
         );
