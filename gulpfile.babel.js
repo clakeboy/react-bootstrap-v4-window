@@ -29,6 +29,7 @@ gulp.task('server', () => {
 
     bs.init({
         logPrefix: 'AMT',
+        ghostMode: false,
         server: {
             baseDir: ['example'],
             middleware: [

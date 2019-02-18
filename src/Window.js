@@ -11,6 +11,9 @@ import {
 class Window extends React.PureComponent {
     constructor(props) {
         super(props);
+        this.state = {
+            close:true
+        };
         this.parent = this.props.parent || null;
         this.data = null;
         this.evts = {};
@@ -62,7 +65,11 @@ class Window extends React.PureComponent {
         this.params = option.params || null;
         this.dom.classList.remove('d-none');
         this.move(option.x,option.y);
-        this.showHandler(null);
+        this.setState({
+            close:false
+        },()=>{
+            this.showHandler(null);
+        });
     }
 
     close = () => {
@@ -70,12 +77,11 @@ class Window extends React.PureComponent {
             this.beforeCloseHandler(this.hide);
             return;
         }
-        this.max(false);
         this.hide();
-        this.closeHandler();
     };
 
     hide = ()=>{
+        this.max(false);
         this.dom.style.top = 0;
         this.dom.style.left = 0;
         this.dom.classList.add('d-none');
@@ -84,6 +90,11 @@ class Window extends React.PureComponent {
         if (this.parent) {
             this.parent.removeWindowOpens(this.props.name);
         }
+        this.setState({
+            close:true
+        },()=>{
+            this.closeHandler();
+        });
     };
 
     move(x,y) {
@@ -142,6 +153,7 @@ class Window extends React.PureComponent {
 
     closeHandler = (e)=>{
         this.trigger(EVT_CLOSE,e);
+        this.clearEvent();
     };
 
     beforeCloseHandler = (e)=>{
@@ -160,6 +172,10 @@ class Window extends React.PureComponent {
         if (typeof this.evts[fn_name] === 'function') {
             this.evts[fn_name](val);
         }
+    }
+
+    clearEvent() {
+        this.evts = {};
     }
 
     getClasses() {
@@ -208,7 +224,7 @@ class Window extends React.PureComponent {
                     </div>
                     <div className="card-body">
                         {/*{this.props.children}*/}
-                        {this.renderContent()}
+                        {!this.state.close?this.renderContent():null}
                     </div>
                 </div>
                 <div ref={c=>this.dragDom=c} className='ck-window-drag-box d-none border border-secondary' style={this.getStyles(true)}/>
@@ -224,6 +240,10 @@ class Window extends React.PureComponent {
         return React.Children.map(this.props.children,(child)=>{
             return React.cloneElement(child,{...child.props,parent:this});
         })
+    }
+
+    renderEmpty() {
+        return null;
     }
 }
 

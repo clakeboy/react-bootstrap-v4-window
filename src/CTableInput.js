@@ -2,7 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import './css/CTableInput.less';
-
+import {
+    i18n,
+    Icon
+} from '@clake/react-bootstrap4';
+import WCombo from "./WCombo";
+import WCalendar from './WCalendar';
 class CTableInput extends React.Component {
     constructor(props) {
         super(props);
@@ -10,6 +15,31 @@ class CTableInput extends React.Component {
             value:this.props.data || '',
             comboData:this.props.comboData
         };
+    }
+
+    componentDidMount(){
+        if (this.props.calendar) {
+            this.input.addEventListener('focus', (e) => {
+                this.calendar.show(e);
+            }, false);
+            // this.input.addEventListener('blur', (e)=>{
+            //     this.calendar.hide();
+            // },false);
+            this.input.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+            }, false);
+        }
+        if (this.props.combo) {
+            this.input.addEventListener('focus', (e) => {
+                this.combo.show(this.state.value,e);
+            }, false);
+            // this.input.addEventListener('blur', (e)=>{
+            //     this.combo.hide();
+            // },false);
+            this.input.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+            }, false);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -37,10 +67,32 @@ class CTableInput extends React.Component {
 
     changeHandler = (e) => {
         this.setState({
-            value:e.target.value
+            value: e.target.value
         });
+        // console.log(e.target,e.currentTarget)
         if (typeof this.props.onChange === 'function') {
             this.props.onChange(e,e.target.value);
+        }
+        if (this.combo) {
+            this.combo.filter(e.target.value);
+        }
+    };
+
+    selectHandler = (val,row,e)=>{
+        this.setState({
+            value:val
+        });
+        if (typeof this.props.onChange === 'function') {
+            this.props.onChange(e,val);
+        }
+    };
+
+    calendarSelectHandler = (val,e)=>{
+        this.setState({
+            value:val
+        });
+        if (typeof this.props.onChange === 'function') {
+            this.props.onChange(e,val);
         }
     };
 
@@ -49,19 +101,56 @@ class CTableInput extends React.Component {
         if (this.props.align) {
             inputStyle.textAlign = this.props.align;
         }
+        let inputClasses = '';
+        if (this.props.combo || this.props.calendar) {
+            inputClasses = 'right-icon';
+        }
         return (
             <div className={this.getClasses()}>
-                <input type='text' {...this.props} onChange={this.changeHandler} disabled={this.props.disabled} style={inputStyle} value={this.state.value}/>
+                <input ref={c=>this.input=c} type='text' {...this.props}
+                       onChange={this.changeHandler}
+                       disabled={this.props.disabled}
+                       style={inputStyle}
+                       className={inputClasses}
+                       value={this.state.value}/>
+                {this.renderCombo()}
+                {this.renderCalendar()}
             </div>
         );
     }
 
     renderCombo() {
-
+        if (!this.props.combo) {
+            return null;
+        }
+        let input_icon = 'ck-wcombo-icon';
+        return (
+            <div className='ck-input-calendar'>
+                <WCombo ref={c => this.combo = c} combo={this.props.combo}
+                       data={this.state.comboData} noSearch={this.props.readOnly}
+                       onSelect={this.selectHandler}/>
+                <div className={input_icon} onClick={() => {
+                    this.input.focus();
+                }}><Icon icon='angle-down'/></div>
+            </div>
+        )
     }
 
     renderCalendar() {
-
+        if (!this.props.calendar) {
+            return null;
+        }
+        let input_icon = 'ck-wcalendar-icon';
+        return (
+            <div className='ck-input-calendar'>
+                <WCalendar ref={c => this.calendar = c} onSelect={this.calendarSelectHandler}
+                           value={this.state.value}
+                           format={this.props.calendarFormat}/>
+                <div className={input_icon} onClick={() => {
+                    this.input.focus();
+                }}><Icon iconType='regular' icon='calendar-alt'/></div>
+            </div>
+        )
     }
 }
 
@@ -73,6 +162,7 @@ CTableInput.propTypes = {
     comboData: PropTypes.any,
     calendar: PropTypes.object,
     onChange: PropTypes.func,
+    onSelect: PropTypes.func,
 };
 
 CTableInput.defaultProps = {

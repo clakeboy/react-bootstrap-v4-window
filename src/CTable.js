@@ -39,7 +39,7 @@ class CTable extends React.Component {
         this.headerSplits = [];
 
         this.sortList     = {};
-        this.is_sort      = typeof this.props.onSort === 'function' || this.props.menu;
+        this.is_sort      = typeof this.props.onSort === 'function' || this.props.sort;
         this.current_sort = null;
 
         this.filter_type = null;
@@ -61,7 +61,7 @@ class CTable extends React.Component {
             this.select_all = false;
             this.selectRows = {};
             if (this.props.edit) {
-                this.editRows = [];
+                this.editRows     = [];
                 this.originalData = Common.Clone(nextProps.data);
             }
             this.setState({
@@ -157,19 +157,19 @@ class CTable extends React.Component {
             prv_child.classList.remove('fa-sort', 'fa-sort-alpha-up', 'fa-sort-alpha-down');
             prv_child.classList.add('fa-sort');
             this.sortList[this.current_sort] = null;
-            this.current_sort = null;
+            this.current_sort                = null;
         }
     }
 
-    localSort(field,sort_type) {
+    localSort(field, sort_type) {
         let desc = sort_type === 'desc';
         let data = this.originalData.slice(0);
-        data.sort((a,b)=>{
-            if (a[field] > b[field]) return desc?-1:1;
-            if (a[field] < b[field]) return desc?1:-1;
+        data.sort((a, b) => {
+            if (a[field] > b[field]) return desc ? -1 : 1;
+            if (a[field] < b[field]) return desc ? 1 : -1;
             if (a[field] === b[field]) return 0;
         });
-        this.setState({data:data});
+        this.setState({data: data});
     }
 
     /**
@@ -208,6 +208,7 @@ class CTable extends React.Component {
                 break;
         }
     };
+
     /**
      * filter
      * */
@@ -271,8 +272,8 @@ class CTable extends React.Component {
      */
     addNewHandler = (e) => {
         let data = this.state.data.slice(0);
-        data.push(Object.assign({},this.cacheRow));
-        this.editRows.push(data.length-1);
+        data.push(Object.assign({}, this.cacheRow));
+        this.editRows.push(data.length - 1);
         this.setState({
             data: data
         }, () => {
@@ -280,14 +281,14 @@ class CTable extends React.Component {
         })
     };
 
-    editHandler = (e,val)=>{
+    editHandler = (e, val) => {
         let index = parseInt(e.target.dataset.row);
         let field = e.target.dataset.field;
         if (this.editRows.indexOf(index) === -1) {
             this.editRows.push(index);
-            let data = this.state.data.slice(0);
+            let data           = this.state.data.slice(0);
             data[index][field] = val;
-            this.setState({data:data})
+            this.setState({data: data})
         } else {
             this.state.data[index][field] = val;
         }
@@ -306,7 +307,7 @@ class CTable extends React.Component {
             return
         }
         if (typeof this.props.onDelete === 'function') {
-            this.props.onDelete(this.state.data[row_index],row_index);
+            this.props.onDelete(this.state.data[row_index], row_index);
         } else {
             this.deleteRow(row_index)
         }
@@ -319,9 +320,9 @@ class CTable extends React.Component {
         let data = this.state.data.slice(0);
         data.splice(row_index, 1);
         if (this.editRows.indexOf(row_index) !== -1) {
-            this.editRows.splice(this.editRows.indexOf(row_index),1);
+            this.editRows.splice(this.editRows.indexOf(row_index), 1);
         }
-        this.editRows.forEach((item,index)=>{
+        this.editRows.forEach((item, index) => {
             if (item > row_index) {
                 this.editRows[index] = item - 1;
             }
@@ -435,7 +436,7 @@ class CTable extends React.Component {
             base = classNames(base, 'table-responsive');
         }
         //nowrap
-        if (this.props.noWrap) {
+        if (this.props.noWrap && !this.props.edit) {
             base = classNames(base, 'ck-ctable-nowrap');
         }
         return base;
@@ -528,7 +529,8 @@ class CTable extends React.Component {
                     <tr>
                         {this.state.select ?
                             <th width='20px'>
-                                {this.props.edit?<Icon icon='list'/>:<input type='checkbox' onChange={this.selectAll}/>}
+                                {this.props.edit ? <Icon icon='list'/> :
+                                    <input type='checkbox' onChange={this.selectAll}/>}
                             </th> : null}
                         {React.Children.map(this.props.children, (item, key) => {
                             this.cacheRow[item.props.field] = '';
@@ -642,7 +644,8 @@ class CTable extends React.Component {
                 <tr className={this.props.onClick ? 'click-row' : null} onClick={this.clickHandler(row, i)}>
                     {this.state.select ?
                         <th width='20px'>
-                            {this.editRows.indexOf(i) === -1 ? null:<Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className='text-danger'/>}
+                            {this.editRows.indexOf(i) === -1 ? null :
+                                <Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className='text-danger'/>}
                         </th> : null}
                     {React.Children.map(this.props.children, (item, key) => {
                         if (!item || item.props.hide) {
@@ -688,8 +691,11 @@ class CTable extends React.Component {
                     if (!item || item.props.hide) {
                         return null;
                     }
+                    let style = {
+                        width: item.props.width
+                    };
                     return (
-                        <td>
+                        <td style={style}>
                             <CTableInput onFocus={this.addNewHandler}/>
                         </td>
                     );
@@ -701,9 +707,19 @@ class CTable extends React.Component {
     renderEditComponent(item, row, i) {
         switch (item.type) {
             case "combo":
-                break;
+                return (
+                    <CTableInput onChange={this.editHandler} data-row={i}
+                                 data-field={item.field} data={row[item.field]}
+                                 align={item.align} disabled={item.disabled}
+                                 combo={item.combo} comboData={item.comboData}/>
+                );
             case "calendar":
-                break;
+                return (
+                    <CTableInput onChange={this.editHandler} data-row={i}
+                                 data-field={item.field} data={row[item.field]}
+                                 align={item.align} disabled={item.disabled}
+                                 calendarFormat={item.calendarFormat} calendar/>
+                );
             case "checkbox":
                 break;
             default:
@@ -823,11 +839,11 @@ class CTable extends React.Component {
                         this.filterHandler(this.state.filter.contain, this.mainMenu.data.field, 'contain');
                     }} icon='search'/>
                 </Menu.Item>
-                <Menu.Item step/>
-                <Menu.Item field="asc">Sort Ascending</Menu.Item>
-                <Menu.Item field="desc">Sort Descending</Menu.Item>
-                {this.props.edit?<Menu.Item step/>:null}
-                {this.props.edit?<Menu.Item field="delete_row" >Delete Row</Menu.Item>:null}
+                {this.is_sort?<Menu.Item step/>:null}
+                {this.is_sort?<Menu.Item field="asc">Sort Ascending</Menu.Item>:null}
+                {this.is_sort?<Menu.Item field="desc">Sort Descending</Menu.Item>:null}
+                {this.props.edit ? <Menu.Item step/> : null}
+                {this.props.edit ? <Menu.Item field="delete_row">Delete Row</Menu.Item> : null}
             </Menu>
         )
     }
@@ -879,7 +895,9 @@ CTable.propTypes = {
     menu        : PropTypes.bool,
     total       : PropTypes.object,
     edit        : PropTypes.bool,
-    onDelete: PropTypes.func,
+    onDelete    : PropTypes.func,
+    sort        : PropTypes.bool,
+    filter      : PropTypes.bool
 };
 
 CTable.defaultProps = {

@@ -14,7 +14,7 @@ import {
     Button,
     Common
 } from '@clake/react-bootstrap4';
-
+// } from '@clake/react-bootstrap4';
 class CTableTest extends React.Component {
     constructor(props) {
         super(props);
@@ -34,6 +34,23 @@ class CTableTest extends React.Component {
         }
 
         this.org_data;
+
+        this.combo_data = [{
+            "id"             : 3,
+            "task_name"      : "测试通知",
+            "time_rule"      : "0 * * * * *",
+            "source"         : "System"
+        }, {
+            "id"             : 2,
+            "task_name"      : "测试一次通知",
+            "time_rule"      : "* */1 * * * *",
+            "source"         : "System",
+        }, {
+            "id"             : 1,
+            "task_name"      : "测试任务",
+            "time_rule"      : "0 * * * * *",
+            "source"         : "",
+        }]
 
         this.id = 1;
     }
@@ -160,18 +177,18 @@ class CTableTest extends React.Component {
                     top:'260px',
                     bottom:'10px',
                 }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true}
-                        data={this.state.table_data}
-
                         edit
                         foot={false}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
                         console.log(row);
                     }}/>
-                    <TableHeader field='price' text='Price' width='100px' align='right' onDoubleClick={(row)=>{
-                        console.log(row);
-                    }}/>
-                    <TableHeader field='name' text='Name' width='200px'/>
+                    <TableHeader field='price' text='Price' width='100px' align='right' />
+                    <TableHeader field='name' text='Name' width='200px' combo={{
+                        searchColumn:'task_name',
+                        width:'600px'
+                    }} comboData={this.combo_data} type='combo'/>
+                    <TableHeader field='date' text='Date' width='100px' type='calendar' />
                 </CTable>
                 <WModal ref={c=>this.modal=c} fade/>
             </React.Fragment>
