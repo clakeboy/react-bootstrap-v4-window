@@ -12,7 +12,7 @@ const ModalAlert = 0;
 const ModalConfirm = 1;
 const ModalLoading = 2;
 const ModalView = 3;
-const BaseModal = 1050;
+const BaseModal = 950;
 
 class WModal extends React.Component {
     constructor(props) {

@@ -7,12 +7,13 @@ import {
     Menu,
     Input,
     Button,
-    Common
+    Common,
+    i18n,
 } from '@clake/react-bootstrap4';
 import './css/CTable.less';
 import Drag from "./Drag";
 import CTableInput from "./CTableInput";
-
+import CTableLang from './i18n/CTable';
 class CTable extends React.Component {
     constructor(props) {
         super(props);
@@ -780,25 +781,30 @@ class CTable extends React.Component {
     }
 
     renderMenu() {
+        let lang = this.props.lang;
+        if (!lang) {
+            let i18 = i18n.getLang();
+            lang = CTableLang[i18.short];
+        }
         return (
             <Menu ref={c => this.mainMenu = c} onClick={this.menuClickHandler}>
                 <Menu.Item field="copy" onClick={() => {
                     document.execCommand("copy");
-                }}>Copy</Menu.Item>
+                }}><Icon className='mr-1' icon='copy'/>{lang['Copy']}</Menu.Item>
                 <Menu.Item field="cut" onClick={() => {
                     document.execCommand("cut");
-                }}>Cut</Menu.Item>
+                }}><Icon className='mr-1' icon='cut'/>{lang['Cut']}</Menu.Item>
                 <Menu.Item step/>
                 <Menu.Item field='select_filter' onClick={(e, field, data) => {
                     let select = document.getSelection();
                     this.filterHandler(select.toString(), data.field, 'contain');
-                }}>Filter By Selection</Menu.Item>
+                }}><Icon className='mr-1' icon='filter'/>{lang['Filter By Selection']}</Menu.Item>
                 <Menu.Item field='clear_filter' onClick={() => {
                     this.clearFilter();
-                }}>Clear Filter / Sort</Menu.Item>
+                }}><Icon className='mr-1' icon='brush'/>{lang['Clear Filter / Sort']}</Menu.Item>
                 <Menu.Item step/>
                 <Menu.Item field="filter">
-                    <span className='mr-1' style={inputStyle}>Start With</span>
+                    <span className='mr-1' style={inputStyle}>{lang['Start With']}</span>
                     <Input className='mr-1' size='xs' width='120px'
                            data={this.state.filter.start}
                            onChange={this.filterChangeHandler('start')}
@@ -812,7 +818,7 @@ class CTable extends React.Component {
                     }} icon='search'/>
                 </Menu.Item>
                 <Menu.Item field="filter">
-                    <span className='mr-1' style={inputStyle}>End With</span>
+                    <span className='mr-1' style={inputStyle}>{lang['End With']}</span>
                     <Input className='mr-1' size='xs' width='120px'
                            data={this.state.filter.end}
                            onChange={this.filterChangeHandler('end')}
@@ -826,7 +832,7 @@ class CTable extends React.Component {
                     }} icon='search'/>
                 </Menu.Item>
                 <Menu.Item field="filter">
-                    <span className='mr-1' style={inputStyle}>Contain with</span>
+                    <span className='mr-1' style={inputStyle}>{lang['Contain with']}</span>
                     <Input className='mr-1' size='xs' width='120px'
                            data={this.state.filter.contain}
                            onChange={this.filterChangeHandler('contain')}
@@ -840,10 +846,14 @@ class CTable extends React.Component {
                     }} icon='search'/>
                 </Menu.Item>
                 {this.is_sort?<Menu.Item step/>:null}
-                {this.is_sort?<Menu.Item field="asc">Sort Ascending</Menu.Item>:null}
-                {this.is_sort?<Menu.Item field="desc">Sort Descending</Menu.Item>:null}
+                {this.is_sort?<Menu.Item field="asc"><Icon className='mr-1' icon='sort-alpha-down'/>{lang['Sort Ascending']}</Menu.Item>:null}
+                {this.is_sort?<Menu.Item field="desc"><Icon className='mr-1' icon='sort-alpha-up'/>{lang['Sort Descending']}</Menu.Item>:null}
                 {this.props.edit ? <Menu.Item step/> : null}
-                {this.props.edit ? <Menu.Item field="delete_row">Delete Row</Menu.Item> : null}
+                {this.props.edit ? <Menu.Item field="delete_row">{lang['Delete Row']}</Menu.Item> : null}
+                {this.props.customMenu?<Menu.Item step/>:null}
+                {this.props.customMenu?this.props.customMenu.map((menu)=>{
+                    return <Menu.Item field={menu.field} onClick={menu.click}>{menu.text}</Menu.Item>
+                }):null}
             </Menu>
         )
     }
@@ -897,7 +907,9 @@ CTable.propTypes = {
     edit        : PropTypes.bool,
     onDelete    : PropTypes.func,
     sort        : PropTypes.bool,
-    filter      : PropTypes.bool
+    filter      : PropTypes.bool,
+    customMenu  : PropTypes.array,
+    lang        : PropTypes.object
 };
 
 CTable.defaultProps = {

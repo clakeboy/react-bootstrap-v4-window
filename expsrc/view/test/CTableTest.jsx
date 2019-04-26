@@ -165,6 +165,11 @@ class CTableTest extends React.Component {
                         onFilter={this.filterHandler}
                         onSort={this.sortHandler}
                         total={{id:10}}
+                        customMenu={[{field:'test',text:'测试自定义菜单',click:(e,field,data)=>{
+                                console.log(e);
+                                console.log(field);
+                                console.log(data);
+                            }}]}
                 >
                     <TableHeader field='id' text='ID' width='100px' onDoubleClick={(row)=>{
                         console.log(row);

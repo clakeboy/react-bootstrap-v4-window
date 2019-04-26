@@ -22,9 +22,6 @@ class CTableInput extends React.Component {
             this.input.addEventListener('focus', (e) => {
                 this.calendar.show(e);
             }, false);
-            // this.input.addEventListener('blur', (e)=>{
-            //     this.calendar.hide();
-            // },false);
             this.input.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
             }, false);
@@ -33,9 +30,6 @@ class CTableInput extends React.Component {
             this.input.addEventListener('focus', (e) => {
                 this.combo.show(this.state.value,e);
             }, false);
-            // this.input.addEventListener('blur', (e)=>{
-            //     this.combo.hide();
-            // },false);
             this.input.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
             }, false);
