@@ -631,7 +631,7 @@ class CTable extends React.Component {
                                                item.props.onDoubleClick(row);
                                            }
                                        }}
-                                       data-row={`${i}`}>{item.props.onFormat ? item.props.onFormat(row[item.props.field], row) : row[item.props.field]}</td>;
+                                       data-row={`${i}`}>{item.props.onFormat ? item.props.onFormat(row[item.props.field], row, item.props.field) : row[item.props.field]}</td>;
                         }
                     })}
                 </tr>
@@ -769,7 +769,7 @@ class CTable extends React.Component {
                             }
                             return (
                                 <td id={this.domId + '-' + key} data-field={item.props.field} style={style}>
-                                    {item.props.onFormat ? item.props.onFormat(total[item.props.field], total) : total[item.props.field]}
+                                    {item.props.onFormat ? item.props.onFormat(total[item.props.field], total, item.props.field) : total[item.props.field]}
                                 </td>
                             );
                         })}
