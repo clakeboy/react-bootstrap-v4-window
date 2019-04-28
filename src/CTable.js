@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, {object} from 'prop-types';
 import classNames from 'classnames/bind';
 import {
     Icon,
@@ -101,10 +101,11 @@ class CTable extends React.Component {
 
     changeHandler(row, i) {
         return (e) => {
+            this.selectRows[i] = e.target.checked ? row: undefined;
             if (e.target.checked) {
-                this.selectRows[i] = row;
+                e.target.parentNode.parentNode.classList.add('ck-table-selected');
             } else {
-                this.selectRows[i] = undefined;
+                e.target.parentNode.parentNode.classList.remove('ck-table-selected');
             }
             if (typeof this.props.onCheck === "function") {
                 this.props.onCheck(e.target.checked, row);
@@ -185,13 +186,16 @@ class CTable extends React.Component {
             this.tableTotal.style.transform = `translateX(-${e.currentTarget.scrollLeft}px)`;
         }
     };
-
+    /**
+     * show menu list
+     * @param e
+     */
     menuContextHandler = (e) => {
         e.preventDefault();
         let data = {
-            field: e.target.dataset.field || '',
-            data : this.state.data[e.target.dataset.row],
-            index: e.target.dataset.row
+            field: e.currentTarget.dataset.field || '',
+            data : this.state.data[e.currentTarget.dataset.row],
+            index: e.currentTarget.dataset.row
         };
         this.mainMenu.show({evt: e, type: 'mouse', data: data});
     };
@@ -338,6 +342,14 @@ class CTable extends React.Component {
         this.select_all = e.target.checked;
         Common.map(this.refs, (item) => {
             item.checked = this.select_all;
+            if (this.select_all) {
+                item.parentNode.parentNode.classList.add('ck-table-selected');
+            } else {
+                item.parentNode.parentNode.classList.remove('ck-table-selected');
+            }
+        });
+        this.state.data.forEach((item, idx) => {
+            this.selectRows[idx] = this.select_all ? item : null;
         });
     };
 
@@ -346,9 +358,13 @@ class CTable extends React.Component {
      * @returns {*}
      */
     getSelectRows() {
-        return Common.map(this.selectRows, (item) => {
-            return item;
+        let list = [];
+        Common.map(this.selectRows, (item) => {
+            if (item) {
+                list.push(item);
+            }
         });
+        return list;
     }
 
     /**
@@ -492,11 +508,15 @@ class CTable extends React.Component {
         return classNames(base, this.props.headClass);
     }
 
-    getTableStyles() {
+    getTableStyles(style) {
         let base = {};
 
         if (this.width) {
             base.width = this.width;
+        }
+
+        if (style) {
+            base = Object.assign({},base,style);
         }
 
         return base;
@@ -550,7 +570,7 @@ class CTable extends React.Component {
                                 sort_icon = 'sort-alpha-' + (this.sortList[item.props.field] === 'asc' ? 'down' : 'up');
                             }
                             return (
-                                <th id={this.domId + '-' + key} data-key={'head_' + key} style={style}>
+                                <th onContextMenu={this.menuContextHandler} id={this.domId + '-' + key} data-key={'head_' + key} style={style}>
                                     {this.is_sort ?
                                         <a className='ck-ctable-sort' href='javascript://' id={`${this.domId}-sort-${item.props.field}`}
                                            data-field={item.props.field}
@@ -571,7 +591,7 @@ class CTable extends React.Component {
 
     renderRows() {
         return (
-            <div ref={c => this.table_rows = c} className='flex-grow-1 rows' onScroll={this.scrollHandler} onContextMenu={this.menuContextHandler}>
+            <div ref={c => this.table_rows = c} className='flex-grow-1 rows' onScroll={this.scrollHandler}>
                 <table ref={c => this.table_body = c} id={`table-body-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
                     {this.state.data.map((row, i) => {
@@ -609,7 +629,7 @@ class CTable extends React.Component {
 
                         if (item.props.children) {
                             return (
-                                <td id={this.domId + '-' + key} data-row={`${i}`} data-field={item.props.field}
+                                <td onContextMenu={this.menuContextHandler} id={this.domId + '-' + key} data-row={`${i}`} data-field={item.props.field}
                                     className={item.props.className} style={{'text-align': align}}
                                     key={'col_' + key}>{React.cloneElement(item, {
                                     text : item.props.text,
@@ -618,7 +638,7 @@ class CTable extends React.Component {
                                 })}</td>
                             );
                         } else {
-                            return <td id={this.domId + '-' + key}
+                            return <td onContextMenu={this.menuContextHandler} id={this.domId + '-' + key}
                                        data-field={item.props.field}
                                        style={style}
                                        onClick={(e) => {
@@ -660,7 +680,8 @@ class CTable extends React.Component {
                             style.width = item.props.width;
                         }
                         return (
-                            <td className={item.props.disabled ? 'disabled' : ''} id={this.domId + '-' + key}
+                            <td onContextMenu={this.menuContextHandler}
+                                className={item.props.disabled ? 'disabled' : ''} id={this.domId + '-' + key}
                                 data-field={item.props.field}
                                 style={style}
                                 onClick={(e) => {

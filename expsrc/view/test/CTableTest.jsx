@@ -174,7 +174,9 @@ class CTableTest extends React.Component {
                     <TableHeader field='id' text='ID' width='100px' onDoubleClick={(row)=>{
                         console.log(row);
                     }}/>
-                    <TableHeader field='name' text='Name' width='200px'/>
+                    <TableHeader field='name' text='Name' width='200px' onFormat={(val,row,key)=>{
+                        return <span>{val}</span>
+                    }}/>
                 </CTable>
                 <CTable ref={c=>this.edit_table=c} position={{
                     right:'10px',
