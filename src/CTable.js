@@ -163,7 +163,7 @@ class CTable extends React.Component {
             return
         }
 
-        this.clearSort();
+        this.clearSort(false);
         this.current_sort = dom.dataset.field;
         dom.dataset.sort  = sort_type === 'asc' ? 'desc' : 'asc';
         dom.classList.remove('ck-ctable-sort');
@@ -178,7 +178,7 @@ class CTable extends React.Component {
         }
     }
 
-    clearSort() {
+    clearSort(emitEvt) {
         if (this.current_sort) {
             let prv          = document.querySelector(`#${this.domId}-sort-${this.current_sort}`);
             prv.dataset.sort = 'asc';
@@ -188,6 +188,9 @@ class CTable extends React.Component {
             prv_child.classList.add('fa-sort');
             this.sortList[this.current_sort] = null;
             this.current_sort                = null;
+            if (emitEvt && typeof this.props.onSort === 'function') {
+                this.props.onSort('','clear');
+            }
         }
     }
 
@@ -271,7 +274,7 @@ class CTable extends React.Component {
         this.filter_type  = '';
         let field         = this.filter_field;
         this.filter_field = '';
-        this.clearSort();
+        this.clearSort(true);
         this.setState({
             filter: {
                 start  : '',
