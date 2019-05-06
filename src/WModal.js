@@ -81,8 +81,8 @@ class WModal extends React.Component {
         }
         this.fadeTime.close = setTimeout(()=>{
             this._main.classList.remove('d-block');
+            this.is_open = false;
         },150);
-        this.is_open = false;
     }
 
     closeHandler = (e)=>{
