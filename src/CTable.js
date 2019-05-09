@@ -66,6 +66,10 @@ class CTable extends React.Component {
                 this.editRows     = [];
                 this.originalData = Common.Clone(nextProps.data);
             }
+            if (this.allchk) {
+                this.allchk.setHalf(false);
+                this.selectRows = [];
+            }
             this.setState({
                 data     : nextProps.data,
                 dataCount: nextProps.dataCount,
