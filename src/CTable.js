@@ -906,10 +906,20 @@ class CTable extends React.Component {
                 {this.props.edit ? <Menu.Item field="delete_row">{lang['Delete Row']}</Menu.Item> : null}
                 {this.props.customMenu?<Menu.Item step/>:null}
                 {this.props.customMenu?this.props.customMenu.map((menu)=>{
-                    return <Menu.Item field={menu.field} onClick={menu.click}>{menu.text}</Menu.Item>
+                    return this.explainCustomMenu(menu)
                 }):null}
             </Menu>
         )
+    }
+
+    explainCustomMenu(menu) {
+        if (menu.children && menu.children instanceof Array) {
+            return <Menu.Item field={menu.field} text={menu.text}>{menu.children.map((item)=>{
+                return this.explainCustomMenu(item)
+            })}</Menu.Item>
+        } else {
+            return <Menu.Item field={menu.field} onClick={menu.click}>{menu.text}</Menu.Item>
+        }
     }
 }
 
