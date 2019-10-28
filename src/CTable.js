@@ -914,7 +914,7 @@ class CTable extends React.Component {
 
     explainCustomMenu(menu) {
         if (menu.children && menu.children instanceof Array) {
-            return <Menu.Item field={menu.field} text={menu.text}>{menu.children.map((item)=>{
+            return <Menu.Item field={menu.field} text={menu.text} child>{menu.children.map((item)=>{
                 return this.explainCustomMenu(item)
             })}</Menu.Item>
         } else {
