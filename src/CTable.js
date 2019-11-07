@@ -227,6 +227,7 @@ class CTable extends React.Component {
      */
     menuContextHandler = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         let data = {
             field: e.currentTarget.dataset.field || '',
             data : this.state.data[e.currentTarget.dataset.row],
