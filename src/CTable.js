@@ -9,7 +9,9 @@ import {
     Button,
     Common,
     i18n,
-    CCheckbox
+    CCheckbox,
+    Scroll,
+    HScroll
 } from '@clake/react-bootstrap4';
 import './css/CTable.less';
 import Drag from "./Drag";
@@ -568,6 +570,8 @@ class CTable extends React.Component {
                     {this.renderHeader()}
                     {this.renderRows()}
                     {this.renderTotal()}
+                    {<Scroll selector={`#table-body-com-${this.domId}`}/>}
+                    {<HScroll selector={`#table-body-com-${this.domId}`}/>}
                 </div>
                 {this.renderFoot()}
                 <div ref={c => this.split = c} className='ck-split d-none'/>
@@ -624,7 +628,7 @@ class CTable extends React.Component {
 
     renderRows() {
         return (
-            <div ref={c => this.table_rows = c} className='flex-grow-1 rows' onScroll={this.scrollHandler}>
+            <div ref={c => this.table_rows = c} id={`table-body-com-${this.domId}`} className='flex-grow-1 rows' onScroll={this.scrollHandler}>
                 <table ref={c => this.table_body = c} id={`table-body-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
                     {this.state.data.map((row, i) => {

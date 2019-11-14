@@ -26,9 +26,10 @@ class WCombo extends React.PureComponent {
 
     show(search,e) {
         let xy = Common.GetDomXY(e.currentTarget);
-        let fixed = this.calculatePosition(e.currentTarget);
-        this.dom.style.left = (xy.left-fixed.left)+'px';
-        this.dom.style.top = (xy.top+xy.height-fixed.top+5)+'px';
+        // let fixed = this.calculatePosition(e.currentTarget);
+        // console.log(fixed);
+        this.dom.style.left = (xy.left)+'px';
+        this.dom.style.top = (xy.top+xy.height+5)+'px';
         this.dom.classList.remove('d-none');
         this.event = e;
         this.combo.show(search,e.currentTarget);

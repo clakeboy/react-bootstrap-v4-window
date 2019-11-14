@@ -66,7 +66,18 @@ gulp.task('clean',['clean:build','clean:publish']);
 gulp.task('publish:pack',['clean:publish','publish:css'],(callback)=>{
     return gulp.src('src/**/*.js')
         .pipe(sourcemaps.init())
-        .pipe(babel({presets: ['env','es2015', 'stage-0', 'react']}))
+        .pipe(babel({
+            "presets": ["@babel/preset-env", "@babel/preset-react"],
+            "plugins": [
+                "@babel/plugin-proposal-object-rest-spread",
+                ["@babel/plugin-transform-runtime",{
+                    "helpers": false
+                }],
+                "@babel/plugin-proposal-class-properties",
+                "@babel/plugin-syntax-dynamic-import",
+                "@babel/plugin-proposal-export-default-from"
+            ]
+        }))
         .pipe(sourcemaps.write('.'))
         .pipe(header(banner))
         .pipe(gulp.dest('lib'));

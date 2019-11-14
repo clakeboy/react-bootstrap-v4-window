@@ -21,10 +21,10 @@ class WCalendar extends React.PureComponent {
 
     show(e) {
         let xy = Common.GetDomXY(e.currentTarget);
-        let fixed = this.calculatePosition(e.currentTarget);
-        let positionTop = (xy.top+xy.height-fixed.top);
+        // let fixed = this.calculatePosition(e.currentTarget);
+        let positionTop = (xy.top+xy.height);
 
-        this.dom.style.left = (xy.left-fixed.left)+'px';
+        this.dom.style.left = (xy.left)+'px';
 
         this.dom.classList.remove('d-none');
         this.event = e;

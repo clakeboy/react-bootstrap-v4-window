@@ -160,8 +160,10 @@ class Main extends React.Component {
                                 2
                             </div>
                         </div>
-                        <div className='bg-info p-2'>
-
+                        <div className='bg-info p-2 overflow-hidden position-relative test-transform-parent'>
+                            <div className='test-transform position-absolute'>
+                                asdlfkjasldfjalskdf
+                            </div>
                         </div>
                     </div>
                 </Card>
