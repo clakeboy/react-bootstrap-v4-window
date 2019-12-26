@@ -54,6 +54,10 @@ class CTable extends React.Component {
         this.initTableWidth();
 
         this.cacheRow = {};
+
+        this.lockColumns = [];
+        //lock column flag
+        this.isLock = false;
     }
 
     componentDidMount() {
@@ -965,7 +969,8 @@ CTable.propTypes = {
     y           : PropTypes.string,
     width       : PropTypes.string,
     height      : PropTypes.string,
-    foot        : PropTypes.bool,
+    // foot        : PropTypes.bool,
+    foot: PropTypes.objectOf(),
     position    : PropTypes.object,
     showPages   : PropTypes.number,
     showNumbers : PropTypes.number,

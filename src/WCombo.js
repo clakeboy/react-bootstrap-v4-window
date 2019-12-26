@@ -28,25 +28,17 @@ class WCombo extends React.PureComponent {
         let xy = Common.GetDomXY(e.currentTarget);
         // let fixed = this.calculatePosition(e.currentTarget);
         // console.log(fixed);
+        let positionTop = (xy.top+xy.height);
         this.dom.style.left = (xy.left)+'px';
-        this.dom.style.top = (xy.top+xy.height+5)+'px';
         this.dom.classList.remove('d-none');
         this.event = e;
         this.combo.show(search,e.currentTarget);
-    }
-
-    calculatePosition(e) {
-        let scroll = {
-            top: e.scrollTop||0,
-            left: e.scrollLeft||0
-        };
-
-        while((e=e.parentNode) && e !== document.body) {
-            if (!e.scrollTop && !e.scrollLeft) continue;
-            scroll.top += e.scrollTop;
-            scroll.left += e.scrollLeft;
+        if (positionTop + this.calDom.offsetHeight >
+            document.documentElement.scrollTop + document.documentElement.clientHeight) {
+        } else {
+            positionTop += 5;
         }
-        return scroll;
+        this.dom.style.top = (positionTop)+'px';
     }
 
     hide = ()=>{

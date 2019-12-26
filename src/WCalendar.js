@@ -23,15 +23,12 @@ class WCalendar extends React.PureComponent {
         let xy = Common.GetDomXY(e.currentTarget);
         // let fixed = this.calculatePosition(e.currentTarget);
         let positionTop = (xy.top+xy.height);
-
         this.dom.style.left = (xy.left)+'px';
-
         this.dom.classList.remove('d-none');
         this.event = e;
         this.calendar.show(e.currentTarget);
         if (positionTop + this.calDom.offsetHeight >
             document.documentElement.scrollTop + document.documentElement.clientHeight) {
-
         } else {
             positionTop += 5;
         }

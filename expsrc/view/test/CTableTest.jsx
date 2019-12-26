@@ -35,22 +35,62 @@ class CTableTest extends React.Component {
 
         this.org_data;
 
-        this.combo_data = [{
-            "id"             : 3,
-            "task_name"      : "测试通知",
-            "time_rule"      : "0 * * * * *",
-            "source"         : "System"
-        }, {
-            "id"             : 2,
-            "task_name"      : "测试一次通知",
-            "time_rule"      : "* */1 * * * *",
-            "source"         : "System",
-        }, {
-            "id"             : 1,
-            "task_name"      : "测试任务",
-            "time_rule"      : "0 * * * * *",
-            "source"         : "",
-        }]
+        this.combo_data = [
+            {
+                "id"             : 3,
+                "task_name"      : "测试通知",
+                "time_rule"      : "0 * * * * *",
+                "source"         : "System"
+            },
+            {
+                "id"             : 2,
+                "task_name"      : "测试一次通知",
+                "time_rule"      : "* */1 * * * *",
+                "source"         : "System",
+            },
+            {
+                "id"             : 1,
+                "task_name"      : "测试任务",
+                "time_rule"      : "0 * * * * *",
+                "source"         : "",
+            },
+            {
+                "id"             : 3,
+                "task_name"      : "测试通知",
+                "time_rule"      : "0 * * * * *",
+                "source"         : "System"
+            },
+            {
+                "id"             : 2,
+                "task_name"      : "测试一次通知",
+                "time_rule"      : "* */1 * * * *",
+                "source"         : "System",
+            },
+            {
+                "id"             : 1,
+                "task_name"      : "测试任务",
+                "time_rule"      : "0 * * * * *",
+                "source"         : "",
+            },
+            {
+                "id"             : 3,
+                "task_name"      : "测试通知",
+                "time_rule"      : "0 * * * * *",
+                "source"         : "System"
+            },
+            {
+                "id"             : 2,
+                "task_name"      : "测试一次通知",
+                "time_rule"      : "* */1 * * * *",
+                "source"         : "System",
+            },
+            {
+                "id"             : 1,
+                "task_name"      : "测试任务",
+                "time_rule"      : "0 * * * * *",
+                "source"         : "",
+            }
+        ];
 
         this.id = 1;
     }
@@ -192,7 +232,9 @@ class CTableTest extends React.Component {
                     }}/>
                     <TableHeader field='price' text='Price' width='100px' align='right' />
                     <TableHeader field='name' text='Name' width='200px' combo={{
+                        header:true,
                         searchColumn:'task_name',
+                        filterColumns: [{field:'task_name',text:'Task Name'},{field:'time_rule',text:'Rule'},{field:'source',text:'Source'}],
                         width:'600px'
                     }} comboData={this.combo_data} type='combo'/>
                     <TableHeader field='date' text='Date' width='100px' type='calendar' />
