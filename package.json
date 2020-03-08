@@ -1,6 +1,6 @@
 {
   "name": "@clake/react-bootstrap4-window",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "react bootstrap v4 window",
   "main": "lib/index.js",
   "scripts": {
@@ -60,6 +60,7 @@
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
+    "react-hot-loader": "^4.12.19",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "style-loader": "^0.23.1",

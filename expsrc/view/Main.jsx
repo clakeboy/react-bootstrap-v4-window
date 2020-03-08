@@ -171,7 +171,6 @@ class Main extends React.Component {
                     </div>
                 </Card>
                 <WindowGroup ref={c=>this.manage=c}>
-
                     <Window name='f_aes_query' marginTop={25} title='Query Customer' width='867px' height='444px' x={'40px'} y={'55px'} backColor={'#f3f3f4'}>
                         <LoaderComponent loadPath='/window/FAesQuery.jsx' parent={this} import={GetComponent}/>
                     </Window>

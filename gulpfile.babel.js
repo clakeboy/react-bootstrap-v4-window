@@ -41,7 +41,8 @@ gulp.task('server', () => {
                     watchOptions:{
                         aggregateTimeout: 300,
                         poll: true
-                    }
+                    },
+                    hot: true,
                 }),
                 webpackHotMiddleware(bundler)
             ]

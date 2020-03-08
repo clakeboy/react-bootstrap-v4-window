@@ -276,3 +276,6 @@ Window.EVT_CLOSE = EVT_CLOSE;
 Window.EVT_BEFORE_CLOSE = EVT_BEFORE_CLOSE;
 
 export default Window;
+if (module.hot) {
+    module.hot.accept();
+}

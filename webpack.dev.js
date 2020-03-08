@@ -6,6 +6,7 @@ export default merge(cfg,{
     entry: {
         //主文件
         app : [
+            'react-hot-loader/patch',
             'webpack/hot/dev-server',
             'webpack-hot-middleware/client?reload=true',
             './expsrc/app.js'
@@ -15,6 +16,10 @@ export default merge(cfg,{
         path: `${__dirname}/examples`,
         filename: '[name].js',
         chunkFilename:`./view/chunk/[name].[chunkhash:8].js`
+    },
+    devServer: {
+        hot:true,
+        hotOnly:true
     },
     //插件项
     plugins: [

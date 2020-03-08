@@ -17,6 +17,7 @@ import './css/CTable.less';
 import Drag from "./Drag";
 import CTableInput from "./CTableInput";
 import CTableLang from './i18n/CTable';
+import PageBar from "./PageBar";
 class CTable extends React.Component {
     constructor(props) {
         super(props);
@@ -542,7 +543,7 @@ class CTable extends React.Component {
     getHeaderClasses() {
         let base = 'ck-ctable-header';
         if (this.props.headerTheme) {
-            base = 'thead-' + this.props.headerTheme;
+            base = classNames(base,'thead-' + this.props.headerTheme);
         }
         return classNames(base, this.props.headClass);
     }
@@ -799,10 +800,10 @@ class CTable extends React.Component {
         }
         return (
             <div>
-                <Pagination current={this.state.page} count={this.state.dataCount} size='sm'
-                            onSelect={this.selectPageHandler}
-                            number={this.props.showNumbers}
-                            showPages={this.props.showPages}/>
+                <PageBar page={this.state.page} dataCount={this.state.dataCount}
+                         onSelect={this.selectPageHandler}
+                         showNumbers={this.props.showNumbers}
+                         showPages={this.props.showPages}/>
             </div>
         )
     }
@@ -1003,6 +1004,8 @@ CTable.defaultProps = {
     bordered   : true,
     move       : true,
     menu       : true,
+    showNumbers: 30,
+    showPages: 10,
 };
 
 export default CTable;

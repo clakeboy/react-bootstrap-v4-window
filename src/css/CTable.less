@@ -18,6 +18,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    font-size: .75rem;
   }
   .pagination-sm {
     margin-bottom: 0 !important;
@@ -55,6 +56,16 @@
 
 .ck-ctable-header {
   border-bottom: none!important;
+  th {
+    &:first-child {
+      border-left-color: #dee2e6 !important;
+    }
+    &:last-child {
+      border-right-color: #dee2e6 !important;
+    }
+    border-left-color: #b6babd !important;
+    border-right-color: #b6babd !important;
+  }
 }
 
 .ck-ctable-nowrap {
