@@ -68,7 +68,7 @@ class Window extends React.PureComponent {
         this.setState({
             close:false
         },()=>{
-            this.showHandler(null);
+            this.showHandler(this.params);
         });
     }
 

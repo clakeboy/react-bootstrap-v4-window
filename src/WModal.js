@@ -14,6 +14,11 @@ const ModalLoading = 2;
 const ModalView = 3;
 const BaseModal = 950;
 
+const defBtns = {
+    ok:'确定',
+    cancel:'取消',
+};
+
 class WModal extends React.Component {
     constructor(props) {
         super(props);
@@ -25,7 +30,8 @@ class WModal extends React.Component {
             center:this.props.center,
             fade:this.props.fade,
             show:false,
-            header:true
+            header:true,
+            btns:defBtns,
         };
         //modal type
         this.modalType = ModalAlert;
@@ -107,8 +113,8 @@ class WModal extends React.Component {
      * }
      * @param opt object
      */
-    alert(opt) {
-        this.callback = opt.callback||null;
+    alert(opt,cb) {
+        this.callback = opt.callback||cb||null;
         this.modalType = ModalAlert;
         this.setState({
             title:opt.title||'提示',
@@ -117,7 +123,8 @@ class WModal extends React.Component {
             type:ModalAlert,
             center:opt.center||this.props.center,
             fade:opt.fade||this.props.fade,
-            header: typeof opt.header === 'undefined' ? true:opt.header
+            header: typeof opt.header === 'undefined' ? true:opt.header,
+            btns: typeof opt.btns != 'undefined' ? opt.btns:defBtns,
         },()=>{
             this.open({
                 backdrop:'static',
@@ -136,8 +143,8 @@ class WModal extends React.Component {
      * }
      * @param opt
      */
-    confirm(opt) {
-        this.callback = opt.callback||null;
+    confirm(opt,cb) {
+        this.callback = opt.callback||cb||null;
         this.modalType = ModalConfirm;
         this.setState({
             title:opt.title||'提示',
@@ -146,7 +153,8 @@ class WModal extends React.Component {
             type:ModalConfirm,
             center:opt.center||this.props.center,
             fade:opt.fade||this.props.fade,
-            header: typeof opt.header === 'undefined' ? true:opt.header
+            header: typeof opt.header === 'undefined' ? true:opt.header,
+            btns: typeof opt.btns != 'undefined' ? opt.btns:defBtns,
         },()=>{
             this.open({
                 backdrop:'static',
@@ -234,6 +242,16 @@ class WModal extends React.Component {
         return classNames(base,this.props.className);
     }
 
+    getDialogStyles() {
+        let base = {};
+        if (this.state.width) {
+            base['maxWidth'] = this.state.width;
+        } else if (this.props.width) {
+            base['maxWidth'] = this.props.width;
+        }
+        return base;
+    }
+
     getDialogClasses() {
         let base = 'modal-dialog';
         if (this.modalType === ModalView) {
@@ -262,7 +280,7 @@ class WModal extends React.Component {
                         if (typeof this.callback === 'function') {
                             this.callback(1);
                         }
-                    }}>确定</Button>
+                    }}>{this.state.btns['ok']}</Button>
                 );
                 break;
             case ModalConfirm:
@@ -273,13 +291,13 @@ class WModal extends React.Component {
                             if (typeof this.callback === 'function') {
                                 this.callback(1);
                             }
-                        }}>确定</Button>
+                        }}>{this.state.btns['ok']}</Button>
                         <Button size='sm' onClick={()=>{
                             this.close();
                             if (typeof this.callback === 'function') {
                                 this.callback(0);
                             }
-                        }} theme='secondary'>取消</Button>
+                        }} theme='secondary'>{this.state.btns['cancel']}</Button>
                     </React.Fragment>
                 );
                 break;
@@ -301,7 +319,7 @@ class WModal extends React.Component {
             <div ref={c=>this._main=c} className={this.getMainClasses()}>
                 <div ref={c=>this._shadow=c} className={this.getShadowClasses()} style={shadowIndex} id={`${this.domId}-shadow`}/>
                 <div className={this.getClasses()} style={modalIndex} tabIndex="-1" id={this.domId} role="dialog">
-                    <div ref={c=>this._dialog=c} className={this.getDialogClasses()} style={{maxWidth:this.props.width}} role="document">
+                    <div ref={c=>this._dialog=c} className={this.getDialogClasses()} style={this.getDialogStyles()} role="document">
                         <div className="modal-content">
                             {this.state.header?<div className="modal-header">
                                 <h5 className="modal-title">{this.state.title}</h5>

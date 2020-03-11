@@ -1,6 +1,6 @@
 {
   "name": "@clake/react-bootstrap4-window",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "react bootstrap v4 window",
   "main": "lib/index.js",
   "scripts": {
@@ -39,7 +39,7 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
     "@babel/runtime": "^7.3.4",
-    "@clake/react-bootstrap4": "^1.0.9",
+    "@clake/react-bootstrap4": "^1.2.0",
     "babel-loader": "^8.0.5",
     "browser-sync": "^2.24.5",
     "connect-history-api-fallback": "^1.5.0",
