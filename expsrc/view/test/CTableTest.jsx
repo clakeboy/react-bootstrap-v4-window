@@ -172,8 +172,14 @@ class CTableTest extends React.Component {
         let data = this.state.table_data.slice(0);
         let filter = [];
         data.forEach((item)=>{
-            if (reg.test(item[field])) {
-                filter.push(item);
+            if (type === 'exclude') {
+                if (!reg.test(item[field])) {
+                    filter.push(item);
+                }
+            } else {
+                if (reg.test(item[field])) {
+                    filter.push(item);
+                }
             }
         });
 

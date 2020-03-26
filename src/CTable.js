@@ -45,10 +45,10 @@ class CTable extends React.Component {
 
         this.sortList     = {};
         this.is_sort      = typeof this.props.onSort === 'function' || this.props.sort;
+        this.is_filter      = typeof this.props.onFilter === 'function' || this.props.filter;
         this.current_sort = null;
 
-        this.filter_type = null;
-        this.filter_text = null;
+        this.filter_list = [];
 
         this.editRows = [];
 
@@ -111,6 +111,56 @@ class CTable extends React.Component {
         }
     }
 
+    //inner source ********************
+    sourceLoad() {
+        if (typeof this.props.sourceFunc !== 'function') return;
+
+        this.props.sourceFunc({
+            source:this.props.source,
+            page:this.state.page,
+            number:this.props.showNumbers,
+        },(res)=>{
+            this.setState({
+                data     : res.data,
+                dataCount: res.count,
+                page     : res.page,
+            })
+        });
+    }
+
+    sourceFilter() {
+        return this.filter_list.map((item)=>{
+            switch (item.type) {
+                case "start":
+                    return {
+                        field:item.field,
+                        value:`${item.text}%`,
+                        flag:'like'
+                    };
+                case "end":
+                    return {
+                        field:item.field,
+                        value:`%${item.text}`,
+                        flag:'like'
+                    };
+                case "clear":
+                    this.filter = [];
+                    break;
+                default:
+                    return {
+                        field:item.field,
+                        value:`%${item.text}%`,
+                        flag:'like'
+                    }
+            }
+        });
+    }
+
+    sourceOrder() {
+
+    }
+
+    //innter source end ***************************
     //checkbox handler
     changeHandler(row, i) {
         return (checked,e) => {
@@ -201,13 +251,17 @@ class CTable extends React.Component {
             this.current_sort                = null;
             if (emitEvt && typeof this.props.onSort === 'function') {
                 this.props.onSort('','clear');
+            } else {
+                this.setState({data:this.originalData.slice(0)})
             }
+            return true;
         }
+        return false;
     }
 
     localSort(field, sort_type) {
         let desc = sort_type === 'desc';
-        let data = this.originalData.slice(0);
+        let data = this.state.data.slice(0);
         data.sort((a, b) => {
             if (a[field] > b[field]) return desc ? -1 : 1;
             if (a[field] < b[field]) return desc ? 1 : -1;
@@ -260,17 +314,41 @@ class CTable extends React.Component {
     /**
      * filter
      * */
-    localFilter() {
-
+    localFilter(text, field, type) {
+        let reg;
+        switch (type) {
+            case "start":
+                reg = new RegExp(`^${text}`);
+                break;
+            case "end":
+                reg = new RegExp(`${text}$`);
+                break;
+            default:
+                reg = new RegExp(`${text}`);
+        }
+        let data = this.state.data.slice(0);
+        let filter = [];
+        data.forEach((item)=>{
+            if (type === 'exclude') {
+                if (!reg.test(item[field])) {
+                    filter.push(item);
+                }
+            } else {
+                if (reg.test(item[field])) {
+                    filter.push(item);
+                }
+            }
+        });
+        this.setState({data:filter});
     }
 
     filterHandler(text, field, type) {
-        this.filter_text  = text;
-        this.filter_type  = type;
-        this.filter_field = field;
-        if (typeof this.props.onFilter === 'function') {
-            this.props.onFilter(text, field, type);
-        }
+        this.filter_list.push({
+            text:text,
+            field:field,
+            type:type
+        });
+
         this.setState({
             filter: {
                 start  : '',
@@ -279,14 +357,16 @@ class CTable extends React.Component {
             }
         });
         this.mainMenu.hide();
+        if (typeof this.props.onFilter === 'function') {
+            this.props.onFilter(text, field, type);
+        } else {
+            this.localFilter(text,field,type);
+        }
     }
 
     clearFilter() {
-        this.filter_text  = '';
-        this.filter_type  = '';
-        let field         = this.filter_field;
-        this.filter_field = '';
-        this.clearSort(true);
+        this.filter_list = [];
+        let is_clean = this.clearSort(true);
         this.setState({
             filter: {
                 start  : '',
@@ -295,7 +375,11 @@ class CTable extends React.Component {
             }
         });
         if (typeof this.props.onFilter === 'function') {
-            this.props.onFilter('', field, 'clear');
+            this.props.onFilter('', '', 'clear');
+        } else {
+            if (!is_clean) {
+                this.setState({data:this.originalData.slice(0)});
+            }
         }
     }
 
@@ -848,7 +932,8 @@ class CTable extends React.Component {
         let lang = this.props.lang;
         if (!lang) {
             let i18 = i18n.getLang();
-            lang = CTableLang[i18.short];
+            let langStr = typeof lang === 'string'?lang:i18.short;
+            lang = CTableLang[langStr];
         }
         return (
             <Menu ref={c => this.mainMenu = c} onClick={this.menuClickHandler}>
@@ -858,16 +943,20 @@ class CTable extends React.Component {
                 <Menu.Item field="cut" onClick={() => {
                     document.execCommand("cut");
                 }}><Icon className='mr-1' icon='cut'/>{lang['Cut']}</Menu.Item>
-                <Menu.Item step/>
-                <Menu.Item field='select_filter' onClick={(e, field, data) => {
+                {this.is_filter?<Menu.Item step/>:null}
+                {this.is_filter?<Menu.Item field='select_filter' onClick={(e, field, data) => {
                     let select = document.getSelection();
                     this.filterHandler(select.toString(), data.field, 'contain');
-                }}><Icon className='mr-1' icon='filter'/>{lang['Filter By Selection']}</Menu.Item>
-                <Menu.Item field='clear_filter' onClick={() => {
+                }}><Icon className='mr-1' icon='filter'/>{lang['Filter By Selection']}</Menu.Item>:null}
+                {this.is_filter?<Menu.Item field='select_exclude' onClick={(e, field, data) => {
+                    let select = document.getSelection();
+                    this.filterHandler(select.toString(), data.field, 'exclude');
+                }}><Icon className='mr-1' icon='filter'/>{lang['Filter Excluding Selection']}</Menu.Item>:null}
+                {this.is_filter||this.is_sort?<Menu.Item field='clear_filter' onClick={() => {
                     this.clearFilter();
-                }}><Icon className='mr-1' icon='brush'/>{lang['Clear Filter / Sort']}</Menu.Item>
-                <Menu.Item step/>
-                <Menu.Item field="filter">
+                }}><span className='text-danger'><Icon className='mr-1' icon='brush'/>{lang['Clear Filter / Sort']}</span></Menu.Item>:null}
+                {this.is_filter?<Menu.Item step/>:null}
+                {this.is_filter?<Menu.Item field="filter">
                     <span className='mr-1' style={inputStyle}>{lang['Start With']}</span>
                     <Input className='mr-1' size='xs' width='120px'
                            data={this.state.filter.start}
@@ -880,35 +969,35 @@ class CTable extends React.Component {
                     <Button size='xs' onMouseDown={stopEvent} onClick={(e) => {
                         this.filterHandler(this.state.filter.start, this.mainMenu.data.field, 'start');
                     }} icon='search'/>
-                </Menu.Item>
-                <Menu.Item field="filter">
+                </Menu.Item>:null}
+                {this.is_filter?<Menu.Item field="filter">
                     <span className='mr-1' style={inputStyle}>{lang['End With']}</span>
                     <Input className='mr-1' size='xs' width='120px'
                            data={this.state.filter.end}
                            onChange={this.filterChangeHandler('end')}
                            onMouseDown={stopEvent}
                            onEnter={() => {
-                               this.filterHandler(this.state.filter.start, this.mainMenu.data.field, 'start');
+                               this.filterHandler(this.state.filter.start, this.mainMenu.data.field, 'end');
                            }}
                     />
                     <Button size='xs' onMouseDown={stopEvent} onClick={(e) => {
                         this.filterHandler(this.state.filter.end, this.mainMenu.data.field, 'end');
                     }} icon='search'/>
-                </Menu.Item>
-                <Menu.Item field="filter">
+                </Menu.Item>:null}
+                {this.is_filter?<Menu.Item field="filter">
                     <span className='mr-1' style={inputStyle}>{lang['Contain with']}</span>
                     <Input className='mr-1' size='xs' width='120px'
                            data={this.state.filter.contain}
                            onChange={this.filterChangeHandler('contain')}
                            onMouseDown={stopEvent}
                            onEnter={() => {
-                               this.filterHandler(this.state.filter.start, this.mainMenu.data.field, 'start');
+                               this.filterHandler(this.state.filter.start, this.mainMenu.data.field, 'contain');
                            }}
                     />
                     <Button size='xs' onMouseDown={stopEvent} onClick={(e) => {
                         this.filterHandler(this.state.filter.contain, this.mainMenu.data.field, 'contain');
                     }} icon='search'/>
-                </Menu.Item>
+                </Menu.Item>:null}
                 {this.is_sort?<Menu.Item step/>:null}
                 {this.is_sort?<Menu.Item field="asc"><Icon className='mr-1' icon='sort-alpha-down'/>{lang['Sort Ascending']}</Menu.Item>:null}
                 {this.is_sort?<Menu.Item field="desc"><Icon className='mr-1' icon='sort-alpha-up'/>{lang['Sort Descending']}</Menu.Item>:null}
@@ -984,7 +1073,9 @@ CTable.propTypes = {
     sort        : PropTypes.bool,
     filter      : PropTypes.bool,
     customMenu  : PropTypes.array,
-    lang        : PropTypes.object
+    lang        : PropTypes.object,
+    source: PropTypes.string,
+    sourceFunc: PropTypes.func,
 };
 
 CTable.defaultProps = {
@@ -1006,6 +1097,7 @@ CTable.defaultProps = {
     menu       : true,
     showNumbers: 30,
     showPages: 10,
+    source: null
 };
 
 export default CTable;
