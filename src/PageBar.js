@@ -72,11 +72,11 @@ class PageBar extends React.Component {
                             this.setState({
                                 page:e.value
                             })
-                        }} onKeyPress={(e)=>{
+                        }} onKeyUp={(e)=>{
                             if (e.keyCode === 13) {
-                                this.changePage(parseInt(e.value));
+                                this.changePage(parseInt(e.target.value));
                             }
-                        }} type="text" value={this.state.page}/> / {this.state.pages}
+                        }} type="number" min="1" max={this.state.pages} value={this.state.page}/> / {this.state.pages}
                     </div>
                     <div className='icon-btn' onClick={()=>{
                         this.changePage(this.state.page+1);
