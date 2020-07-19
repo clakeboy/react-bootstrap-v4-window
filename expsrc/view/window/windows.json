@@ -1,0 +1,74 @@
+[
+    {
+        "height": "536px",
+        "name": "f_efc_release_query",
+        "source": "v_efc_release_query_general",
+        "title": "Query EFC Release Log",
+        "uname": "FEfcReleaseQuery",
+        "width": "816px"
+    },
+    {
+        "height": "544px",
+        "name": "f_urs_efc_query",
+        "source": "s_urs",
+        "title": "Query EFC Test Log",
+        "uname": "FUrsEfcQuery",
+        "width": "820px"
+    },
+    {
+        "height": "548px",
+        "name": "f_urs_log_query",
+        "source": "v_urs_log_query_general",
+        "title": "Query EFC Test Log",
+        "uname": "FUrsLogQuery",
+        "width": "820px"
+    },
+    {
+        "height": "540px",
+        "name": "f_efc_work_query",
+        "source": "v_efc_work_query_general",
+        "title": "Query EFC Work Log",
+        "uname": "FEfcWorkQuery",
+        "width": "816px"
+    },
+    {
+        "height": "484px",
+        "name": "f_urs_log",
+        "source": "s_urs",
+        "title": "User Reporting System",
+        "uname": "FUrsLog",
+        "width": "636px"
+    },
+    {
+        "height": "528px",
+        "name": "f_efc_release_review",
+        "source": "s_efc_release_new",
+        "title": "EFC Release Review",
+        "uname": "FEfcReleaseReview",
+        "width": "744px"
+    },
+    {
+        "height": "532px",
+        "name": "f_efc_release_new",
+        "source": "s_efc_release_new",
+        "title": "EFC New Release",
+        "uname": "FEfcReleaseNew",
+        "width": "760px"
+    },
+    {
+        "height": "584px",
+        "name": "f_efc_work",
+        "source": "s_efc_work",
+        "title": "EFC Work Log",
+        "uname": "FEfcWork",
+        "width": "760px"
+    },
+    {
+        "height": "516px",
+        "name": "f_urs_efc",
+        "source": "s_urs",
+        "title": "User Reporting System - EFC",
+        "uname": "FUrsEfc",
+        "width": "740px"
+    }
+]
