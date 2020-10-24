@@ -64,6 +64,7 @@ export default {
         "react-dom": "ReactDOM",
         "zepto": "Zepto",
         "marked":"Marked",
-        "moment":"Moment"
+        "moment":"Moment",
+        "@clake/react-bootstrap4":"ReactBootstrapV4"
     }
 };
