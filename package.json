@@ -51,6 +51,7 @@
     "gulp-babel": "^8.0.0",
     "gulp-header": "^1.8.9",
     "gulp-load-plugins": "^1.5.0",
+    "gulp-sourcemaps": "^2.6.5",
     "gulp-util": "^3.0.8",
     "less": "^3.0.4",
     "less-loader": "^4.1.0",
