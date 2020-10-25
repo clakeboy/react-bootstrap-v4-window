@@ -22,5 +22,8 @@ export default merge(cfg,{
     optimization: {
         minimize:true,
     },
+    externals: {
+        "@clake/react-bootstrap4":"ReactBootstrapV4"
+    },
     mode: 'production',
 });

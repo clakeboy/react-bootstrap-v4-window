@@ -577,7 +577,7 @@ class CTable extends React.Component {
             base = classNames(base, 'table-responsive');
         }
         //nowrap
-        if (this.props.noWrap && !this.props.edit) {
+        if (this.props.noWrap) {
             base = classNames(base, 'ck-ctable-nowrap');
         }
         return base;
@@ -691,7 +691,7 @@ class CTable extends React.Component {
                             if (item.props.width) {
                                 style.width = item.props.width;
                             }
-                            let sort_icon = 'sort';
+                            let sort_icon = '';
                             if (this.sortList[item.props.field]) {
                                 sort_icon = 'sort-alpha-' + (this.sortList[item.props.field] === 'asc' ? 'down' : 'up');
                             }
