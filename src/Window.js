@@ -218,8 +218,8 @@ class Window extends React.PureComponent {
                         {this.props.title}
                         <div className='window-btn'>
                             {/*<IconButton className='mr-1' iconType='regular' icon='window-minimize'/>*/}
-                            <IconButton className='mr-1' iconType='regular' icon='window-maximize' onClick={this.maxHandler}/>
-                            <IconButton icon='window-close' onClick={this.close}/>
+                            {this.props.isMaxBtn?<IconButton className='mr-1' iconType='regular' icon='window-maximize' onClick={this.maxHandler}/>:null}
+                            {this.props.isCloseBtn?<IconButton icon='window-close' onClick={this.close}/>:null}
                         </div>
                     </div>
                     <div className="card-body">
@@ -256,11 +256,17 @@ Window.propTypes = {
     backColor: PropTypes.string,
     name: PropTypes.string,
     parent: PropTypes.any,
-    marginTop: PropTypes.any
+    marginTop: PropTypes.any,
+    isMaxBtn: PropTypes.bool,
+    isCloseBtn: PropTypes.bool,
+    isMinBtn: PropTypes.bool,
 };
 
 Window.defaultProps = {
-    marginTop: 0
+    marginTop: 0,
+    isMaxBtn: true,
+    isCloseBtn: true,
+    isMinBtn: false,
 };
 
 const EVT_RESIZE = 'resize';
