@@ -143,6 +143,9 @@ class Window extends React.PureComponent {
     }
 
     maxHandler = (e)=>{
+        if (!this.props.isMaxBtn) {
+            return
+        }
         this.trigger(EVT_MAX_WINDOW,e);
         this.max(!this.is_max);
     };
