@@ -20,6 +20,7 @@ class PageBar extends React.Component {
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
+        console.log(nextProps,this.props);
         if (nextProps !== this.props) {
             this.setState({
                 page:nextProps.page,
@@ -30,7 +31,6 @@ class PageBar extends React.Component {
     }
 
     calPage(count,number) {
-        console.log(count,number);
         let pages = parseInt(count / number);
         if (count % number !== 0) {
             pages += 1;
@@ -63,7 +63,7 @@ class PageBar extends React.Component {
                 <div className='total'>
                     {this.props.dataCount}
                 </div>
-                <div className='page d-flex align-items-center align-self-center'>
+                {!this.props.noPage?<div className='page d-flex align-items-center align-self-center'>
                     <div className='icon-btn' onClick={()=>{
                         this.changePage(this.state.page-1);
                     }}><Icon icon='angle-double-left'/></div>
@@ -81,7 +81,7 @@ class PageBar extends React.Component {
                     <div className='icon-btn' onClick={()=>{
                         this.changePage(this.state.page+1);
                     }}><Icon icon='angle-double-right'/></div>
-                </div>
+                </div>:null}
             </div>
         );
     }
@@ -92,7 +92,8 @@ PageBar.propTypes = {
     page        : PropTypes.number,
     showNumbers  : PropTypes.number,
     showPages   : PropTypes.number,
-    onSelect: PropTypes.func
+    onSelect: PropTypes.func,
+    noPage: PropTypes.bool,
 };
 
 PageBar.defaultProps = {

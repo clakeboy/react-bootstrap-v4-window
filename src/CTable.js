@@ -67,9 +67,10 @@ class CTable extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (this.state.data !== nextProps.data) {
-            this.select_all = false;
-            this.selectRows = [];
             if (this.props.edit) {
+                if (this.originalData === nextProps.data) {
+                    return
+                }
                 this.editRows     = [];
                 this.originalData = Common.Clone(nextProps.data);
             }
@@ -77,6 +78,8 @@ class CTable extends React.Component {
                 this.allchk.setHalf(false);
                 this.selectRows = [];
             }
+            this.select_all = false;
+            this.selectRows = [];
             this.setState({
                 data     : nextProps.data,
                 dataCount: nextProps.dataCount,
@@ -308,6 +311,9 @@ class CTable extends React.Component {
             case "delete_row":
                 this.deleteRowHandler(parseInt(this.mainMenu.data.index));
                 break;
+            case "clone_row":
+                this.cloneRow(parseInt(this.mainMenu.data.index));
+                break;
         }
     };
 
@@ -407,7 +413,8 @@ class CTable extends React.Component {
         data.push(Object.assign({}, this.cacheRow));
         this.editRows.push(data.length - 1);
         this.setState({
-            data: data
+            data: data,
+            dataCount: data.length,
         }, () => {
             document.querySelector(`#${this.domId}-edit`).previousElementSibling.querySelector('input:not([disabled])').focus()
         })
@@ -434,12 +441,16 @@ class CTable extends React.Component {
         return list;
     }
 
+    clearEditRows() {
+        this.editRows = [];
+    }
+
     deleteRowHandler(row_index) {
         if (row_index < 0 || row_index >= this.state.data.length) {
             return
         }
         if (typeof this.props.onDelete === 'function') {
-            this.props.onDelete(this.state.data[row_index], row_index);
+            this.props.onDelete(this.state.data[row_index], row_index,this.deleteRow);
         } else {
             this.deleteRow(row_index)
         }
@@ -460,7 +471,23 @@ class CTable extends React.Component {
             }
         });
 
-        this.setState({data: data});
+        this.setState({
+            data: data,
+            dataCount: data.length,
+        });
+    }
+
+    cloneRow(row_index) {
+        if (row_index < 0 || row_index >= this.state.data.length) {
+            return
+        }
+        let data = this.state.data.slice(0);
+        data.push(Object.assign({}, this.state.data[row_index]));
+        this.editRows.push(data.length - 1);
+        this.setState({
+            data: data,
+            dataCount: data.length,
+        })
     }
 
     //****************************
@@ -674,7 +701,7 @@ class CTable extends React.Component {
                 <table ref={c => this.table_head = c} id={`table-head-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <thead className={this.getHeaderClasses()}>
                     <tr>
-                        {this.state.select ?
+                        {this.state.select || this.props.edit ?
                             <th style={{width:'20px',textAlign:'center'}}>
                                 {this.props.edit ? <Icon icon='list'/> :
                                     <CCheckbox ref={c=>this.allchk=c} onChange={this.selectAll}/>}
@@ -790,11 +817,10 @@ class CTable extends React.Component {
         return (
             <React.Fragment>
                 <tr className={this.props.onClick ? 'click-row' : null} onClick={this.clickHandler(row, i)}>
-                    {this.state.select ?
-                        <th style={{width:'20px',textAlign:'center'}}>
-                            {this.editRows.indexOf(i) === -1 ? null :
-                                <Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className='text-danger'/>}
-                        </th> : null}
+                    <th style={{width:'20px',textAlign:'center'}}>
+                        {this.editRows.indexOf(i) === -1 ? null :
+                            <Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className='text-danger'/>}
+                    </th>
                     {React.Children.map(this.props.children, (item, key) => {
                         if (!item || item.props.hide) {
                             return null;
@@ -834,8 +860,7 @@ class CTable extends React.Component {
     renderEditAddRow() {
         return (
             <tr id={this.domId + '-edit'}>
-                {this.state.select ?
-                    <th style={{width:'20px',textAlign:'center'}}><Icon icon='chevron-circle-right'/></th> : null}
+                <th style={{width:'20px',textAlign:'center'}}><Icon icon='chevron-circle-right'/></th>
                 {React.Children.map(this.props.children, (item, key) => {
                     if (!item || item.props.hide) {
                         return null;
@@ -887,7 +912,7 @@ class CTable extends React.Component {
                 <PageBar page={this.state.page} dataCount={this.state.dataCount}
                          onSelect={this.selectPageHandler}
                          showNumbers={this.props.showNumbers}
-                         showPages={this.props.showPages}/>
+                         showPages={this.props.showPages} noPage={this.props.edit}/>
             </div>
         )
     }
@@ -1003,6 +1028,7 @@ class CTable extends React.Component {
                 {this.is_sort?<Menu.Item field="desc"><Icon className='mr-1' icon='sort-alpha-up'/>{lang['Sort Descending']}</Menu.Item>:null}
                 {this.props.edit ? <Menu.Item step/> : null}
                 {this.props.edit ? <Menu.Item field="delete_row">{lang['Delete Row']}</Menu.Item> : null}
+                {this.props.edit ? <Menu.Item field="clone_row">{lang['Clone Row']}</Menu.Item> : null}
                 {this.props.customMenu?<Menu.Item step/>:null}
                 {this.props.customMenu?this.props.customMenu.map((menu)=>{
                     return this.explainCustomMenu(menu)

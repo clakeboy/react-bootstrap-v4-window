@@ -21,7 +21,8 @@ class CTableTest extends React.Component {
         this.state = {
             table_data:[],
             data_count:0,
-            page:1
+            page:1,
+            editData:[],
         };
 
         if (this.props.parent instanceof Window) {
@@ -189,7 +190,16 @@ class CTableTest extends React.Component {
     };
 
     testHandler = ()=>{
-        console.log(this.edit_table.getEditRows());
+        let list = this.edit_table.getEditRows();
+        console.log(list);
+
+        list.forEach((row,idx)=>{
+            row.id = idx + 1;
+        });
+        this.edit_table.clearEditRows();
+        this.setState({
+            editData:list
+        })
     };
 
     render() {
@@ -201,7 +211,7 @@ class CTableTest extends React.Component {
                     right:'10px',
                     left:'10px',
                     top:'50px',
-                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true}
+                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={false}
                         onSelectPage={(page)=>{
                             console.log(page);
                         }}
@@ -229,9 +239,8 @@ class CTableTest extends React.Component {
                     left:'10px',
                     top:'260px',
                     bottom:'10px',
-                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true}
-                        edit
-                        foot={false}
+                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={false}
+                        edit data={this.state.editData}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
                         console.log(row);

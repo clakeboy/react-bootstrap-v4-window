@@ -10,6 +10,7 @@ const zh_cn = {
     "Sort Ascending":"升序",
     "Sort Descending":"降序",
     "Delete Row":"删除行",
+    "Clone Row":"克隆行数据",
 };
 
 const en_us = {
@@ -24,6 +25,7 @@ const en_us = {
     "Sort Ascending":"Sort Ascending",
     "Sort Descending":"Sort Descending",
     "Delete Row":"Delete Row",
+    "Clone Row":"Clone Row",
 };
 
 const CTableLang = {

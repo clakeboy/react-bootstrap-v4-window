@@ -72,6 +72,18 @@ class CTableInput extends React.Component {
         }
     };
 
+    dblHandler = (e)=> {
+        if (this.calendar && !this.state.value) {
+            this.calendar.setCurrentDate(new Date());
+            let val = this.calendar.format()
+            this.setState({value:val})
+            if (typeof this.props.onChange === 'function') {
+                this.props.onChange(e,val);
+            }
+            this.calendar.hide();
+        }
+    };
+
     selectHandler = (val,row,e)=>{
         this.setState({
             value:val
@@ -103,6 +115,7 @@ class CTableInput extends React.Component {
             <div className={this.getClasses()}>
                 <input ref={c=>this.input=c} type='text' {...this.props}
                        onChange={this.changeHandler}
+                       onDoubleClick={this.dblHandler}
                        disabled={this.props.disabled}
                        style={inputStyle}
                        className={inputClasses}

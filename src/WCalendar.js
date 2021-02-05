@@ -67,6 +67,14 @@ class WCalendar extends React.PureComponent {
         return classNames(base,this.props.className);
     }
 
+    format() {
+        return this.calendar?.format();
+    }
+
+    setCurrentDate(d) {
+        return this.calendar?.setCurrentDate(d);
+    }
+
     render() {
         let lang = i18n.getLang();
         let content = (
