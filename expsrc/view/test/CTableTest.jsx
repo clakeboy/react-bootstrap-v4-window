@@ -251,11 +251,12 @@ class CTableTest extends React.Component {
                         searchColumn:'task_name',
                         filterColumns: [{field:'task_name',text:'Task Name'},{field:'time_rule',text:'Rule'},{field:'source',text:'Source'}],
                         width:'600px'
-                    }} comboData={this.combo_data} type='combo' onEdit={(index,val,row,callback)=>{
-                        callback(index,{
-                            rule:row.time_rule
-                        })
-                    }}/>
+                    }} comboData={this.combo_data} type='combo'
+                        onEdit={(index,val,row,callback)=>{
+                            callback(index,{
+                                rule:row.time_rule
+                            })
+                        }}/>
                     <TableHeader field='date' text='Date' width='100px' type='calendar' />
                     <TableHeader field='rule' text='Rule' width='100px' type='text' />
                 </CTable>
