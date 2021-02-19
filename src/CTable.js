@@ -52,13 +52,17 @@ class CTable extends React.Component {
 
         this.editRows = [];
 
-        this.initTableWidth();
-
         this.cacheRow = {};
+        //列头数据
+        this.headers = {};
+        //不需要克隆列
+        this.noClone = {};
 
         this.lockColumns = [];
         //lock column flag
         this.isLock = false;
+
+        this.initTableWidth();
     }
 
     componentDidMount() {
@@ -105,6 +109,10 @@ class CTable extends React.Component {
                 if (item.props.width) {
                     let matchs = item.props.width.match(reg);
                     this.width += parseInt(matchs[1]);
+                    this.headers[item.props.field] = item.props;
+                    if (item.props.noClone) {
+                        this.noClone[item.props.field] = "";
+                    }
                 }
             });
             if (this.props.select) {
@@ -419,8 +427,8 @@ class CTable extends React.Component {
             document.querySelector(`#${this.domId}-edit`).previousElementSibling.querySelector('input:not([disabled])').focus()
         })
     };
-
-    editHandler = (e, val) => {
+    //编辑事件
+    editHandler = (e, val,row) => {
         let index = parseInt(e.target.dataset.row);
         let field = e.target.dataset.field;
         if (this.editRows.indexOf(index) === -1) {
@@ -430,6 +438,17 @@ class CTable extends React.Component {
             this.setState({data: data})
         } else {
             this.state.data[index][field] = val;
+        }
+        if (this.headers[field] && typeof(this.headers[field].onEdit) === 'function') {
+            this.headers[field].onEdit(index,val,row,this.editCallback)
+        }
+    };
+    //自定义 onEdit 事件回调函数
+    editCallback = (index,editData) => {
+        if (this.state.data[index]) {
+            let data           = this.state.data.slice(0);
+            data[index] = Object.assign(data[index],editData);
+            this.setState({data: data});
         }
     };
 
@@ -482,7 +501,7 @@ class CTable extends React.Component {
             return
         }
         let data = this.state.data.slice(0);
-        data.push(Object.assign({}, this.state.data[row_index]));
+        data.push(Object.assign({}, this.state.data[row_index],this.noClone));
         this.editRows.push(data.length - 1);
         this.setState({
             data: data,
@@ -1056,54 +1075,98 @@ const stopEvent  = function (e) {
 };
 
 CTable.propTypes = {
+    //主题
     theme       : PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']),
+    //标头主题
     headerTheme : PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']),
+    //标头css class
     headClass   : PropTypes.string,
+    //数据来源
     data        : PropTypes.array,
+    //数据总记录数
     dataCount   : PropTypes.number,
+    //总页数
     page        : PropTypes.number,
+    //第一列是否出现选择项
     select      : PropTypes.bool,
+    //是否显示标头
     header      : PropTypes.bool,
+    //
     center      : PropTypes.bool,
+    //数据当前页
     currentPage : PropTypes.number,
+    //
     striped     : PropTypes.bool,
+    //是否显示边框
     bordered    : PropTypes.bool,
+    //行是否有hover效果
     hover       : PropTypes.bool,
+    //是否小型化显示列表
     sm          : PropTypes.bool,
+    //文字最小化
     fontSm      : PropTypes.bool,
     responsive  : PropTypes.bool,
+    //文字列表 left,center,right
     align       : PropTypes.string,
+    //是否显示树结构
     tree        : PropTypes.string,
+    //点击树事件
     onClickTree : PropTypes.func,
+    //点击事件
     onClick     : PropTypes.func,
+    //选择事件
     onCheck     : PropTypes.func,
+    //过滤事件
     onFilter    : PropTypes.func,
+    //排序事件
     onSort      : PropTypes.func,
+    //是否列可移动
     move        : PropTypes.bool,
+    //刷新事件
     onRefresh   : PropTypes.func,
+    //刷新事件按钮文字
     refreshText : PropTypes.string,
+    //是否漂浮
     absolute    : PropTypes.bool,
+    //漂浮X坐标
     x           : PropTypes.string,
+    //漂浮Y坐标
     y           : PropTypes.string,
+    //表宽
     width       : PropTypes.string,
+    //表高
     height      : PropTypes.string,
     // foot        : PropTypes.bool,
-    foot: PropTypes.objectOf(),
+    //是否显示列表尾
+    foot        : PropTypes.object,
+    //表自动随主体小设置
     position    : PropTypes.object,
+    //显示的页码数
     showPages   : PropTypes.number,
+    //显示的记录条数
     showNumbers : PropTypes.number,
+    //翻页事件
     onSelectPage: PropTypes.func,
+    //是否自动换行
     noWrap      : PropTypes.bool,
+    //是否启用右键菜单
     menu        : PropTypes.bool,
+    //是否显示每列记录总合数
     total       : PropTypes.object,
+    //是否编辑模式
     edit        : PropTypes.bool,
+    //数据删除事件
     onDelete    : PropTypes.func,
+    //是否启用排序
     sort        : PropTypes.bool,
+    //是否启用过滤
     filter      : PropTypes.bool,
+    //自定义右键菜单
     customMenu  : PropTypes.array,
+    //自定义显示语言
     lang        : PropTypes.object,
-    source: PropTypes.string,
-    sourceFunc: PropTypes.func,
+    source      : PropTypes.string,
+    sourceFunc  : PropTypes.func,
 };
 
 CTable.defaultProps = {
@@ -1124,8 +1187,8 @@ CTable.defaultProps = {
     move       : true,
     menu       : true,
     showNumbers: 30,
-    showPages: 10,
-    source: null
+    showPages  : 10,
+    source     : null
 };
 
 export default CTable;

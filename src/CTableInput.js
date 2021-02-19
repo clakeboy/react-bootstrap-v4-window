@@ -89,7 +89,7 @@ class CTableInput extends React.Component {
             value:val
         });
         if (typeof this.props.onChange === 'function') {
-            this.props.onChange(e,val);
+            this.props.onChange(e,val,row);
         }
     };
 
