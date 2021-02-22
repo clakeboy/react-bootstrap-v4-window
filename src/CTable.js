@@ -867,7 +867,7 @@ class CTable extends React.Component {
                                     }
                                 }}
                                 data-row={`${i}`}>
-                                {this.props.disabled?
+                                {item.props.disabled?
                                     (item.props.onFormat ? item.props.onFormat(row[item.props.field], row, item.props.field) : row[item.props.field]):
                                     this.renderEditComponent(item.props, row, i)}
                             </td>
