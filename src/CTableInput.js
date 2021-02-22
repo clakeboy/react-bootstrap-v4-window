@@ -12,7 +12,8 @@ class CTableInput extends React.Component {
     constructor(props) {
         super(props);
         this.state={
-            value:this.props.data || '',
+            value:this.parseValue(this.props.data),
+            // value: this.props.data || '',
             comboData:this.props.comboData
         };
     }
@@ -38,7 +39,8 @@ class CTableInput extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            value: nextProps.data || '',
+            value: this.parseValue(nextProps.data),
+            // value: nextProps.value || '',
             comboData: nextProps.comboData
         });
     }
@@ -51,6 +53,14 @@ class CTableInput extends React.Component {
             return true
         }
         return nextState.value !== this.state.value;
+    }
+
+    parseValue(val) {
+        if (val === null || val === undefined) {
+            return "";
+        } else {
+            return '' + val;
+        }
     }
 
     getClasses() {

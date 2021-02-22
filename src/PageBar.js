@@ -20,7 +20,6 @@ class PageBar extends React.Component {
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
-        console.log(nextProps,this.props);
         if (nextProps !== this.props) {
             this.setState({
                 page:nextProps.page,

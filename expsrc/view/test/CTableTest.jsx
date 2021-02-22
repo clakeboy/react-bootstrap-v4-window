@@ -22,7 +22,13 @@ class CTableTest extends React.Component {
             table_data:[],
             data_count:0,
             page:1,
-            editData:[],
+            editData:[{
+                "id":1,
+                "price":0,
+                "name":1,
+                "date":"asdfasdf",
+                "rule":"1aaasdf",
+            }],
         };
 
         if (this.props.parent instanceof Window) {
