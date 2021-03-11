@@ -72,7 +72,7 @@ class CTable extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (this.state.data !== nextProps.data) {
             if (this.props.edit) {
-                if (this.originalData === nextProps.data) {
+                if (this.equals(this.originalData,nextProps.data)) {
                     return
                 }
                 this.editRows     = [];
@@ -98,6 +98,16 @@ class CTable extends React.Component {
         }
         return nextState.data !== this.state.data;
     }
+
+    equals = (a, b) => {
+        if (a === b) return true;
+        if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();
+        if (!a || !b || (typeof a !== 'object' && typeof b !== 'object')) return a === b;
+        if (a.prototype !== b.prototype) return false;
+        let keys = Object.keys(a);
+        if (keys.length !== Object.keys(b).length) return false;
+        return keys.every(k => this.equals(a[k], b[k]));
+    };
 
     initTableWidth() {
         if (this.props.width) {
@@ -157,6 +167,12 @@ class CTable extends React.Component {
                 case "clear":
                     this.filter = [];
                     break;
+                case "":
+                    return {
+                        field:item.field,
+                        value:item.text,
+                        flag:'='
+                    };
                 default:
                     return {
                         field:item.field,
@@ -1002,6 +1018,20 @@ class CTable extends React.Component {
                     this.clearFilter();
                 }}><span className='text-danger'><Icon className='mr-1' icon='brush'/>{lang['Clear Filter / Sort']}</span></Menu.Item>:null}
                 {this.is_filter?<Menu.Item step/>:null}
+                {this.is_filter?<Menu.Item field="equal">
+                    <span className='mr-1' style={inputStyle}>{lang['Equal With']}</span>
+                    <Input className='mr-1' size='xs' width='120px'
+                           data={this.state.filter.equal}
+                           onChange={this.filterChangeHandler('equal')}
+                           onMouseDown={stopEvent}
+                           onEnter={() => {
+                               this.filterHandler(this.state.filter.equal, this.mainMenu.data.field, 'equal');
+                           }}
+                    />
+                    <Button size='xs' onMouseDown={stopEvent} onClick={(e) => {
+                        this.filterHandler(this.state.filter.equal, this.mainMenu.data.field, 'equal');
+                    }} icon='search'/>
+                </Menu.Item>:null}
                 {this.is_filter?<Menu.Item field="filter">
                     <span className='mr-1' style={inputStyle}>{lang['Start With']}</span>
                     <Input className='mr-1' size='xs' width='120px'
@@ -1023,7 +1053,7 @@ class CTable extends React.Component {
                            onChange={this.filterChangeHandler('end')}
                            onMouseDown={stopEvent}
                            onEnter={() => {
-                               this.filterHandler(this.state.filter.start, this.mainMenu.data.field, 'end');
+                               this.filterHandler(this.state.filter.end, this.mainMenu.data.field, 'end');
                            }}
                     />
                     <Button size='xs' onMouseDown={stopEvent} onClick={(e) => {
@@ -1037,7 +1067,7 @@ class CTable extends React.Component {
                            onChange={this.filterChangeHandler('contain')}
                            onMouseDown={stopEvent}
                            onEnter={() => {
-                               this.filterHandler(this.state.filter.start, this.mainMenu.data.field, 'contain');
+                               this.filterHandler(this.state.filter.contain, this.mainMenu.data.field, 'contain');
                            }}
                     />
                     <Button size='xs' onMouseDown={stopEvent} onClick={(e) => {
