@@ -311,17 +311,23 @@ class CTable extends React.Component {
     };
     /**
      * show menu list
-     * @param e
+     * @param dataType
      */
-    menuContextHandler = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        let data = {
-            field: e.currentTarget.dataset.field || '',
-            data : this.state.data[e.currentTarget.dataset.row],
-            index: e.currentTarget.dataset.row
-        };
-        this.mainMenu.show({evt: e, type: 'mouse', data: data});
+    menuContextHandler(dataType) {
+        return (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            let data = {
+                field: e.currentTarget.dataset.field || '',
+                data : this.state.data[e.currentTarget.dataset.row],
+                index: e.currentTarget.dataset.row
+            };
+            if (dataType === "text") {
+                this.mainMenu.show({evt: e, type: 'mouse', data: data});
+            } else {
+                this.numMenu.show({evt: e, type: 'mouse', data: data});
+            }
+        }
     };
 
     menuClickHandler = (field, data) => {
@@ -387,6 +393,7 @@ class CTable extends React.Component {
             }
         });
         this.mainMenu.hide();
+        this.numMenu.hide();
         if (typeof this.props.onFilter === 'function') {
             this.props.onFilter(text, field, type);
         } else {
@@ -447,6 +454,11 @@ class CTable extends React.Component {
     editHandler = (e, val,row) => {
         let index = parseInt(e.target.dataset.row);
         let field = e.target.dataset.field;
+        //如果是check组件
+        if (row === 'chk') {
+            val = val?1:0;
+        }
+
         if (this.editRows.indexOf(index) === -1) {
             this.editRows.push(index);
             let data           = this.state.data.slice(0);
@@ -792,6 +804,7 @@ class CTable extends React.Component {
                     </tbody>
                 </table>
                 {this.props.menu ? this.renderMenu() : null}
+                {this.props.menu ? this.renderNumberMenu() : null}
             </div>
         )
     }
@@ -815,10 +828,21 @@ class CTable extends React.Component {
                         if (item.props.width) {
                             style.width = item.props.width;
                         }
+                        let dataType;
+                        switch (item.props.dataType) {
+                            case "number":
+                                dataType = "number";
+                                break;
+                            case "date":
+                                dataType = "date";
+                                break;
+                            default:
+                                dataType = "text";
+                        }
 
                         if (item.props.children) {
                             return (
-                                <td onContextMenu={this.menuContextHandler} id={this.domId + '-' + key} data-row={`${i}`} data-field={item.props.field}
+                                <td onContextMenu={this.menuContextHandler(dataType)} id={this.domId + '-' + key} data-row={`${i}`} data-field={item.props.field}
                                     className={item.props.className} style={{'text-align': align}}
                                     key={'col_' + key}>{React.cloneElement(item, {
                                     text : item.props.text,
@@ -827,7 +851,10 @@ class CTable extends React.Component {
                                 })}</td>
                             );
                         } else {
-                            return <td onContextMenu={this.menuContextHandler} id={this.domId + '-' + key}
+                            if (item.props.type) {
+                                item.props.disabled=true;
+                            }
+                            return <td onContextMenu={this.menuContextHandler(dataType)} id={this.domId + '-' + key}
                                        data-field={item.props.field}
                                        style={style}
                                        onClick={(e) => {
@@ -840,7 +867,7 @@ class CTable extends React.Component {
                                                item.props.onDoubleClick(row);
                                            }
                                        }}
-                                       data-row={`${i}`}>{item.props.onFormat ? item.props.onFormat(row[item.props.field], row, item.props.field) : row[item.props.field]}</td>;
+                                       data-row={`${i}`}>{item.props.type ? this.renderEditComponent(item.props,row,i):(item.props.onFormat ? item.props.onFormat(row[item.props.field], row, item.props.field) : row[item.props.field])}</td>;
                         }
                     })}
                 </tr>
@@ -867,8 +894,9 @@ class CTable extends React.Component {
                         if (item.props.width) {
                             style.width = item.props.width;
                         }
+                        let dataType = 'text';
                         return (
-                            <td onContextMenu={this.menuContextHandler}
+                            <td onContextMenu={this.menuContextHandler(dataType)}
                                 className={item.props.disabled ? 'disabled' : ''} id={this.domId + '-' + key}
                                 data-field={item.props.field}
                                 style={style}
@@ -932,7 +960,10 @@ class CTable extends React.Component {
                                  calendarFormat={item.calendarFormat} calendar/>
                 );
             case "checkbox":
-                break;
+                return (
+                    <CCheckbox width='20px' onChange={(chk,e)=>{this.editHandler(e,chk,'chk')}} data-row={i}
+                               data-field={item.field} checked={!!row[item.field]} disabled={item.disabled}/>
+                )
             default:
                 return (
                     <CTableInput onChange={this.editHandler} data-row={i} data-field={item.field} data={row[item.field]} align={item.align} disabled={item.disabled}/>
@@ -997,14 +1028,11 @@ class CTable extends React.Component {
             let langStr = typeof lang === 'string'?lang:i18.short;
             lang = CTableLang[langStr];
         }
-        return (
+        return <>
             <Menu ref={c => this.mainMenu = c} onClick={this.menuClickHandler}>
                 <Menu.Item field="copy" onClick={() => {
                     document.execCommand("copy");
                 }}><Icon className='mr-1' icon='copy'/>{lang['Copy']}</Menu.Item>
-                <Menu.Item field="cut" onClick={() => {
-                    document.execCommand("cut");
-                }}><Icon className='mr-1' icon='cut'/>{lang['Cut']}</Menu.Item>
                 {this.is_filter?<Menu.Item step/>:null}
                 {this.is_filter?<Menu.Item field='select_filter' onClick={(e, field, data) => {
                     let select = document.getSelection();
@@ -1074,9 +1102,18 @@ class CTable extends React.Component {
                         this.filterHandler(this.state.filter.contain, this.mainMenu.data.field, 'contain');
                     }} icon='search'/>
                 </Menu.Item>:null}
-                {this.is_sort?<Menu.Item step/>:null}
-                {this.is_sort?<Menu.Item field="asc"><Icon className='mr-1' icon='sort-alpha-down'/>{lang['Sort Ascending']}</Menu.Item>:null}
-                {this.is_sort?<Menu.Item field="desc"><Icon className='mr-1' icon='sort-alpha-up'/>{lang['Sort Descending']}</Menu.Item>:null}
+                {this.is_filter? <Menu.Item step/> : null}
+                {this.is_filter?<Menu.Item field="filter" className='flex-column'>
+                    <div className='w-100'>{lang['Condition Filter']}</div>
+                    <Input size='xs' width='100%'
+                           data={this.state.filter.condition}
+                           onChange={this.filterChangeHandler('condition')}
+                           onMouseDown={stopEvent}
+                           onEnter={() => {
+                               this.filterHandler(this.state.filter.condition, this.mainMenu.data.field, 'condition');
+                           }}
+                    />
+                </Menu.Item>:null}
                 {this.props.edit ? <Menu.Item step/> : null}
                 {this.props.edit ? <Menu.Item field="delete_row">{lang['Delete Row']}</Menu.Item> : null}
                 {this.props.edit ? <Menu.Item field="clone_row">{lang['Clone Row']}</Menu.Item> : null}
@@ -1085,7 +1122,48 @@ class CTable extends React.Component {
                     return this.explainCustomMenu(menu)
                 }):null}
             </Menu>
-        )
+        </>
+    }
+
+    renderNumberMenu() {
+        let lang = this.props.lang;
+        if (!lang) {
+            let i18 = i18n.getLang();
+            let langStr = typeof lang === 'string'?lang:i18.short;
+            lang = CTableLang[langStr];
+        }
+        return <>
+            <Menu ref={c => this.numMenu = c} onClick={this.menuClickHandler}>
+                <Menu.Item field="copy" onClick={() => {
+                    document.execCommand("copy");
+                }}><Icon className='mr-1' icon='copy'/>{lang['Copy']}</Menu.Item>
+                {this.is_filter?<Menu.Item step/>:null}
+                {this.is_filter?<Menu.Item field='select_filter' onClick={(e, field, data) => {
+                    let select = document.getSelection();
+                    this.filterHandler(select.toString(), data.field, 'contain');
+                }}><Icon className='mr-1' icon='filter'/>{lang['Filter By Selection']}</Menu.Item>:null}
+                {this.is_filter?<Menu.Item field='select_exclude' onClick={(e, field, data) => {
+                    let select = document.getSelection();
+                    this.filterHandler(select.toString(), data.field, 'exclude');
+                }}><Icon className='mr-1' icon='filter'/>{lang['Filter Excluding Selection']}</Menu.Item>:null}
+                {this.is_filter||this.is_sort?<Menu.Item field='clear_filter' onClick={() => {
+                    this.clearFilter();
+                }}><span className='text-danger'><Icon className='mr-1' icon='brush'/>{lang['Clear Filter / Sort']}</span></Menu.Item>:null}
+                {this.is_filter?<Menu.Item step/>:null}
+                {this.is_filter?<Menu.Item field="filter" className='flex-column'>
+                    <div className='w-100'>{lang['Condition Filter']}</div>
+                    <Input size='xs' width='100%'
+                           data={this.state.filter.condition}
+                           onChange={this.filterChangeHandler('condition')}
+                           onMouseDown={stopEvent}
+                           onEnter={() => {
+                               this.filterHandler(this.state.filter.condition, this.numMenu.data.field, 'condition');
+                           }}
+                    />
+                    <div>and,or,between,&gt;,&gt;=,&lt;,&lt;=,=</div>
+                </Menu.Item>:null}
+            </Menu>
+        </>
     }
 
     explainCustomMenu(menu) {

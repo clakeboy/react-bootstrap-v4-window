@@ -28,6 +28,7 @@ class CTableTest extends React.Component {
                 "name":1,
                 "date":"asdfasdf",
                 "rule":"1aaasdf",
+                "is_chk":1
             }],
         };
 
@@ -117,7 +118,7 @@ class CTableTest extends React.Component {
         setTimeout(()=>{
             let data = [];
             for (let i=0;i<5;i++) {
-                data.push({'id': i+1, 'name': `${this.id}-${Common.RandomString(32)}`});
+                data.push({'id': i+1, 'name': `${this.id}-${Common.RandomString(32)}`,'is_chk':i%2===0});
             }
             this.org_data = data.slice(0);
             this.setState({
@@ -233,12 +234,13 @@ class CTableTest extends React.Component {
                                 console.log(data);
                             }}]}
                 >
-                    <TableHeader field='id' text='ID' width='100px' onDoubleClick={(row)=>{
+                    <TableHeader field='id' text='ID' width='100px' dataType='number' onDoubleClick={(row)=>{
                         console.log(row);
                     }}/>
                     <TableHeader field='name' text='Name' width='200px' onFormat={(val,row,key)=>{
                         return <span>{val}</span>
                     }}/>
+                    <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center' />
                 </CTable>
                 <CTable ref={c=>this.edit_table=c} position={{
                     right:'10px',
@@ -265,6 +267,7 @@ class CTableTest extends React.Component {
                         }}/>
                     <TableHeader field='date' text='Date' width='100px' type='calendar' />
                     <TableHeader field='rule' text='Rule' width='100px' type='text' />
+                    <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center' />
                 </CTable>
                 <WModal ref={c=>this.modal=c} fade/>
             </React.Fragment>

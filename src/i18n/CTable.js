@@ -12,6 +12,7 @@ const zh_cn = {
     "Sort Descending":"降序",
     "Delete Row":"删除行",
     "Clone Row":"克隆行数据",
+    "Condition Filter":"条件查询",
 };
 
 const en_us = {
@@ -28,6 +29,7 @@ const en_us = {
     "Sort Descending":"Sort Descending",
     "Delete Row":"Delete Row",
     "Clone Row":"Clone Row",
+    "Condition Filter":"Condition Filter",
 };
 
 const CTableLang = {
