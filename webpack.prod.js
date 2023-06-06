@@ -9,7 +9,7 @@ export default merge(cfg,{
     //页面入口文件配置
     entry: {
         //主文件
-        'react-bootstrap-v4-window' : './src/index.js'
+        'react-bootstrap4-window' : './src/index.js'
     },
     //插件项
     plugins: [
