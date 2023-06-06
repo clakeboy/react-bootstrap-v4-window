@@ -142,6 +142,7 @@ class Main extends React.Component {
                                 <Menu.Item field="f_aes_master">WWF / AESWeblink</Menu.Item>
                                 <Menu.Item field="test-empty">Test Empty</Menu.Item>
                                 <Menu.Item field="test">Test</Menu.Item>
+                                <Menu.Item field="tree-table">Tree Table</Menu.Item>
                             </Menu>
                         </TopMenu.Item>
                         <TopMenu.Item text='ABI'>
@@ -185,6 +186,9 @@ class Main extends React.Component {
                     </Window>
                     <Window name='test-empty' marginTop={25} title='Test CTable' width='1000px' height='800px' backColor={'#f3f3f4'}>
                         <LoaderComponent loadPath='/test/Test' parent={this} import={GetComponent}/>
+                    </Window>
+                    <Window name='tree-table' marginTop={25} title='Test Tree CTable' width='700px' height='500px' backColor={'#f3f3f4'}>
+                        <LoaderComponent loadPath='/test/TreeTable' parent={this} import={GetComponent}/>
                     </Window>
                     {windowList.map((item)=>{
                         return (<Window name={item.name} marginTop={25} title={item.title} width={item.width} height={item.height} backColor={'#f3f3f4'}>

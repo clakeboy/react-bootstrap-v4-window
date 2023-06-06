@@ -64,6 +64,6 @@ export default {
         "react-dom": "ReactDOM",
         "zepto": "Zepto",
         "marked":"Marked",
-        "moment":"Moment"
+        "moment":"moment"
     }
 };

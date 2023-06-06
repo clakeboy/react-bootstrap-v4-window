@@ -62,9 +62,9 @@ gulp.task('clean:build', (callback) => {
     ],callback);
 });
 
-gulp.task('clean',['clean:build','clean:publish']);
+gulp.task('clean',gulp.series('clean:build','clean:publish'));
 
-gulp.task('publish:pack',['clean:publish','publish:css'],(callback)=>{
+gulp.task('publish:pack',()=>{
     return gulp.src('src/**/*.js')
         .pipe(sourcemaps.init())
         .pipe(babel({
@@ -84,7 +84,7 @@ gulp.task('publish:pack',['clean:publish','publish:css'],(callback)=>{
         .pipe(gulp.dest('lib'));
 });
 
-gulp.task('publish:css',['clean:publish'],(callback)=>{
+gulp.task('publish:css',(callback)=>{
     return gulp.src('src/css/*.less')
         .pipe(gulp.dest('lib/css'));
 });
@@ -99,13 +99,15 @@ gulp.task('build:pack', (callback)=>{
     });
 });
 
-gulp.task('build:over',['build:pack'],(callback)=>{
+gulp.task('build:over',(callback)=>{
     return gulp.src('dist/*.js')
         .pipe(header(banner))
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('default', ['server']);
+gulp.task('default', gulp.series('server'));
 
-gulp.task('build',['clean:build','build:pack','build:over']);
-gulp.task('publish',['clean:publish','publish:css','publish:pack']);
+gulp.task('build',gulp.series('clean:build','build:pack','build:over'));
+gulp.task('publish',gulp.series('clean:publish','publish:css','publish:pack'));
+
+gulp.task('build-publish',gulp.series('build','publish'))

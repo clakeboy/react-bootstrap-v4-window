@@ -1,8 +1,13 @@
 {
   "name": "@clake/react-bootstrap4-window",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "react bootstrap v4 window",
   "main": "lib/index.js",
+  "unpkg": "./dist/react-bootstrap4-window.js",
+  "files": [
+    "./dist",
+    "./lib"
+  ],
   "scripts": {
     "test": "test",
     "clean": "gulp clean",
@@ -10,7 +15,7 @@
     "start-win": "set NODE_ENV=development&gulp",
     "build": "NODE_ENV=production gulp build",
     "build-win": "set NODE_ENV=production&gulp build",
-    "build-gulp": "set NODE_ENV=production&gulp build:pack",
+    "build-publish": "gulp build-publish",
     "publish-package": "gulp publish"
   },
   "repository": {
@@ -41,7 +46,6 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
     "@babel/runtime": "^7.3.4",
-    "@clake/react-bootstrap4": "^1.7.1",
     "babel-loader": "^8.0.5",
     "browser-sync": "^2.24.5",
     "connect-history-api-fallback": "^1.5.0",
@@ -49,7 +53,7 @@
     "del": "^3.0.0",
     "es6-promise": "^4.2.8",
     "file-loader": "^1.1.5",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-header": "^1.8.9",
     "gulp-load-plugins": "^1.5.0",
@@ -74,6 +78,7 @@
     "whatwg-fetch": "^3.0.0"
   },
   "dependencies": {
+    "@clake/react-bootstrap4": "^1.9.16",
     "classnames": "^2.2.5",
     "natives": "^1.1.6"
   }

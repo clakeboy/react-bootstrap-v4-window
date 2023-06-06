@@ -76,7 +76,9 @@ class FUrsEfc extends React.Component {
 	}
 
     render() {
+        let data = this.state.data
         return (
+            <>
             <Form ref={c=>this.form=c} onChange={this.fieldChangeHandler}>
                 <Input jsxId={'urs_log_no'} field={'urs_log_no'} absolute={true} size={'xs'} x={'100px'} y={'40px'} width={'100px'} tabIndex={'0'} align={'left'}/>
                 <Label jsxId={'Label719'} sm={true} absolute={true} text={'Log No.'} x={'24px'} y={'40px'} width={'68px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
@@ -108,7 +110,7 @@ class FUrsEfc extends React.Component {
                 <Label jsxId={'Label758'} sm={true} absolute={true} text={'Alow Public View'} x={'424px'} y={'156px'} width={'116px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
                 <Input jsxId={'efc_release_id'} field={'efc_release_id'} absolute={true} size={'xs'} x={'176px'} y={'252px'} width={'88px'} tabIndex={'11'} align={'left'}/>
                 <Label jsxId={'Label761'} sm={true} absolute={true} text={'Release ID - Date'} x={'40px'} y={'252px'} width={'128px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
-                <Input jsxId={'release_date'} field={'release_date'} absolute={true} size={'xs'} x={'272px'} y={'252px'} width={'112px'} tabIndex={'12'} align={'left'} readOnly={true} calendar={{format:'YYYY-MM-DD'}}/>
+                <Input jsxId={'release_date'} field={'release_date'} absolute={true} size={'xs'} x={'272px'} y={'252px'} width={'112px'} tabIndex={'12'} align={'left'} readOnly={true} onDblClick={()=>{this.modal.alert('asdf')}} calendar={{format:'YYYY-MM-DD'}} data={data.release_date}/>
                 <Input jsxId={'eft_service_code'} field={'eft_service_code'} absolute={true} size={'xs'} x={'652px'} y={'188px'} width={'48px'} tabIndex={'13'} align={'left'}/>
                 <Label jsxId={'Label765'} sm={true} absolute={true} text={'Service'} x={'588px'} y={'188px'} width={'56px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
                 <Input jsxId={'created_by_code'} field={'created_by_code'} absolute={true} size={'xs'} x={'548px'} y={'424px'} width={'60px'} tabIndex={'14'} align={'left'}/>
@@ -118,7 +120,7 @@ class FUrsEfc extends React.Component {
                 <Input jsxId={'urs_date'} field={'urs_date'} absolute={true} size={'xs'} x={'272px'} y={'156px'} width={'112px'} tabIndex={'18'} align={'left'} readOnly={true} calendar={{format:'YYYY-MM-DD'}}/>
                 <Label jsxId={'Label724'} sm={true} absolute={true} text={'Report By - Date'} x={'40px'} y={'156px'} width={'128px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
                 <Input jsxId={'urs_by_code'} field={'urs_by_code'} absolute={true} size={'xs'} x={'176px'} y={'156px'} width={'88px'} tabIndex={'19'} align={'left'} readOnly={true}/>
-                <Input jsxId={'review_date'} field={'review_date'} absolute={true} size={'xs'} x={'272px'} y={'188px'} width={'112px'} tabIndex={'20'} align={'left'} readOnly={true} calendar={{format:'YYYY-MM-DD'}}/>
+                <Input jsxId={'review_date'} field={'review_date'} absolute={true} size={'xs'} x={'272px'} y={'188px'} width={'80px'} tabIndex={'20'} align={'left'} disabled calendar={{format:'YYYY-MM-DD'}} data={data.release_date} onDblClick={()=>{this.modal.alert('asdf')}}/>
                 <Input jsxId={'Text775'} field={'review_by_code'} absolute={true} size={'xs'} x={'176px'} y={'188px'} width={'88px'} tabIndex={'21'} align={'left'} readOnly={true}/>
                 <Label jsxId={'Label752'} sm={true} absolute={true} text={'- Date'} x={'100px'} y={'188px'} width={'68px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
                 <Input jsxId={'close_by_code'} field={'close_by_code'} absolute={true} size={'xs'} x={'176px'} y={'220px'} width={'88px'} tabIndex={'22'} align={'left'} readOnly={true}/>
@@ -176,6 +178,8 @@ class FUrsEfc extends React.Component {
                     
                 </Button>
             </Form>
+                <WModal ref={(c)=>{this.modal = c}}/>
+            </>
         );
     }
 }
