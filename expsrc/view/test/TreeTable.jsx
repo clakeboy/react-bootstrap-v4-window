@@ -59,7 +59,7 @@ class TreeTable extends React.Component {
                     left:'10px',
                     top:'50px',
                     bottom: '10px',
-                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={false}
+                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={true} selectOnce
                         onSelectPage={(page)=>{
                             console.log(page);
                         }}

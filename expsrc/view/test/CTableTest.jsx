@@ -218,7 +218,7 @@ class CTableTest extends React.Component {
                     right:'10px',
                     left:'10px',
                     top:'50px',
-                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={false}
+                }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={true}
                         onSelectPage={(page)=>{
                             console.log(page);
                         }}
