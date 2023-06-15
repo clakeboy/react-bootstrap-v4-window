@@ -88,6 +88,7 @@ class CTable extends React.Component {
                 data     : nextProps.data,
                 dataCount: nextProps.dataCount,
                 page     : nextProps.page,
+                total    : nextProps.total
             });
         }
     }
@@ -95,6 +96,9 @@ class CTable extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (this.state.filter !== nextState.filter) {
             return true;
+        }
+        if (nextState.total !== this.state.total) {
+            return true
         }
         return nextState.data !== this.state.data;
     }
@@ -460,13 +464,13 @@ class CTable extends React.Component {
     };
     //编辑事件
     editHandler = (e, val,row) => {
-        let index = parseInt(e.target.dataset.row);
-        let field = e.target.dataset.field;
+        const dataset = row === 'chk'?e.currentTarget.dataset:e.target.dataset
+        let index = parseInt(dataset.row);
+        let field = dataset.field;
         //如果是check组件
         if (row === 'chk') {
             val = val?1:0;
         }
-
         if (this.editRows.indexOf(index) === -1) {
             this.editRows.push(index);
             let data           = this.state.data.slice(0);
@@ -629,8 +633,11 @@ class CTable extends React.Component {
         }
     }
 
-    getClasses() {
+    getClasses(name) {
         let base = 'table ck-table';
+        if (!!name) {
+            base = classNames(base, name);
+        }
         //striped
         if (this.props.striped && !this.props.edit) {
             base = classNames(base, 'table-striped');
@@ -732,6 +739,23 @@ class CTable extends React.Component {
         let base = 'ck-ctable-body flex-grow-1 d-flex flex-column';
 
         return base;
+    }
+
+    calcLocalTotal(field) {
+        return (e)=>{
+            let list = this.state.data;
+            let total = 0;
+            list.forEach((item)=>{
+                if (!!parseFloat(item[field])) {
+                    total += parseFloat(item[field])
+                }
+            })
+            let totalData = Object.assign({},this.state.total);
+            totalData[field] = total.toFixed(2)
+            this.setState({
+                total:totalData
+            })
+        }
     }
 
     render() {
@@ -875,7 +899,9 @@ class CTable extends React.Component {
                                                item.props.onDoubleClick(row);
                                            }
                                        }}
-                                       data-row={`${i}`}>{item.props.type ? this.renderEditComponent(item.props,row,i):(item.props.onFormat ? item.props.onFormat(row[item.props.field], row, item.props.field) : row[item.props.field])}</td>;
+                                       data-row={`${i}`}>
+                                {item.props.type ? this.renderEditComponent(item.props,row,i):(item.props.onFormat ? item.props.onFormat(row[item.props.field], row, item.props.field) : row[item.props.field])}
+                            </td>;
                         }
                     })}
                 </tr>
@@ -974,7 +1000,10 @@ class CTable extends React.Component {
                 )
             default:
                 return (
-                    <CTableInput onChange={this.editHandler} data-row={i} data-field={item.field} data={row[item.field]} align={item.align} disabled={item.disabled}/>
+                    <CTableInput onChange={this.editHandler} data-row={i} data-field={item.field}
+                                 data={row[item.field]} align={item.align} disabled={item.disabled}
+                                 onBlur={this.state.total&&this.state.total.hasOwnProperty(item.field)?this.calcLocalTotal(item.field):null}
+                    />
                 )
         }
     }
@@ -999,7 +1028,7 @@ class CTable extends React.Component {
         }
         let total = this.state.total;
         return (
-            <div ref={c => this.tableTotal = c}>
+            <div ref={c => this.tableTotal = c} className='ck-ctable-total'>
                 <table ref={c => this.table_total = c} id={`table-total-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
                     <tr>
@@ -1306,7 +1335,8 @@ CTable.defaultProps = {
     menu       : true,
     showNumbers: 30,
     showPages  : 10,
-    source     : null
-};
+    source     : null,
+    total      : null
+}
 
 export default CTable;

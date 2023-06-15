@@ -22,14 +22,25 @@ class CTableTest extends React.Component {
             table_data:[],
             data_count:0,
             page:1,
-            editData:[{
-                "id":1,
-                "price":0,
-                "name":1,
-                "date":"asdfasdf",
-                "rule":"1aaasdf",
-                "is_chk":1
-            }],
+            editData:[
+                {
+                    "id":1,
+                    "price":500,
+                    "name":1,
+                    "date":"asdfasdf",
+                    "rule":"1aaasdf",
+                    "is_chk":1
+                },
+                {
+                    "id":1,
+                    "price":33.44,
+                    "name":1,
+                    "date":"2022-01-02",
+                    "rule":Common.RandomString(16),
+                    "is_chk":0
+                }
+            ],
+            total:{}
         };
 
         if (this.props.parent instanceof Window) {
@@ -117,14 +128,18 @@ class CTableTest extends React.Component {
         this.id++;
         setTimeout(()=>{
             let data = [];
-            for (let i=0;i<5;i++) {
+            let total = {'id':0}
+            for (let i=0;i<50;i++) {
                 data.push({'id': i+1, 'name': `${this.id}-${Common.RandomString(32)}`,'is_chk':i%2===0});
+                total.id += i+1
             }
             this.org_data = data.slice(0);
+            console.log(total)
             this.setState({
                 table_data:data,
                 page:1,
-                data_count:data.length
+                data_count:data.length,
+                total:total
             });
             this.modal.alert('loading ssussce');
         },200)
@@ -200,13 +215,6 @@ class CTableTest extends React.Component {
         let list = this.edit_table.getEditRows();
         console.log(list);
 
-        list.forEach((row,idx)=>{
-            row.id = idx + 1;
-        });
-        this.edit_table.clearEditRows();
-        this.setState({
-            editData:list
-        })
     };
 
     render() {
@@ -227,7 +235,7 @@ class CTableTest extends React.Component {
                         data={this.state.table_data}
                         onFilter={this.filterHandler}
                         onSort={this.sortHandler}
-                        total={{id:10}}
+                        total={this.state.total}
                         customMenu={[{field:'test',text:'测试自定义菜单',click:(e,field,data)=>{
                                 console.log(e);
                                 console.log(field);
@@ -248,7 +256,7 @@ class CTableTest extends React.Component {
                     top:'260px',
                     bottom:'10px',
                 }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={false}
-                        edit data={this.state.editData}
+                        edit data={this.state.editData} total={{"price":0}}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
                         console.log(row);
@@ -262,7 +270,7 @@ class CTableTest extends React.Component {
                     }} comboData={this.combo_data} type='combo'
                         onEdit={(index,val,row,callback)=>{
                             callback(index,{
-                                rule:row.time_rule
+                                rule:row?.time_rule
                             })
                         }}/>
                     <TableHeader field='date' text='Date' width='100px' type='calendar' />

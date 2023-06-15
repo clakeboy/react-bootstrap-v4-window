@@ -110,7 +110,7 @@ class FUrsEfc extends React.Component {
                 <Label jsxId={'Label758'} sm={true} absolute={true} text={'Alow Public View'} x={'424px'} y={'156px'} width={'116px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
                 <Input jsxId={'efc_release_id'} field={'efc_release_id'} absolute={true} size={'xs'} x={'176px'} y={'252px'} width={'88px'} tabIndex={'11'} align={'left'}/>
                 <Label jsxId={'Label761'} sm={true} absolute={true} text={'Release ID - Date'} x={'40px'} y={'252px'} width={'128px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
-                <Input jsxId={'release_date'} field={'release_date'} absolute={true} size={'xs'} x={'272px'} y={'252px'} width={'112px'} tabIndex={'12'} align={'left'} readOnly={true} onDblClick={()=>{this.modal.alert('asdf')}} calendar={{format:'YYYY-MM-DD'}} data={data.release_date}/>
+                <Input jsxId={'release_date'} field={'release_date'} absolute={true} size={'xs'} x={'272px'} y={'252px'} width={'112px'} tabIndex={'12'} align={'left'} readOnly={true} onDblClick={()=>{this.modal.alert('双击')}} calendar={{format:'YYYY-MM-DD'}} data={data.release_date}/>
                 <Input jsxId={'eft_service_code'} field={'eft_service_code'} absolute={true} size={'xs'} x={'652px'} y={'188px'} width={'48px'} tabIndex={'13'} align={'left'}/>
                 <Label jsxId={'Label765'} sm={true} absolute={true} text={'Service'} x={'588px'} y={'188px'} width={'56px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
                 <Input jsxId={'created_by_code'} field={'created_by_code'} absolute={true} size={'xs'} x={'548px'} y={'424px'} width={'60px'} tabIndex={'14'} align={'left'}/>
