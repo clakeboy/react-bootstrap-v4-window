@@ -995,8 +995,8 @@ class CTable extends React.Component {
                 );
             case "checkbox":
                 return (
-                    <CCheckbox width='20px' onChange={(chk,e)=>{this.editHandler(e,chk,'chk')}} data-row={i}
-                               data-field={item.field} checked={!!row[item.field]} disabled={item.disabled}/>
+                    <CCheckbox className='d-inline' width='20px' onChange={(chk,e)=>{this.editHandler(e,chk,'chk')}} data-row={i}
+                               data-field={item.field} checked={!!row[item.field]} disabled={item.disabled} tabIndex="0"/>
                 )
             default:
                 return (
@@ -1032,7 +1032,7 @@ class CTable extends React.Component {
                 <table ref={c => this.table_total = c} id={`table-total-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
                     <tr>
-                        {this.state.select ?
+                        {this.state.select || this.props.edit ?
                             <td width='20px'><Icon icon='chart-line'/></td> : null}
                         {React.Children.map(this.props.children, (item, key) => {
                             if (!item || item.props.hide) {
