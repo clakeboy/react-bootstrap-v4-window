@@ -8,6 +8,7 @@ import {
     HashRouter as Router
 } from 'react-router-dom';
 
+
 import App from './components/App';
 import './css/main.less';
 
@@ -17,6 +18,7 @@ const routes = (
             <Route component={App}/>
         </Switch>
     </Router>
+    // <App/>
 );
 
 export default routes;

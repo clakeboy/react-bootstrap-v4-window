@@ -13,7 +13,8 @@ import {
     TableHeader,
     Button,
     Common,
-    Table
+    Input,
+    Table, Box, Modal
 } from '@clake/react-bootstrap4';
 // } from '@clake/react-bootstrap4';
 class CTableTest extends React.Component {
@@ -120,6 +121,7 @@ class CTableTest extends React.Component {
                 data_count:data.length
             });
             this.modal.alert('loading ssussce');
+            // this.smodal.alert()
         },200)
     }
 
@@ -202,6 +204,10 @@ class CTableTest extends React.Component {
             <React.Fragment>
                 <Button absolute y='10px' x='10px' size='sm' onClick={this.clickHandler}>Alert</Button>
                 <Button absolute y='10px' x='110px' size='sm' onClick={this.testHandler}>Get Edit Data</Button>
+                <input className='form-control' onDoubleClick={(e)=>{
+                    this.modal.alert('dblclick');
+                }} readOnly value={'asdfasd'} style={{'position':'absolute','top':'50px'}}/>
+                <Input jsxId={'urs_log_no'} field={'urs_log_no'} disabled absolute={true} size={'xs'} x={'10px'} y={'80px'} width={'100px'} tabIndex={'0'} align={'left'} data={'clake'}/>
                 <CTable jsxId={'sub_wrk_detail_item'} absolute={true} x={'20px'} y={'309px'} width={'703px'} height={'139px'} scroll={true} headerTheme={'light'} hover={true} select={false} sm={true} fontSm={true} foot={false} source={'v_wrk_item'} data={this.state.tableData} ref={c=>this.queryTable=c} page={this.state.page} dataCount={this.state.dataCount} onSelectPage={this.getData} showNumbers={50} edit={true}>
                     <Table.Header field={'item_seq_no'} text={'Seq'} width={'36px'} align={'center'} type={''}/>
                     <Table.Header field={'item_desc'} text={'Item Desc'} width={'204px'} align={'left'} type={''}/>
@@ -224,6 +230,8 @@ class CTableTest extends React.Component {
                     <Table.Header field={'item_hour'} text={'E-Hour'} width={'48px'} align={'center'} type={''}/>
                 </CTable>
                 <WModal ref={c=>this.modal=c} fade/>
+                <Modal ref={c=>this.smodal=c} />
+                <Box></Box>
             </React.Fragment>
         );
     }

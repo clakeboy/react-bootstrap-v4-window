@@ -129,7 +129,7 @@ class CTableTest extends React.Component {
         setTimeout(()=>{
             let data = [];
             let total = {'id':0}
-            for (let i=0;i<50;i++) {
+            for (let i=0;i<5;i++) {
                 data.push({'id': i+1, 'name': `${this.id}-${Common.RandomString(32)}`,'is_chk':i%2===0});
                 total.id += i+1
             }
@@ -229,6 +229,9 @@ class CTableTest extends React.Component {
                 }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={true}
                         onSelectPage={(page)=>{
                             console.log(page);
+                        }}
+                        onCheck={(chk,e)=>{
+                            console.log(chk,e)
                         }}
                         page={this.state.page}
                         dataCount={this.state.data_count}

@@ -43,8 +43,10 @@
     font-size: .8rem!important;
   }
 
-  .ck-table-selected {
-    background-color: #ffe79f !important;
+  .ck-table-selected>* {
+    // background-color: #ffe79f !important;
+    --bs-table-color-state: var(--bs-table-hover-color);
+    --bs-table-bg-state: #ffe79f;
   }
 }
 

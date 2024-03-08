@@ -31,7 +31,10 @@ class CTable extends React.Component {
                 start  : '',
                 end    : '',
                 contain: ''
-            }
+            },
+            selectAll: false,
+            selectHalf: false,
+            selectRows: []
         };
 
         this.originalData = this.state.data.slice(0);
@@ -78,12 +81,12 @@ class CTable extends React.Component {
                 this.editRows     = [];
                 this.originalData = Common.Clone(nextProps.data);
             }
-            if (this.allchk) {
-                this.allchk.setHalf(false);
-                this.selectRows = [];
-            }
-            this.select_all = false;
-            this.selectRows = [];
+            // if (this.allchk) {
+            //     this.allchk.setHalf(false);
+            //     this.selectRows = [];
+            // }
+            // this.select_all = false;
+            // this.selectRows = [];
             this.setState({
                 data     : nextProps.data,
                 dataCount: nextProps.dataCount,
@@ -94,6 +97,9 @@ class CTable extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        if (nextState.selectRows !== this.state.selectRows) {
+            return true
+        }
         if (this.state.filter !== nextState.filter) {
             return true;
         }
@@ -195,45 +201,68 @@ class CTable extends React.Component {
     //checkbox handler
     changeHandler(row, i) {
         return (checked,e) => {
-            this.setRowCheck(checked,i);
-            this.checkAllCheckHalf();
+            let selectRows = this.setRowCheck(checked,i);
+            const [allChecked, half] = this.checkAllCheckHalf(selectRows);
+            this.setState({
+                selectRows: selectRows,
+                selectAll: allChecked,
+                selectHalf: half
+            })
             if (typeof this.props.onCheck === "function") {
-                this.props.onCheck(e.target.checked, row);
+                this.props.onCheck(checked, row);
             }
         };
     }
-    checkAllCheckHalf() {
-        if (this.props.selectOnce) return
-        if (this.selectRows.length > 0 && this.selectRows.length !== this.state.data.length) {
-            this.allchk.setHalf(true);
+    checkAllCheckHalf(selectRows) {
+        if (!this.allchk || this.props.selectOnce) {
+            return [false, false];
         }
-        if (this.selectRows.length === 0) {
-            this.allchk.setHalf(false);
-            this.allchk.setChecked(false);
-        } else if (this.selectRows.length === this.state.data.length) {
-            this.allchk.setHalf(false);
-            this.allchk.setChecked(true);
+        if (selectRows.length > 0 && selectRows.length !== this.state.data.length) {
+            return [false, true]
         }
+        if (selectRows.length === 0) {
+            return [false, false]
+        } else if (selectRows.length === this.state.data.length) {
+            return [true, false]
+        }
+        return [false, false]
     }
     setRowCheck(checked,rowIdx) {
-        let row = this.refs['row_'+rowIdx];
+        // let row = this.refs['row_'+rowIdx];
+        let selectRows = this.props.selectOnce?[]:this.state.selectRows.slice()
         if (checked) {
-            if (this.props.selectOnce && this.selectRows.length > 0) {
-                let reIdx = this.selectRows[0]
-                this.refs['row_'+reIdx].setChecked(false)
-                this.setRowCheck(false,reIdx)
+            if (selectRows.indexOf(rowIdx) === -1) {
+                selectRows.push(rowIdx);
             }
-            if (this.selectRows.indexOf(rowIdx) === -1) {
-                this.selectRows.push(rowIdx);
-            }
-            ReactDOM.findDOMNode(row).parentNode.parentNode.classList.add('ck-table-selected');
+            // ReactDOM.findDOMNode(row).parentNode.parentNode.classList.add('ck-table-selected');
         } else {
-            if (this.selectRows.indexOf(rowIdx) !== -1) {
-                this.selectRows.splice(this.selectRows.indexOf(rowIdx),1);
+            if (selectRows.indexOf(rowIdx) !== -1) {
+                selectRows.splice(this.selectRows.indexOf(rowIdx),1);
             }
-            ReactDOM.findDOMNode(row).parentNode.parentNode.classList.remove('ck-table-selected');
+            // ReactDOM.findDOMNode(row).parentNode.parentNode.classList.remove('ck-table-selected');
         }
+        // this.setState({selectRows: selectRows});
+        return selectRows
     }
+
+    selectAll = (checked) => {
+        this.select_all = checked;
+        // Common.map(this.refs, (item,key,idx) => {
+        //     item.setChecked(this.select_all);
+        //     this.setRowCheck(this.select_all,idx);
+        // });
+        let selectRows = []
+        if (checked) {
+            this.state.data.forEach((item,key)=>{
+                selectRows.push(key)
+            })
+        }
+        this.setState({
+            selectRows: selectRows,
+            selectAll: checked,
+            selectHalf: false
+        })
+    };
 
     clickHandler(row, i) {
         return () => {
@@ -340,7 +369,7 @@ class CTable extends React.Component {
                 this.numMenu.show({evt: e, type: 'mouse', data: data});
             }
         }
-    };
+    }
 
     menuClickHandler = (field, data) => {
         switch (field) {
@@ -440,7 +469,7 @@ class CTable extends React.Component {
                 filter: filter
             })
         }
-    };
+    }
 
     selectPageHandler = (page) => {
         if (typeof this.props.onSelectPage === 'function') {
@@ -550,14 +579,6 @@ class CTable extends React.Component {
     }
 
     //****************************
-
-    selectAll = (checked) => {
-        this.select_all = checked;
-        Common.map(this.refs, (item,key,idx) => {
-            item.setChecked(this.select_all);
-            this.setRowCheck(this.select_all,idx);
-        });
-    };
 
     /**
      * 得到所有选中的行
@@ -783,7 +804,7 @@ class CTable extends React.Component {
                         {this.state.select || this.props.edit ?
                             <th style={{width:'20px',textAlign:'center'}}>
                                 {this.props.edit || this.props.selectOnce ? <Icon icon='list'/> :
-                                    <CCheckbox ref={c=>this.allchk=c} onChange={this.selectAll}/>}
+                                    <CCheckbox ref={c=>this.allchk=c} onChange={this.selectAll} checked={this.state.selectAll} half={this.state.selectHalf}/>}
                             </th> : null}
                         {React.Children.map(this.props.children, (item, key) => {
                             this.cacheRow[item.props.field] = '';
@@ -842,12 +863,13 @@ class CTable extends React.Component {
     }
 
     renderRow(row, i, parentRow) {
+        let checked = this.state.selectRows.indexOf(i) !== -1
         return (
             <React.Fragment>
-                <tr className={this.props.onClick ? 'click-row' : null} onClick={this.clickHandler(row, i)}>
+                <tr className={checked ? 'ck-table-selected' : null} onClick={this.clickHandler(row, i)}>
                     {this.state.select ?
                         <th style={{width:'20px',textAlign:'center'}}>
-                            <CCheckbox ref={'row_' + i} onChange={this.changeHandler(row, i)}/>
+                            <CCheckbox ref={'row_' + i} onChange={this.changeHandler(row, i)} checked={checked}/>
                         </th> : null}
                     {React.Children.map(this.props.children, (item, key) => {
                         if (!item || item.props.hide) {

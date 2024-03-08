@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import {GetComponent} from "../common/Funcs";
-import {
-    LoaderComponent
-} from '@clake/react-bootstrap4';
+
+import Loader from './Loader';
 
 export default class App extends React.Component {
     constructor(props) {
@@ -13,7 +12,7 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-
+        
     }
 
     ucFirst(str) {
@@ -45,6 +44,6 @@ export default class App extends React.Component {
     render() {
         console.log("render app");
         let load_path = this.explainUrl(this.props.location.pathname);
-        return <LoaderComponent loadPath={load_path} import={GetComponent} {...this.props}/>
+        return <Loader loadPath={load_path} import={GetComponent} />
     }
 }

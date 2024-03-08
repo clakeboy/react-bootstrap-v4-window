@@ -47,7 +47,9 @@ class FUrsEfc extends React.Component {
         }
 
 		this.state = {
-			data:{}
+			data:{
+                release_date:'asdf'
+            }
 		};
     }
 
@@ -80,7 +82,7 @@ class FUrsEfc extends React.Component {
         return (
             <>
             <Form ref={c=>this.form=c} onChange={this.fieldChangeHandler}>
-                <Input jsxId={'urs_log_no'} field={'urs_log_no'} absolute={true} size={'xs'} x={'100px'} y={'40px'} width={'100px'} tabIndex={'0'} align={'left'}/>
+                <Input jsxId={'urs_log_no'} field={'urs_log_no'} readOnly absolute={true} size={'xs'} x={'100px'} y={'40px'} width={'100px'} tabIndex={'0'} align={'left'} data={'clake'}/>
                 <Label jsxId={'Label719'} sm={true} absolute={true} text={'Log No.'} x={'24px'} y={'40px'} width={'68px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
                 <Input jsxId={'branch_code'} field={'branch_code'} absolute={true} size={'xs'} x={'272px'} y={'124px'} width={'112px'} tabIndex={'2'} align={'left'} readOnly={true}/>
                 <Input jsxId={'efc_group_code'} field={'efc_group_code'} absolute={true} size={'xs'} x={'176px'} y={'124px'} width={'88px'} tabIndex={'3'} align={'left'} readOnly={true}/>

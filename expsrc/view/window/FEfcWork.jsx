@@ -25,7 +25,7 @@ import {
     Window,
     WModal
 } from '../../../src/index'
-import {GetData,ComboSearch,ProcessData} from '../../common/DataService';
+import {GetData,ComboSearch} from '../../common/DataService';
 class FEfcWork extends React.Component {
     constructor(props) {
         super(props);
