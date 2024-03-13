@@ -18,6 +18,7 @@ import Drag from "./Drag";
 import CTableInput from "./CTableInput";
 import CTableLang from './i18n/CTable';
 import PageBar from "./PageBar";
+import { log } from 'gulp-util';
 class CTable extends React.Component {
     constructor(props) {
         super(props);
@@ -87,11 +88,31 @@ class CTable extends React.Component {
             // }
             // this.select_all = false;
             // this.selectRows = [];
+            let selectRows = []
+            let isHalf = false
+            let allchk = false
+            if (nextProps.data && nextProps.data.length > 0) {
+                nextProps.data.forEach((item,idx)=>{
+                    if (item?.set_chk) {
+                        selectRows.push(idx)
+                    }
+                })
+                if (selectRows.length === nextProps.data.length) {
+                    allchk = true
+                } else {
+                    if (selectRows.length>0) {
+                        isHalf = true
+                    }
+                }
+            }
             this.setState({
                 data     : nextProps.data,
                 dataCount: nextProps.dataCount,
                 page     : nextProps.page,
-                total    : nextProps.total
+                total    : nextProps.total,
+                selectRows: selectRows,
+                selectHalf: isHalf,
+                selectAll: allchk,
             });
         }
     }
@@ -230,14 +251,16 @@ class CTable extends React.Component {
     setRowCheck(checked,rowIdx) {
         // let row = this.refs['row_'+rowIdx];
         let selectRows = this.props.selectOnce?[]:this.state.selectRows.slice()
+        console.log(checked,rowIdx,selectRows);
+
         if (checked) {
-            if (selectRows.indexOf(rowIdx) === -1) {
+            if (!selectRows.includes(rowIdx)) {
                 selectRows.push(rowIdx);
             }
             // ReactDOM.findDOMNode(row).parentNode.parentNode.classList.add('ck-table-selected');
         } else {
-            if (selectRows.indexOf(rowIdx) !== -1) {
-                selectRows.splice(this.selectRows.indexOf(rowIdx),1);
+            if (selectRows.includes(rowIdx)) {
+                selectRows.splice(selectRows.indexOf(rowIdx),1);
             }
             // ReactDOM.findDOMNode(row).parentNode.parentNode.classList.remove('ck-table-selected');
         }
@@ -737,7 +760,7 @@ class CTable extends React.Component {
     getHeaderClasses() {
         let base = 'ck-ctable-header';
         if (this.props.headerTheme) {
-            base = classNames(base,'thead-' + this.props.headerTheme);
+            base = classNames(base,'table-' + this.props.headerTheme);
         }
         return classNames(base, this.props.headClass);
     }
@@ -1362,7 +1385,7 @@ CTable.defaultProps = {
     align      : 'left',
     sm         : true,
     fontSm     : true,
-    headerTheme: 'light',
+    headerTheme: 'primary',
     noWrap     : true,
     bordered   : true,
     move       : true,

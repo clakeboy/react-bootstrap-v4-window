@@ -79,7 +79,7 @@ class FEfcReleaseNew extends React.Component {
         return (
             <Form ref={c=>this.form=c} onChange={this.fieldChangeHandler}>
                 <Tabs jsxId={'TabCtl774'} sm={true} border={true} absolute={true} x={'0px'} y={'28px'} width={'760px'} height={'504px'}>
-                    <TabsContent jsxId={'Release Info'} id={'Release Info'} text={'Release Info'} active={true}>
+                    <TabsContent className='' jsxId={'Release Info'} id={'Release Info'} text={'Release Info'} active={true}>
                         <Input jsxId={'efc_release_no'} field={'efc_release_no'} absolute={true} size={'xs'} x={'136px'} y={'5px'} width={'104px'} tabIndex={'0'} align={'left'}/>
                         <Label jsxId={'Label719'} sm={true} absolute={true} text={'EFC Release No.'} x={'20px'} y={'5px'} width={'108px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
                         <Input jsxId={'sub_version_no'} field={'sub_version_no'} absolute={true} size={'xs'} x={'368px'} y={'33px'} width={'56px'} tabIndex={'1'} align={'left'}/>
