@@ -203,7 +203,16 @@ class CTableTest extends React.Component {
         return (
             <React.Fragment>
                 <Button absolute y='10px' x='10px' size='sm' onClick={this.clickHandler}>Alert</Button>
-                <Button absolute y='10px' x='110px' size='sm' onClick={this.testHandler}>Get Edit Data</Button>
+                <Button absolute y='10px' x='80px' size='sm' onClick={()=>{
+                    this.modal.confirm({
+                        title:'Confirm',
+                        content:'Are you sure you want to confirm this data?',
+                        callback:(flag)=>{
+                            this.modal.alert(`You clicked the ${flag?'confirm':'cancel'} button`);
+                        }
+                    })
+                }}>Confirm</Button>
+                <Button absolute y='10px' x='180px' size='sm' onClick={this.testHandler}>Get Edit Data</Button>
                 <input className='form-control' onDoubleClick={(e)=>{
                     this.modal.alert('dblclick');
                 }} readOnly value={'asdfasd'} style={{'position':'absolute','top':'50px'}}/>

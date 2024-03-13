@@ -130,7 +130,12 @@ class CTableTest extends React.Component {
             let data = [];
             let total = {'id':0}
             for (let i=0;i<5;i++) {
-                data.push({'id': i+1, 'name': `${this.id}-${Common.RandomString(32)}`,'is_chk':i%2===0});
+                data.push({
+                    'id': i+1, 
+                    'name': `${this.id}-${Common.RandomString(32)}`,
+                    'is_chk':i%2===0,
+                    'set_chk':i%2===0,
+                });
                 total.id += i+1
             }
             this.org_data = data.slice(0);

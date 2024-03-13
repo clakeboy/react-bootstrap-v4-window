@@ -1,6 +1,6 @@
 {
   "name": "@clake/react-bootstrap4-window",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "react bootstrap v4 window",
   "main": "lib/index.js",
   "unpkg": "./dist/react-bootstrap4-window.js",

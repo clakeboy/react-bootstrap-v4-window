@@ -4,7 +4,8 @@ import classNames from 'classnames/bind';
 import {
     Button,
     Load,
-    Common
+    Common,
+    ButtonGroup
 } from '@clake/react-bootstrap4';
 import './css/WModal.less';
 
@@ -15,8 +16,8 @@ const ModalView = 3;
 const BaseModal = 950;
 
 const defBtns = {
-    ok:'确定',
-    cancel:'取消',
+    ok:'Ok',
+    cancel:'Cancel',
 };
 
 class WModal extends React.Component {
@@ -119,7 +120,7 @@ class WModal extends React.Component {
         this.callback = opt.callback||cb||null;
         this.modalType = ModalAlert;
         this.setState({
-            title:opt.title||'提示',
+            title:opt.title||'Prompt',
             content:opt.content||opt||'',
             isCloseBtn:true,
             type:ModalAlert,
@@ -149,7 +150,7 @@ class WModal extends React.Component {
         this.callback = opt.callback||cb||null;
         this.modalType = ModalConfirm;
         this.setState({
-            title:opt.title||'提示',
+            title:opt.title||'Prompt',
             content:opt.content||'',
             isCloseBtn:true,
             type:ModalConfirm,
@@ -172,7 +173,7 @@ class WModal extends React.Component {
     loading(opt) {
         this.modalType = ModalLoading;
         this.setState({
-            title:opt.title||'提示',
+            title:opt.title||'Prompt',
             // content:(
             //     <React.Fragment>
             //         <Icon icon='spinner'/>&nbsp;&nbsp;&nbsp;{content}
@@ -206,7 +207,7 @@ class WModal extends React.Component {
         this.callback = opt.callback||null;
         this.modalType = ModalView;
         this.setState({
-            title:opt.title||'提示',
+            title:opt.title||'Prompt',
             content:opt.content||'',
             isCloseBtn:true,
             type:ModalView,
@@ -277,7 +278,7 @@ class WModal extends React.Component {
         switch (this.state.type) {
             case ModalAlert:
                 content = (
-                    <Button size='sm' data-dismiss="modal" onClick={e=>{
+                    <Button className="w-100" size='sm' data-dismiss="modal" onClick={e=>{
                         this.close();
                         if (typeof this.callback === 'function') {
                             this.callback(1);
@@ -287,20 +288,22 @@ class WModal extends React.Component {
                 break;
             case ModalConfirm:
                 content = (
-                    <React.Fragment>
-                        <Button size='sm' onClick={()=>{
+                    <div className='row flex-grow-1 g-1'>
+                        <ButtonGroup>
+                        <Button className='col-6' size='sm' onClick={()=>{
                             this.close();
                             if (typeof this.callback === 'function') {
                                 this.callback(1);
                             }
                         }}>{this.state.btns['ok']}</Button>
-                        <Button size='sm' onClick={()=>{
+                        <Button className='col-6' size='sm' onClick={()=>{
                             this.close();
                             if (typeof this.callback === 'function') {
                                 this.callback(0);
                             }
                         }} theme='secondary'>{this.state.btns['cancel']}</Button>
-                    </React.Fragment>
+                        </ButtonGroup>
+                    </div>
                 );
                 break;
             default:
@@ -324,7 +327,7 @@ class WModal extends React.Component {
                     <div ref={c=>this._dialog=c} className={this.getDialogClasses()} style={this.getDialogStyles()} role="document">
                         <div className="modal-content">
                             {this.state.header?<div className="modal-header">
-                                <h5 className="modal-title">{this.state.title}</h5>
+                                <h6 className="modal-title">{this.state.title}</h6>
                                 {this.state.isCloseBtn?<button type="button" className="btn-close" onClick={()=>{
                                     this.close();
                                 }}>

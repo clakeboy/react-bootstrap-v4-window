@@ -1081,33 +1081,39 @@ class CTable extends React.Component {
     }
 
     renderMenu() {
-        let lang = this.props.lang;
-        if (!lang) {
+        let lang;
+        if (!this.props.lang) {
             let i18 = i18n.getLang();
             let langStr = typeof lang === 'string'?lang:i18.short;
             lang = CTableLang[langStr];
+        } else {
+            if (typeof this.props.lang === 'string') {
+                lang = CTableLang[this.props.lang]
+            } else {
+                lang = this.props.lang
+            }
         }
         return <>
             <Menu ref={c => this.mainMenu = c} onClick={this.menuClickHandler}>
                 <Menu.Item field="copy" onClick={() => {
                     document.execCommand("copy");
-                }}><Icon className='mr-1' icon='copy'/>{lang['Copy']}</Menu.Item>
+                }}><Icon className='me-1' icon='copy'/>{lang['Copy']}</Menu.Item>
                 {this.is_filter?<Menu.Item step/>:null}
                 {this.is_filter?<Menu.Item field='select_filter' onClick={(e, field, data) => {
                     let select = document.getSelection();
                     this.filterHandler(select.toString(), data.field, 'contain');
-                }}><Icon className='mr-1' icon='filter'/>{lang['Filter By Selection']}</Menu.Item>:null}
+                }}><Icon className='me-1' icon='filter'/>{lang['Filter By Selection']}</Menu.Item>:null}
                 {this.is_filter?<Menu.Item field='select_exclude' onClick={(e, field, data) => {
                     let select = document.getSelection();
                     this.filterHandler(select.toString(), data.field, 'exclude');
-                }}><Icon className='mr-1' icon='filter'/>{lang['Filter Excluding Selection']}</Menu.Item>:null}
+                }}><Icon className='me-1' icon='filter'/>{lang['Filter Excluding Selection']}</Menu.Item>:null}
                 {this.is_filter||this.is_sort?<Menu.Item field='clear_filter' onClick={() => {
                     this.clearFilter();
-                }}><span className='text-danger'><Icon className='mr-1' icon='brush'/>{lang['Clear Filter / Sort']}</span></Menu.Item>:null}
+                }}><span className='text-danger'><Icon className='me-1' icon='brush'/>{lang['Clear Filter / Sort']}</span></Menu.Item>:null}
                 {this.is_filter?<Menu.Item step/>:null}
                 {this.is_filter?<Menu.Item field="equal">
-                    <span className='mr-1' style={inputStyle}>{lang['Equal With']}</span>
-                    <Input className='mr-1' size='xs' width='120px'
+                    <span className='me-1' style={inputStyle}>{lang['Equal With']}</span>
+                    <Input className='me-1' size='xs' width='120px'
                            data={this.state.filter.equal}
                            onChange={this.filterChangeHandler('equal')}
                            onMouseDown={stopEvent}
@@ -1120,8 +1126,8 @@ class CTable extends React.Component {
                     }} icon='search'/>
                 </Menu.Item>:null}
                 {this.is_filter?<Menu.Item field="filter">
-                    <span className='mr-1' style={inputStyle}>{lang['Start With']}</span>
-                    <Input className='mr-1' size='xs' width='120px'
+                    <span className='me-1' style={inputStyle}>{lang['Start With']}</span>
+                    <Input className='me-1' size='xs' width='120px'
                            data={this.state.filter.start}
                            onChange={this.filterChangeHandler('start')}
                            onMouseDown={stopEvent}
@@ -1134,8 +1140,8 @@ class CTable extends React.Component {
                     }} icon='search'/>
                 </Menu.Item>:null}
                 {this.is_filter?<Menu.Item field="filter">
-                    <span className='mr-1' style={inputStyle}>{lang['End With']}</span>
-                    <Input className='mr-1' size='xs' width='120px'
+                    <span className='me-1' style={inputStyle}>{lang['End With']}</span>
+                    <Input className='me-1' size='xs' width='120px'
                            data={this.state.filter.end}
                            onChange={this.filterChangeHandler('end')}
                            onMouseDown={stopEvent}
@@ -1148,8 +1154,8 @@ class CTable extends React.Component {
                     }} icon='search'/>
                 </Menu.Item>:null}
                 {this.is_filter?<Menu.Item field="filter">
-                    <span className='mr-1' style={inputStyle}>{lang['Contain with']}</span>
-                    <Input className='mr-1' size='xs' width='120px'
+                    <span className='me-1' style={inputStyle}>{lang['Contain with']}</span>
+                    <Input className='me-1' size='xs' width='120px'
                            data={this.state.filter.contain}
                            onChange={this.filterChangeHandler('contain')}
                            onMouseDown={stopEvent}
@@ -1185,29 +1191,35 @@ class CTable extends React.Component {
     }
 
     renderNumberMenu() {
-        let lang = this.props.lang;
-        if (!lang) {
+        let lang;
+        if (!this.props.lang) {
             let i18 = i18n.getLang();
             let langStr = typeof lang === 'string'?lang:i18.short;
             lang = CTableLang[langStr];
+        } else {
+            if (typeof this.props.lang === 'string') {
+                lang = CTableLang[this.props.lang]
+            } else {
+                lang = this.props.lang
+            }
         }
         return <>
             <Menu ref={c => this.numMenu = c} onClick={this.menuClickHandler}>
                 <Menu.Item field="copy" onClick={() => {
                     document.execCommand("copy");
-                }}><Icon className='mr-1' icon='copy'/>{lang['Copy']}</Menu.Item>
+                }}><Icon className='me-1' icon='copy'/>{lang['Copy']}</Menu.Item>
                 {this.is_filter?<Menu.Item step/>:null}
                 {this.is_filter?<Menu.Item field='select_filter' onClick={(e, field, data) => {
                     let select = document.getSelection();
                     this.filterHandler(select.toString(), data.field, 'contain');
-                }}><Icon className='mr-1' icon='filter'/>{lang['Filter By Selection']}</Menu.Item>:null}
+                }}><Icon className='me-1' icon='filter'/>{lang['Filter By Selection']}</Menu.Item>:null}
                 {this.is_filter?<Menu.Item field='select_exclude' onClick={(e, field, data) => {
                     let select = document.getSelection();
                     this.filterHandler(select.toString(), data.field, 'exclude');
-                }}><Icon className='mr-1' icon='filter'/>{lang['Filter Excluding Selection']}</Menu.Item>:null}
+                }}><Icon className='me-1' icon='filter'/>{lang['Filter Excluding Selection']}</Menu.Item>:null}
                 {this.is_filter||this.is_sort?<Menu.Item field='clear_filter' onClick={() => {
                     this.clearFilter();
-                }}><span className='text-danger'><Icon className='mr-1' icon='brush'/>{lang['Clear Filter / Sort']}</span></Menu.Item>:null}
+                }}><span className='text-danger'><Icon className='me-1' icon='brush'/>{lang['Clear Filter / Sort']}</span></Menu.Item>:null}
                 {this.is_filter?<Menu.Item step/>:null}
                 {this.is_filter?<Menu.Item field="filter" className='flex-column'>
                     <div className='w-100'>{lang['Condition Filter']}</div>
@@ -1358,7 +1370,8 @@ CTable.defaultProps = {
     showNumbers: 30,
     showPages  : 10,
     source     : null,
-    total      : null
+    total      : null,
+    lang       : 'en'
 }
 
 export default CTable;
