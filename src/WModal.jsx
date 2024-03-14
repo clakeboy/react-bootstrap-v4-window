@@ -288,7 +288,7 @@ class WModal extends React.Component {
                 break;
             case ModalConfirm:
                 content = (
-                    <div className='row flex-grow-1 g-1'>
+                    <div className='row flex-grow-1 g-1 btn'>
                         <ButtonGroup>
                         <Button className='col-6' size='sm' onClick={()=>{
                             this.close();

@@ -65,7 +65,7 @@ gulp.task('clean:build', (callback) => {
 gulp.task('clean',gulp.series('clean:build','clean:publish'));
 
 gulp.task('publish:pack',()=>{
-    return gulp.src('src/**/*.js')
+    return gulp.src(['src/**/*.js','src/**/*.jsx'])
         .pipe(sourcemaps.init())
         .pipe(babel({
             "presets": ["@babel/preset-env", "@babel/preset-react"],

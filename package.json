@@ -1,6 +1,6 @@
 {
   "name": "@clake/react-bootstrap4-window",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "react bootstrap v4 window",
   "main": "lib/index.js",
   "unpkg": "./dist/react-bootstrap4-window.js",
@@ -63,6 +63,7 @@
     "gulp-load-plugins": "^1.5.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-util": "^3.0.8",
+    "html2canvas": "^1.4.1",
     "less": "^3.0.4",
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.4.0",

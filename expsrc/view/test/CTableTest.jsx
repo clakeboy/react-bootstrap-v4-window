@@ -2,6 +2,7 @@
  * Created by clakeboy on 2018/10/25.
  */
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import {
@@ -12,9 +13,11 @@ import {
 import {
     TableHeader,
     Button,
-    Common
+    Common,
+    RImage
 } from '@clake/react-bootstrap4';
 // } from '@clake/react-bootstrap4';
+import html2canvas from 'html2canvas';
 class CTableTest extends React.Component {
     constructor(props) {
         super(props);
@@ -134,7 +137,7 @@ class CTableTest extends React.Component {
                     'id': i+1, 
                     'name': `${this.id}-${Common.RandomString(32)}`,
                     'is_chk':i%2===0,
-                    'set_chk':0,
+                    'set_chk':true,
                 });
                 total.id += i+1
             }
@@ -159,13 +162,21 @@ class CTableTest extends React.Component {
     };
 
     clickHandler = ()=>{
-        this.modal.alert({
-            title:'Tips',
-            content:'Alert message',
-            fade:true
-        });
-        this.id ++;
-        this.manage.open('f_abha_house_review',{id:this.id});
+        // this.modal.alert({
+        //     title:'Tips',
+        //     content:'Alert message',
+        //     fade:true
+        // });
+        // this.id ++;
+        // this.manage.open('f_abha_house_review',{id:this.id});
+        let mainDom = ReactDOM.findDOMNode(this.window)
+        
+        html2canvas(mainDom).then((canvas)=>{
+            let dataURL = canvas.toDataURL("image/png")
+            this.modal.view({
+                content: <RImage  src={dataURL}/>
+            })
+        })
     };
 
     sortHandler = (field,sort_type)=>{
