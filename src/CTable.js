@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes, {object} from 'prop-types';
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import {
     Icon,
@@ -18,7 +18,6 @@ import Drag from "./Drag";
 import CTableInput from "./CTableInput";
 import CTableLang from './i18n/CTable';
 import PageBar from "./PageBar";
-import { log } from 'gulp-util';
 class CTable extends React.Component {
     constructor(props) {
         super(props);
