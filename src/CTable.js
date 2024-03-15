@@ -1,3 +1,5 @@
+/** @module react-bootstrap-v4-window/CTable */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
@@ -18,6 +20,11 @@ import Drag from "./Drag";
 import CTableInput from "./CTableInput";
 import CTableLang from './i18n/CTable';
 import PageBar from "./PageBar";
+
+/**
+ * data Grid class
+ * @extends React.Component
+ */
 class CTable extends React.Component {
     constructor(props) {
         super(props);
@@ -32,9 +39,10 @@ class CTable extends React.Component {
                 end    : '',
                 contain: ''
             },
-            selectAll: false,
-            selectHalf: false,
-            selectRows: []
+            selectAll: false, //选中全部状态
+            selectHalf: false, //半选中状态
+            selectRows: [], //选中的数据列表
+            focus: -1 //当前显示焦点
         };
 
         this.originalData = this.state.data.slice(0);
@@ -112,6 +120,7 @@ class CTable extends React.Component {
                 selectRows: selectRows,
                 selectHalf: isHalf,
                 selectAll: allchk,
+                focus: -1
             });
         }
     }
@@ -126,6 +135,9 @@ class CTable extends React.Component {
         if (nextState.total !== this.state.total) {
             return true
         }
+        if (this.props.focus && nextState.focus !== this.state.focus) {
+            return true
+        }
         return nextState.data !== this.state.data;
     }
 
@@ -137,7 +149,7 @@ class CTable extends React.Component {
         let keys = Object.keys(a);
         if (keys.length !== Object.keys(b).length) return false;
         return keys.every(k => this.equals(a[k], b[k]));
-    };
+    }
 
     initTableWidth() {
         if (this.props.width) {
@@ -248,22 +260,17 @@ class CTable extends React.Component {
         return [false, false]
     }
     setRowCheck(checked,rowIdx) {
-        // let row = this.refs['row_'+rowIdx];
         let selectRows = this.props.selectOnce?[]:this.state.selectRows.slice()
-        console.log(checked,rowIdx,selectRows);
 
         if (checked) {
             if (!selectRows.includes(rowIdx)) {
                 selectRows.push(rowIdx);
             }
-            // ReactDOM.findDOMNode(row).parentNode.parentNode.classList.add('ck-table-selected');
         } else {
             if (selectRows.includes(rowIdx)) {
                 selectRows.splice(selectRows.indexOf(rowIdx),1);
             }
-            // ReactDOM.findDOMNode(row).parentNode.parentNode.classList.remove('ck-table-selected');
         }
-        // this.setState({selectRows: selectRows});
         return selectRows
     }
 
@@ -291,11 +298,16 @@ class CTable extends React.Component {
             if (typeof this.props.onClick === 'function') {
                 this.props.onClick(row, i);
             }
-            if (this.props.select) {
+            if (this.props.select && this.props.rowCheck) {
                 let row = this.refs['row_'+i];
                 row.changeHandler(null)
                 // this.setRowCheck(!row.getChecked(),i);
                 // this.checkAllCheckHalf();
+            }
+            if (this.props.focus) {
+                this.setState({
+                    focus:i === this.state.focus?-1:i
+                })
             }
         }
     }
@@ -888,9 +900,11 @@ class CTable extends React.Component {
 
     renderRow(row, i, parentRow) {
         let checked = this.state.selectRows.indexOf(i) !== -1
+        let focus = (i === this.state.focus && this.props.focus)
+        let rowClass = focus ? 'ck-table-focus' : checked ? 'ck-table-selected' : null 
         return (
             <React.Fragment>
-                <tr className={checked ? 'ck-table-selected' : null} onClick={this.clickHandler(row, i)}>
+                <tr className={rowClass} onClick={this.clickHandler(row, i)}>
                     {this.state.select ?
                         <th style={{width:'20px',textAlign:'center'}}>
                             <CCheckbox ref={'row_' + i} onChange={this.changeHandler(row, i)} checked={checked}/>
@@ -1376,6 +1390,10 @@ CTable.propTypes = {
     sourceFunc  : PropTypes.func,
     //是否显示全部选取
     allSelect  : PropTypes.bool,
+    //focus 是否显示焦点
+    focus: PropTypes.bool,
+    //是否全行点选
+    rowCheck: PropTypes.bool,
 };
 
 CTable.defaultProps = {
@@ -1400,7 +1418,9 @@ CTable.defaultProps = {
     source     : null,
     total      : null,
     lang       : 'en',
-    allSelect  : true
+    allSelect  : true,
+    rowCheck   : false,
+    focus: true
 }
 
 export default CTable;

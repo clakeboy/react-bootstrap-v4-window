@@ -1,3 +1,4 @@
+/** @module react-bootstrap-v4-window/WModal */
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
