@@ -228,17 +228,16 @@ class CTableTest extends React.Component {
     };
 
     testHandler = ()=>{
-        let list = this.edit_table.getEditRows();
-        console.log(list);
-
-    };
+        let list = this.table.getSelectRows();
+        this.modal.alert(JSON.stringify(list));
+    }
 
     render() {
         return (
             <React.Fragment>
                 <Button absolute y='10px' x='10px' size='sm' onClick={this.clickHandler}>Alert</Button>
                 <Button absolute y='10px' x='110px' size='sm' onClick={this.testHandler}>Get Edit Data</Button>
-                <CTable position={{
+                <CTable ref={c=>this.table=c} position={{
                     right:'10px',
                     left:'10px',
                     top:'50px',
@@ -246,8 +245,11 @@ class CTableTest extends React.Component {
                         onSelectPage={(page)=>{
                             console.log(page);
                         }}
-                        onCheck={(chk,e)=>{
-                            console.log(chk,e)
+                        onCheck={(chk,row)=>{
+                            console.log(chk,row)
+                        }}
+                        onCheckAll={(checked,list)=>{
+                            console.log(checked,list);
                         }}
                         page={this.state.page}
                         dataCount={this.state.data_count}

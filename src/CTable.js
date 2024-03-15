@@ -269,10 +269,6 @@ class CTable extends React.Component {
 
     selectAll = (checked) => {
         this.select_all = checked;
-        // Common.map(this.refs, (item,key,idx) => {
-        //     item.setChecked(this.select_all);
-        //     this.setRowCheck(this.select_all,idx);
-        // });
         let selectRows = []
         if (checked) {
             this.state.data.forEach((item,key)=>{
@@ -283,6 +279,10 @@ class CTable extends React.Component {
             selectRows: selectRows,
             selectAll: checked,
             selectHalf: false
+        },()=>{
+            if (typeof this.props.onCheckAll === 'function') {
+                this.props.onCheckAll(this.state.selectAll,this.state.data)
+            }
         })
     };
 
@@ -607,27 +607,29 @@ class CTable extends React.Component {
      * @returns {*}
      */
     getSelectRows() {
-        return this.selectRows.map((item)=>{
+        return this.state.selectRows.map((item)=>{
             return this.state.data[item];
         });
     }
 
     /**
      * 设置选中的行
-     * @param key 对应行数据的KEY值
-     * @param list 要选中的数据值
+     * @param {string} key 对应行数据的KEY值
+     * @param {array} list 要选中的数据值
      */
     setSelectRows(key, list) {
+        let selectRows = []
         this.state.data.forEach((row, i) => {
-            if (list.indexOf(row[key]) !== -1) {
-                this.refs['row_' + i].setChecked(true);
-                this.setRowCheck(true,i);
-            } else {
-                this.refs['row_' + i].setChecked(false);
-                this.setRowCheck(false,i);
+            if (list.includes(row[key])) {
+                selectRows.push(i)
             }
         });
-        this.checkAllCheckHalf();
+        let selectAll = selectRows.length > 1 && selectRows.length === this.state.data.length
+        this.setState({
+            selectRows: selectRows,
+            selectHalf: !selectAll,
+            selectAll: selectAll
+        })
     }
 
     /**
@@ -1319,6 +1321,8 @@ CTable.propTypes = {
     onClick     : PropTypes.func,
     //选择事件
     onCheck     : PropTypes.func,
+    //选择所有
+    onCheckAll  : PropTypes.func,
     //过滤事件
     onFilter    : PropTypes.func,
     //排序事件
@@ -1370,6 +1374,8 @@ CTable.propTypes = {
     lang        : PropTypes.object,
     source      : PropTypes.string,
     sourceFunc  : PropTypes.func,
+    //是否显示全部选取
+    allSelect  : PropTypes.bool,
 };
 
 CTable.defaultProps = {
@@ -1393,7 +1399,8 @@ CTable.defaultProps = {
     showPages  : 10,
     source     : null,
     total      : null,
-    lang       : 'en'
+    lang       : 'en',
+    allSelect  : true
 }
 
 export default CTable;
