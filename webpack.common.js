@@ -46,6 +46,11 @@ export default {
                 exclude: /node_modules/
             },
             {
+                test: /\.ts|\.tsx$/,
+                use: [{loader:'babel-loader',query:{presets:["@babel/preset-env", "@babel/preset-react","@babel/preset-typescript"]}},'eslint-loader'],
+                exclude: /node_modules/
+            },
+            {
                 test: /\.(jpe?g|png|gif)$/i,
                 use: 'url-loader?limit=10000&name=img/[hash:8].[name].[ext]'
             }
@@ -53,7 +58,7 @@ export default {
     },
     //其它解决方案配置
     resolve: {
-        extensions: [ '.js', '.json', '.less', '.jsx']
+        extensions: [ '.js', '.json', '.less', '.jsx','.tsx','.ts']
     },
     node: {
         fs: 'empty'

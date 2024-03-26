@@ -1,8 +1,7 @@
 /** @module react-bootstrap-v4-window/CTable */
 
 import React from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames/bind';
+import classNames from 'classnames';
 import {
     Icon,
     Pagination,
@@ -13,7 +12,8 @@ import {
     i18n,
     CCheckbox,
     Scroll,
-    HScroll
+    HScroll,
+    ComponentProps
 } from '@clake/react-bootstrap4';
 import './css/CTable.less';
 import Drag from "./Drag";
@@ -21,18 +21,195 @@ import CTableInput from "./CTableInput";
 import CTableLang from './i18n/CTable';
 import PageBar from "./PageBar";
 
-/**
- * data Grid class
- * @extends React.Component
- */
-class CTable extends React.Component {
-    constructor(props) {
+interface Props extends ComponentProps {
+    //主题 ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
+    theme       ?: string
+    //标头主题
+    headerTheme ?: string
+    //标头css class
+    headClass   ?: string
+    //数据来源
+    data        ?: any[]
+    //数据总记录数
+    dataCount   ?: number
+    //总页数
+    page        ?: number
+    //第一列是否出现选择项
+    select      ?: boolean
+    //是否只能选中一项
+    selectOnce   ?: boolean
+    //是否显示标头
+    header      ?: boolean
+    //
+    center      ?: boolean
+    //数据当前页
+    currentPage ?: number
+    //
+    striped     ?: boolean
+    //是否显示边框
+    bordered    ?: boolean
+    //行是否有hover效果
+    hover       ?: boolean
+    //是否小型化显示列表
+    sm          ?: boolean
+    //文字最小化
+    fontSm      ?: boolean
+    responsive  ?: boolean
+    //文字列表 left,center,right
+    align       ?: string
+    //是否显示树结构
+    tree        ?: string
+    //点击树事件
+    onClickTree ?: ()=>void
+    //点击事件
+    onClick     ?: (row:any,idx:number)=>void
+    //选择事件
+    onCheck     ?: (chk:boolean,row:any)=>void
+    //选择所有
+    onCheckAll  ?: (chk:boolean,data:any[])=>void
+    //过滤事件
+    onFilter    ?: (text:string, field:string, type:string)=>void
+    //排序事件
+    onSort      ?: (field:string,sort_type:string)=>void
+    //是否列可移动
+    move        ?: boolean
+    //刷新事件
+    onRefresh   ?: ()=>void
+    //刷新事件按钮文字
+    refreshText ?: string
+    //是否漂浮
+    absolute    ?: boolean
+    //漂浮X坐标
+    x           ?: string
+    //漂浮Y坐标
+    y           ?: string
+    //表宽
+    width       ?: string
+    //表高
+    height      ?: string
+    // foot        : PropTypes.bool,
+    //是否显示列表尾
+    foot        ?: any
+    //表自动随主体小设置
+    position    ?: any
+    //显示的页码数
+    showPages   ?: number
+    //显示的记录条数
+    showNumbers ?: number
+    //翻页事件
+    onSelectPage?: (page:number)=>void
+    //是否自动换行
+    noWrap      ?: boolean
+    //是否启用右键菜单
+    menu        ?: boolean
+    //是否显示每列记录总合数
+    total       ?: any
+    //是否编辑模式
+    edit        ?: boolean
+    //数据删除事件
+    onDelete    ?: (row:any,idx:number,callback:(row_index:number)=>void)=>void
+    //是否启用排序
+    sort        ?: boolean
+    //是否启用过滤
+    filter      ?: boolean
+    //自定义右键菜单
+    customMenu  ?: any
+    //自定义显示语言
+    lang        ?: any
+    source      ?: string
+    sourceFunc  ?: (opt:any,callback:(res:any)=>void)=>void
+    //是否显示全部选取
+    allSelect  ?: boolean
+    //focus 是否显示焦点
+    focus?: boolean
+    //是否全行点选
+    rowCheck?: boolean
+
+    columnStyle?:any
+}
+
+interface State {
+    data     : any[]
+    dataCount: number
+    page     : number
+    select   : boolean
+    total    : any
+    filter   : any
+    selectAll: boolean //选中全部状态
+    selectHalf: boolean //半选中状态
+    selectRows: any[] //选中的数据列表
+    focus: number //当前显示焦点
+}
+
+export class CTable extends React.Component<Props,State> {
+    static defaultProps = {
+        data       : [],
+        dataCount  : 1,
+        select     : true,
+        header     : true,
+        foot       : true,
+        currentPage: 1,
+        hover      : true,
+        striped    : true,
+        align      : 'left',
+        sm         : true,
+        fontSm     : true,
+        headerTheme: 'primary',
+        noWrap     : true,
+        bordered   : true,
+        move       : true,
+        menu       : true,
+        showNumbers: 30,
+        showPages  : 10,
+        source     : null,
+        total      : null,
+        lang       : 'en',
+        allSelect  : true,
+        rowCheck   : false,
+        focus: true
+    }
+
+    originalData: any[]
+    domId:string
+    select_all:boolean
+    selectRows:any[]
+    headerSplits:any
+    sortList:any
+    is_sort:boolean
+    is_filter:boolean
+    current_sort:any
+    filter_list:any[]
+    editRows:any[]
+    cacheRow:any
+    headers:any
+    noClone:any
+    lockColumns:any[]
+    isLock:boolean
+    filter:any[]
+    
+    width:string
+    tableHeader:HTMLElement
+    tableTotal:HTMLElement
+    table_rows:HTMLElement
+    table_head:HTMLElement
+    table_body:HTMLElement
+    table_total:HTMLElement
+    split:HTMLElement
+    mainDom:HTMLElement
+    mainMenu:Menu
+    numMenu:Menu
+    drag: Drag
+    dragColumnLeft:number
+    dragWidth:number
+    allchk:CCheckbox
+    constructor(props:any) {
+        
         super(props);
         this.state = {
             data     : this.props.data || [],
-            dataCount: this.props.dataCount,
+            dataCount: this.props.dataCount??0,
             page     : 1,
-            select   : this.props.select,
+            select   : this.props.select??false,
             total    : this.props.total,
             filter   : {
                 start  : '',
@@ -55,8 +232,8 @@ class CTable extends React.Component {
         this.headerSplits = [];
 
         this.sortList     = {};
-        this.is_sort      = typeof this.props.onSort === 'function' || this.props.sort;
-        this.is_filter      = typeof this.props.onFilter === 'function' || this.props.filter;
+        this.is_sort      = typeof this.props.onSort === 'function' || !!this.props.sort;
+        this.is_filter      = typeof this.props.onFilter === 'function' || !!this.props.filter;
         this.current_sort = null;
 
         this.filter_list = [];
@@ -80,7 +257,7 @@ class CTable extends React.Component {
         this.bindSplit();
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps:Props) {
         if (this.state.data !== nextProps.data) {
             if (this.props.edit) {
                 if (this.equals(this.originalData,nextProps.data)) {
@@ -95,7 +272,7 @@ class CTable extends React.Component {
             // }
             // this.select_all = false;
             // this.selectRows = [];
-            let selectRows = []
+            let selectRows:any[] = []
             let isHalf = false
             let allchk = false
             if (nextProps.data && nextProps.data.length > 0) {
@@ -113,9 +290,9 @@ class CTable extends React.Component {
                 }
             }
             this.setState({
-                data     : nextProps.data,
-                dataCount: nextProps.dataCount,
-                page     : nextProps.page,
+                data     : nextProps.data??[],
+                dataCount: nextProps.dataCount??0,
+                page     : nextProps.page??0,
                 total    : nextProps.total,
                 selectRows: selectRows,
                 selectHalf: isHalf,
@@ -125,7 +302,7 @@ class CTable extends React.Component {
         }
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
+    shouldComponentUpdate(nextProps:Props, nextState:State) {
         if (nextState.selectRows !== this.state.selectRows) {
             return true
         }
@@ -141,7 +318,7 @@ class CTable extends React.Component {
         return nextState.data !== this.state.data;
     }
 
-    equals = (a, b) => {
+    equals = (a:any, b:any):boolean => {
         if (a === b) return true;
         if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();
         if (!a || !b || (typeof a !== 'object' && typeof b !== 'object')) return a === b;
@@ -153,14 +330,14 @@ class CTable extends React.Component {
 
     initTableWidth() {
         if (this.props.width) {
-            this.width = 0;
+            let width = 0;
             let reg    = /(\d+)(px|rem|cm|mm|pt)$/;
             let matchs = this.props.width.match(reg);
-            let unit   = matchs[2];
+            let unit   = matchs?matchs[2]:'px';
             React.Children.map(this.props.children, (item, key) => {
                 if (item.props.width) {
                     let matchs = item.props.width.match(reg);
-                    this.width += parseInt(matchs[1]);
+                    width += parseInt(matchs[1]);
                     this.headers[item.props.field] = item.props;
                     if (item.props.noClone) {
                         this.noClone[item.props.field] = "";
@@ -168,9 +345,9 @@ class CTable extends React.Component {
                 }
             });
             if (this.props.select) {
-                this.width += 20;
+                width += 20;
             }
-            this.width += unit;
+            this.width = width + unit;
         }
     }
 
@@ -231,8 +408,8 @@ class CTable extends React.Component {
 
     //innter source end ***************************
     //checkbox handler
-    changeHandler(row, i) {
-        return (checked,e) => {
+    changeHandler(row:any, i:number) {
+        return (checked:boolean,e:any) => {
             let selectRows = this.setRowCheck(checked,i);
             const [allChecked, half] = this.checkAllCheckHalf(selectRows);
             this.setState({
@@ -245,8 +422,8 @@ class CTable extends React.Component {
             }
         };
     }
-    checkAllCheckHalf(selectRows) {
-        if (!this.allchk || this.props.selectOnce) {
+    checkAllCheckHalf(selectRows:Array<any>) {
+        if (!this.state.selectAll || this.props.selectOnce) {
             return [false, false];
         }
         if (selectRows.length > 0 && selectRows.length !== this.state.data.length) {
@@ -259,7 +436,7 @@ class CTable extends React.Component {
         }
         return [false, false]
     }
-    setRowCheck(checked,rowIdx) {
+    setRowCheck(checked:boolean,rowIdx:number) {
         let selectRows = this.props.selectOnce?[]:this.state.selectRows.slice()
 
         if (checked) {
@@ -274,9 +451,9 @@ class CTable extends React.Component {
         return selectRows
     }
 
-    selectAll = (checked) => {
+    selectAll = (checked:boolean) => {
         this.select_all = checked;
-        let selectRows = []
+        let selectRows:any[] = []
         if (checked) {
             this.state.data.forEach((item,key)=>{
                 selectRows.push(key)
@@ -293,13 +470,13 @@ class CTable extends React.Component {
         })
     };
 
-    clickHandler(row, i) {
+    clickHandler(row:any, i:number) {
         return () => {
             if (typeof this.props.onClick === 'function') {
                 this.props.onClick(row, i);
             }
             if (this.props.select && this.props.rowCheck) {
-                let row = this.refs['row_'+i];
+                let row:CCheckbox = this.refs['row_'+i] as CCheckbox;
                 row.changeHandler(null)
                 // this.setRowCheck(!row.getChecked(),i);
                 // this.checkAllCheckHalf();
@@ -315,23 +492,28 @@ class CTable extends React.Component {
     /**
      * sort
      */
-    sortHandler = (e) => {
+    sortHandler = (e:any) => {
         let dom       = e.currentTarget;
         let sort_type = dom.dataset.sort || 'asc';
         this.changeSort(dom, sort_type)
     };
 
-    changeSort(dom, sort_type) {
+    changeSort(dom:HTMLElement, sort_type:string) {
         if (!dom) {
             return
         }
-
+        if (!dom.dataset.field) {
+            return
+        }
         this.clearSort(false);
         this.current_sort = dom.dataset.field;
         dom.dataset.sort  = sort_type === 'asc' ? 'desc' : 'asc';
         dom.classList.remove('ck-ctable-sort');
         this.sortList[dom.dataset.field] = sort_type;
         let child                        = dom.querySelector('i');
+        if (!child) {
+            return
+        }
         child.classList.remove('fa-sort', 'fa-sort-alpha-up', 'fa-sort-alpha-down');
         child.classList.add('fa-sort-alpha-' + (sort_type === 'asc' ? 'down' : 'up'));
         if (typeof this.props.onSort === 'function') {
@@ -341,12 +523,14 @@ class CTable extends React.Component {
         }
     }
 
-    clearSort(emitEvt) {
+    clearSort(emitEvt:any) {
         if (this.current_sort) {
-            let prv          = document.querySelector(`#${this.domId}-sort-${this.current_sort}`);
+            let prv          = document.querySelector(`#${this.domId}-sort-${this.current_sort}`) as HTMLElement;
+            if (!prv) return
             prv.dataset.sort = 'asc';
             prv.classList.add('ck-ctable-sort');
             let prv_child = prv.querySelector('i');
+            if (!prv_child) return
             prv_child.classList.remove('fa-sort', 'fa-sort-alpha-up', 'fa-sort-alpha-down');
             prv_child.classList.add('fa-sort');
             this.sortList[this.current_sort] = null;
@@ -361,13 +545,14 @@ class CTable extends React.Component {
         return false;
     }
 
-    localSort(field, sort_type) {
+    localSort(field:string, sort_type:string) {
         let desc = sort_type === 'desc';
         let data = this.state.data.slice(0);
-        data.sort((a, b) => {
+        data.sort((a:any, b:any):number => {
             if (a[field] > b[field]) return desc ? -1 : 1;
             if (a[field] < b[field]) return desc ? 1 : -1;
             if (a[field] === b[field]) return 0;
+            return 0
         });
         this.setState({data: data});
     }
@@ -376,7 +561,7 @@ class CTable extends React.Component {
      * scroll header and total foot
      * @param e
      */
-    scrollHandler = (e) => {
+    scrollHandler = (e:any) => {
         this.tableHeader.style.transform = `translateX(-${e.currentTarget.scrollLeft}px)`;
         // this.tableHeader.scrollLeft = e.currentTarget.scrollLeft;
         if (this.tableTotal) {
@@ -388,8 +573,8 @@ class CTable extends React.Component {
      * show menu list
      * @param dataType
      */
-    menuContextHandler(dataType) {
-        return (e) => {
+    menuContextHandler(dataType:string) {
+        return (e:any) => {
             e.preventDefault();
             e.stopPropagation();
             let data = {
@@ -405,13 +590,13 @@ class CTable extends React.Component {
         }
     }
 
-    menuClickHandler = (field, data) => {
+    menuClickHandler = (field:string, data:any) => {
         switch (field) {
             case "asc":
-                this.changeSort(document.querySelector(`#${this.domId}-sort-${data.field}`), 'asc');
+                this.changeSort(document.querySelector(`#${this.domId}-sort-${data.field}`) as HTMLElement, 'asc');
                 break;
             case "desc":
-                this.changeSort(document.querySelector(`#${this.domId}-sort-${data.field}`), 'desc');
+                this.changeSort(document.querySelector(`#${this.domId}-sort-${data.field}`) as HTMLElement, 'desc');
                 break;
             case "delete_row":
                 this.deleteRowHandler(parseInt(this.mainMenu.data.index));
@@ -425,7 +610,7 @@ class CTable extends React.Component {
     /**
      * filter
      * */
-    localFilter(text, field, type) {
+    localFilter(text:string, field:string, type:string) {
         let reg;
         switch (type) {
             case "start":
@@ -438,7 +623,7 @@ class CTable extends React.Component {
                 reg = new RegExp(`${text}`);
         }
         let data = this.state.data.slice(0);
-        let filter = [];
+        let filter:any[] = [];
         data.forEach((item)=>{
             if (type === 'exclude') {
                 if (!reg.test(item[field])) {
@@ -453,7 +638,7 @@ class CTable extends React.Component {
         this.setState({data:filter});
     }
 
-    filterHandler(text, field, type) {
+    filterHandler(text:string, field:string, type:string) {
         this.filter_list.push({
             text:text,
             field:field,
@@ -467,8 +652,8 @@ class CTable extends React.Component {
                 contain: ''
             }
         });
-        this.mainMenu.hide();
-        this.numMenu.hide();
+        this.mainMenu.hide(undefined);
+        this.numMenu.hide(undefined);
         if (typeof this.props.onFilter === 'function') {
             this.props.onFilter(text, field, type);
         } else {
@@ -495,8 +680,8 @@ class CTable extends React.Component {
         }
     }
 
-    filterChangeHandler(field) {
-        return (val) => {
+    filterChangeHandler(field:string) {
+        return (val:any) => {
             let filter    = this.state.filter;
             filter[field] = val;
             this.setState({
@@ -505,7 +690,7 @@ class CTable extends React.Component {
         }
     }
 
-    selectPageHandler = (page) => {
+    selectPageHandler = (page:number) => {
         if (typeof this.props.onSelectPage === 'function') {
             this.props.onSelectPage(page);
         }
@@ -514,7 +699,7 @@ class CTable extends React.Component {
     /**
      * edit mode
      */
-    addNewHandler = (e) => {
+    addNewHandler = (e:any) => {
         let data = this.state.data.slice(0);
         data.push(Object.assign({}, this.cacheRow));
         this.editRows.push(data.length - 1);
@@ -522,11 +707,11 @@ class CTable extends React.Component {
             data: data,
             dataCount: data.length,
         }, () => {
-            document.querySelector(`#${this.domId}-edit`).previousElementSibling.querySelector('input:not([disabled])').focus()
+            document.querySelector<HTMLElement>(`#${this.domId}-edit`)?.previousElementSibling?.querySelector<HTMLInputElement>('input:not([disabled])')?.focus()
         })
     };
     //编辑事件
-    editHandler = (e, val,row) => {
+    editHandler = (e:any, val:any ,row:any) => {
         const dataset = row === 'chk'?e.currentTarget.dataset:e.target.dataset
         let index = parseInt(dataset.row);
         let field = dataset.field;
@@ -547,7 +732,7 @@ class CTable extends React.Component {
         }
     };
     //自定义 onEdit 事件回调函数
-    editCallback = (index,editData) => {
+    editCallback = (index:number,editData:any) => {
         if (this.state.data[index]) {
             let data           = this.state.data.slice(0);
             data[index] = Object.assign(data[index],editData);
@@ -567,7 +752,7 @@ class CTable extends React.Component {
         this.editRows = [];
     }
 
-    deleteRowHandler(row_index) {
+    deleteRowHandler(row_index:number) {
         if (row_index < 0 || row_index >= this.state.data.length) {
             return
         }
@@ -578,7 +763,7 @@ class CTable extends React.Component {
         }
     }
 
-    deleteRow(row_index) {
+    deleteRow(row_index:number) {
         if (row_index < 0 || row_index >= this.state.data.length) {
             return
         }
@@ -599,7 +784,7 @@ class CTable extends React.Component {
         });
     }
 
-    cloneRow(row_index) {
+    cloneRow(row_index:number) {
         if (row_index < 0 || row_index >= this.state.data.length) {
             return
         }
@@ -629,8 +814,8 @@ class CTable extends React.Component {
      * @param {string} key 对应行数据的KEY值
      * @param {array} list 要选中的数据值
      */
-    setSelectRows(key, list) {
-        let selectRows = []
+    setSelectRows(key:string, list:any[]) {
+        let selectRows:any[] = []
         this.state.data.forEach((row, i) => {
             if (list.includes(row[key])) {
                 selectRows.push(i)
@@ -649,14 +834,14 @@ class CTable extends React.Component {
      */
     bindSplit() {
         if (this.props.move) {
-            this.headerSplits.forEach((split) => {
+            this.headerSplits.forEach((split:any) => {
                 if (!this.drag) {
                     this.dragColumnLeft = 0;
                     this.dragWidth      = 0;
                     this.drag           = new Drag(this.split, split, {
                         start: (dragDom, eventDom) => {
                             let xy              = Common.GetDomXY(eventDom, this.mainDom);
-                            this.dragWidth      = parseInt(eventDom.parentNode.style.width);
+                            this.dragWidth      = parseInt((eventDom?.parentNode as HTMLElement).style.width);
                             this.dragColumnLeft = (xy.left - this.table_rows.scrollLeft);
                             dragDom.style.left  = this.dragColumnLeft + 'px';
                             dragDom.classList.remove('d-none');
@@ -677,7 +862,7 @@ class CTable extends React.Component {
                             if (this.table_total) {
                                 this.table_total.style.width = this.width;
                             }
-                            document.querySelectorAll(`#${column_key}`).forEach((item) => {
+                            document.querySelectorAll(`#${column_key}`).forEach((item:any) => {
                                 item.style.width = `${this.dragWidth + diff}px`;
                             });
                             return true;
@@ -690,7 +875,7 @@ class CTable extends React.Component {
         }
     }
 
-    getClasses(name) {
+    getClasses(name?:string) {
         let base = 'table ck-table';
         if (!!name) {
             base = classNames(base, name);
@@ -739,7 +924,7 @@ class CTable extends React.Component {
 
     getStyles() {
         //default style
-        let base = {};
+        let base:any = {};
         //width
         if (this.props.width) {
             base.width = this.props.width;
@@ -778,8 +963,8 @@ class CTable extends React.Component {
         return classNames(base, this.props.headClass);
     }
 
-    getTableStyles(style) {
-        let base = {};
+    getTableStyles(style?:any) {
+        let base:any = {};
 
         if (this.width) {
             base.width = this.width;
@@ -798,8 +983,8 @@ class CTable extends React.Component {
         return base;
     }
 
-    calcLocalTotal(field) {
-        return (e)=>{
+    calcLocalTotal(field:string) {
+        return (e:any)=>{
             let list = this.state.data;
             let total = 0;
             list.forEach((item)=>{
@@ -817,7 +1002,7 @@ class CTable extends React.Component {
 
     render() {
         return (
-            <div ref={c => this.mainDom = c} className={this.getMainClasses()} style={this.getStyles()}>
+            <div ref={(c:any) => this.mainDom = c} className={this.getMainClasses()} style={this.getStyles()}>
                 <div className={this.getBodyClasses()}>
                     {this.renderHeader()}
                     {this.renderRows()}
@@ -826,21 +1011,21 @@ class CTable extends React.Component {
                     {<HScroll selector={`#table-body-com-${this.domId}`}/>}
                 </div>
                 {this.renderFoot()}
-                <div ref={c => this.split = c} className='ck-split d-none'/>
+                <div ref={(c:any) => this.split = c} className='ck-split d-none'/>
             </div>
         );
     }
 
     renderHeader() {
         return (
-            <div ref={c => this.tableHeader = c}>
-                <table ref={c => this.table_head = c} id={`table-head-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
+            <div ref={(c:any) => this.tableHeader = c}>
+                <table ref={(c:any) => this.table_head = c} id={`table-head-${this.domId}`} className={this.getClasses('')} style={this.getTableStyles(null)}>
                     <thead className={this.getHeaderClasses()}>
                     <tr>
                         {this.state.select || this.props.edit ?
                             <th style={{width:'20px',textAlign:'center'}}>
                                 {this.props.edit || this.props.selectOnce ? <Icon icon='list'/> :
-                                    <CCheckbox ref={c=>this.allchk=c} onChange={this.selectAll} checked={this.state.selectAll} half={this.state.selectHalf}/>}
+                                    <CCheckbox ref={(c:any) => this.allchk=c} onChange={this.selectAll} checked={this.state.selectAll} half={this.state.selectHalf}/>}
                             </th> : null}
                         {React.Children.map(this.props.children, (item, key) => {
                             this.cacheRow[item.props.field] = '';
@@ -848,7 +1033,7 @@ class CTable extends React.Component {
                                 return null;
                             }
                             // let align = item.props.align || this.props.align;
-                            let style = {
+                            let style:any = {
                                 'textAlign': 'center'
                             };
                             if (item.props.width) {
@@ -859,7 +1044,7 @@ class CTable extends React.Component {
                                 sort_icon = 'sort-alpha-' + (this.sortList[item.props.field] === 'asc' ? 'down' : 'up');
                             }
                             return (
-                                <th onContextMenu={this.menuContextHandler} id={this.domId + '-' + key} data-key={'head_' + key} style={style}>
+                                <th onContextMenu={this.menuContextHandler('')} id={this.domId + '-' + key} data-key={'head_' + key} style={style}>
                                     {this.is_sort ?
                                         <a className='ck-ctable-sort' href='javascript://' id={`${this.domId}-sort-${item.props.field}`}
                                            data-field={item.props.field}
@@ -880,14 +1065,14 @@ class CTable extends React.Component {
 
     renderRows() {
         return (
-            <div ref={c => this.table_rows = c} id={`table-body-com-${this.domId}`} className='flex-grow-1 rows' onScroll={this.scrollHandler}>
-                <table ref={c => this.table_body = c} id={`table-body-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
+            <div ref={(c:any) => this.table_rows = c} id={`table-body-com-${this.domId}`} className='flex-grow-1 rows' onScroll={this.scrollHandler}>
+                <table ref={(c:any) => this.table_body = c} id={`table-body-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
-                    {this.state.data.map((row, i) => {
+                    {this.state.data.map((row:any, i:number) => {
                         if (this.props.edit) {
                             return this.renderEditRow(row, i)
                         }
-                        return this.renderRow(row, i);
+                        return this.renderRow(row, i,null);
                     })}
                     {this.props.edit ? this.renderEditAddRow() : null}
                     </tbody>
@@ -898,10 +1083,10 @@ class CTable extends React.Component {
         )
     }
 
-    renderRow(row, i, parentRow) {
+    renderRow(row:any, i:number, parentRow?:any) {
         let checked = this.state.selectRows.indexOf(i) !== -1
         let focus = (i === this.state.focus && this.props.focus)
-        let rowClass = focus ? 'ck-table-focus' : checked ? 'ck-table-selected' : null 
+        let rowClass = focus ? 'ck-table-focus' : checked ? 'ck-table-selected' : undefined 
         return (
             <React.Fragment>
                 <tr className={rowClass} onClick={this.clickHandler(row, i)}>
@@ -935,7 +1120,7 @@ class CTable extends React.Component {
                         if (item.props.children) {
                             return (
                                 <td onContextMenu={this.menuContextHandler(dataType)} id={this.domId + '-' + key} data-row={`${i}`} data-field={item.props.field}
-                                    className={item.props.className} style={{'text-align': align}}
+                                    className={item.props.className}
                                     key={'col_' + key}>{React.cloneElement(item, {
                                     text : item.props.text,
                                     row  : row,
@@ -969,10 +1154,10 @@ class CTable extends React.Component {
         );
     }
 
-    renderEditRow(row, i) {
+    renderEditRow(row:any, i:number) {
         return (
             <React.Fragment>
-                <tr className={this.props.onClick ? 'click-row' : null} onClick={this.clickHandler(row, i)}>
+                <tr className={this.props.onClick ? 'click-row' : undefined} onClick={this.clickHandler(row, i)}>
                     <th style={{width:'20px',textAlign:'center'}}>
                         {this.editRows.indexOf(i) === -1 ? null :
                             <Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className='text-danger'/>}
@@ -1037,7 +1222,7 @@ class CTable extends React.Component {
         )
     }
 
-    renderEditComponent(item, row, i) {
+    renderEditComponent(item:any, row:any, i:number) {
         switch (item.type) {
             case "combo":
                 return (
@@ -1062,7 +1247,7 @@ class CTable extends React.Component {
                 return (
                     <CTableInput onChange={this.editHandler} data-row={i} data-field={item.field}
                                  data={row[item.field]} align={item.align} disabled={item.disabled}
-                                 onBlur={this.state.total&&this.state.total.hasOwnProperty(item.field)?this.calcLocalTotal(item.field):null}
+                                 onBlur={this.state.total&&this.state.total.hasOwnProperty(item.field)?this.calcLocalTotal(item.field):undefined}
                     />
                 )
         }
@@ -1076,8 +1261,8 @@ class CTable extends React.Component {
             <div>
                 <PageBar page={this.state.page} dataCount={this.state.dataCount}
                          onSelect={this.selectPageHandler}
-                         showNumbers={this.props.showNumbers}
-                         showPages={this.props.showPages} noPage={this.props.edit}/>
+                         showNumbers={this.props.showNumbers??0}
+                         showPages={this.props.showPages??0} noPage={this.props.edit??false}/>
             </div>
         )
     }
@@ -1088,8 +1273,8 @@ class CTable extends React.Component {
         }
         let total = this.state.total;
         return (
-            <div ref={c => this.tableTotal = c} className='ck-ctable-total'>
-                <table ref={c => this.table_total = c} id={`table-total-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
+            <div ref={(c:any) => this.tableTotal = c} className='ck-ctable-total'>
+                <table ref={(c:any)  => this.table_total = c} id={`table-total-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
                     <tr>
                         {this.state.select || this.props.edit ?
@@ -1099,7 +1284,7 @@ class CTable extends React.Component {
                                 return null;
                             }
                             let align = item.props.align || this.props.align;
-                            let style = {
+                            let style:any = {
                                 'textAlign': align
                             };
                             if (item.props.width) {
@@ -1132,23 +1317,25 @@ class CTable extends React.Component {
             }
         }
         return <>
-            <Menu ref={c => this.mainMenu = c} onClick={this.menuClickHandler}>
+            <Menu ref={(c:any)  => this.mainMenu = c} onClick={this.menuClickHandler}>
                 <Menu.Item field="copy" onClick={() => {
                     document.execCommand("copy");
                 }}><Icon className='me-1' icon='copy'/>{lang['Copy']}</Menu.Item>
-                {this.is_filter?<Menu.Item step/>:null}
+                {this.is_filter?<Menu.Item field='' step/>:null}
                 {this.is_filter?<Menu.Item field='select_filter' onClick={(e, field, data) => {
                     let select = document.getSelection();
+                    if (!select) return
                     this.filterHandler(select.toString(), data.field, 'contain');
                 }}><Icon className='me-1' icon='filter'/>{lang['Filter By Selection']}</Menu.Item>:null}
                 {this.is_filter?<Menu.Item field='select_exclude' onClick={(e, field, data) => {
                     let select = document.getSelection();
+                    if (!select) return
                     this.filterHandler(select.toString(), data.field, 'exclude');
                 }}><Icon className='me-1' icon='filter'/>{lang['Filter Excluding Selection']}</Menu.Item>:null}
                 {this.is_filter||this.is_sort?<Menu.Item field='clear_filter' onClick={() => {
                     this.clearFilter();
                 }}><span className='text-danger'><Icon className='me-1' icon='brush'/>{lang['Clear Filter / Sort']}</span></Menu.Item>:null}
-                {this.is_filter?<Menu.Item step/>:null}
+                {this.is_filter?<Menu.Item field='' step/>:null}
                 {this.is_filter?<Menu.Item field="equal">
                     <span className='me-1' style={inputStyle}>{lang['Equal With']}</span>
                     <Input className='me-1' size='xs' width='120px'
@@ -1205,7 +1392,7 @@ class CTable extends React.Component {
                         this.filterHandler(this.state.filter.contain, this.mainMenu.data.field, 'contain');
                     }} icon='search'/>
                 </Menu.Item>:null}
-                {this.is_filter? <Menu.Item step/> : null}
+                {this.is_filter? <Menu.Item field='' step/> : null}
                 {this.is_filter?<Menu.Item field="filter" className='flex-column'>
                     <div className='w-100'>{lang['Condition Filter']}</div>
                     <Input size='xs' width='100%'
@@ -1217,11 +1404,11 @@ class CTable extends React.Component {
                            }}
                     />
                 </Menu.Item>:null}
-                {this.props.edit ? <Menu.Item step/> : null}
+                {this.props.edit ? <Menu.Item field='' step/> : null}
                 {this.props.edit ? <Menu.Item field="delete_row">{lang['Delete Row']}</Menu.Item> : null}
                 {this.props.edit ? <Menu.Item field="clone_row">{lang['Clone Row']}</Menu.Item> : null}
-                {this.props.customMenu?<Menu.Item step/>:null}
-                {this.props.customMenu?this.props.customMenu.map((menu)=>{
+                {this.props.customMenu?<Menu.Item field='' step/>:null}
+                {this.props.customMenu?this.props.customMenu.map((menu:any)=>{
                     return this.explainCustomMenu(menu)
                 }):null}
             </Menu>
@@ -1242,23 +1429,25 @@ class CTable extends React.Component {
             }
         }
         return <>
-            <Menu ref={c => this.numMenu = c} onClick={this.menuClickHandler}>
+            <Menu ref={(c:any) => this.numMenu = c} onClick={this.menuClickHandler}>
                 <Menu.Item field="copy" onClick={() => {
                     document.execCommand("copy");
                 }}><Icon className='me-1' icon='copy'/>{lang['Copy']}</Menu.Item>
-                {this.is_filter?<Menu.Item step/>:null}
+                {this.is_filter?<Menu.Item field='' step/>:null}
                 {this.is_filter?<Menu.Item field='select_filter' onClick={(e, field, data) => {
                     let select = document.getSelection();
+                    if (!select) return
                     this.filterHandler(select.toString(), data.field, 'contain');
                 }}><Icon className='me-1' icon='filter'/>{lang['Filter By Selection']}</Menu.Item>:null}
                 {this.is_filter?<Menu.Item field='select_exclude' onClick={(e, field, data) => {
                     let select = document.getSelection();
+                    if (!select) return
                     this.filterHandler(select.toString(), data.field, 'exclude');
                 }}><Icon className='me-1' icon='filter'/>{lang['Filter Excluding Selection']}</Menu.Item>:null}
                 {this.is_filter||this.is_sort?<Menu.Item field='clear_filter' onClick={() => {
                     this.clearFilter();
                 }}><span className='text-danger'><Icon className='me-1' icon='brush'/>{lang['Clear Filter / Sort']}</span></Menu.Item>:null}
-                {this.is_filter?<Menu.Item step/>:null}
+                {this.is_filter?<Menu.Item field='' step/>:null}
                 {this.is_filter?<Menu.Item field="filter" className='flex-column'>
                     <div className='w-100'>{lang['Condition Filter']}</div>
                     <Input size='xs' width='100%'
@@ -1275,9 +1464,9 @@ class CTable extends React.Component {
         </>
     }
 
-    explainCustomMenu(menu) {
+    explainCustomMenu(menu:any) {
         if (menu.children && menu.children instanceof Array) {
-            return <Menu.Item field={menu.field} text={menu.text} child>{menu.children.map((item)=>{
+            return <Menu.Item field={menu.field} text={menu.text} child>{menu.children.map((item:any)=>{
                 return this.explainCustomMenu(item)
             })}</Menu.Item>
         } else {
@@ -1287,140 +1476,8 @@ class CTable extends React.Component {
 }
 
 const inputStyle = {width: '80px'};
-const stopEvent  = function (e) {
+const stopEvent  = function (e:any) {
     e.stopPropagation();
 };
-
-CTable.propTypes = {
-    //主题
-    theme       : PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']),
-    //标头主题
-    headerTheme : PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']),
-    //标头css class
-    headClass   : PropTypes.string,
-    //数据来源
-    data        : PropTypes.array,
-    //数据总记录数
-    dataCount   : PropTypes.number,
-    //总页数
-    page        : PropTypes.number,
-    //第一列是否出现选择项
-    select      : PropTypes.bool,
-    //是否只能选中一项
-    selectOnce   : PropTypes.bool,
-    //是否显示标头
-    header      : PropTypes.bool,
-    //
-    center      : PropTypes.bool,
-    //数据当前页
-    currentPage : PropTypes.number,
-    //
-    striped     : PropTypes.bool,
-    //是否显示边框
-    bordered    : PropTypes.bool,
-    //行是否有hover效果
-    hover       : PropTypes.bool,
-    //是否小型化显示列表
-    sm          : PropTypes.bool,
-    //文字最小化
-    fontSm      : PropTypes.bool,
-    responsive  : PropTypes.bool,
-    //文字列表 left,center,right
-    align       : PropTypes.string,
-    //是否显示树结构
-    tree        : PropTypes.string,
-    //点击树事件
-    onClickTree : PropTypes.func,
-    //点击事件
-    onClick     : PropTypes.func,
-    //选择事件
-    onCheck     : PropTypes.func,
-    //选择所有
-    onCheckAll  : PropTypes.func,
-    //过滤事件
-    onFilter    : PropTypes.func,
-    //排序事件
-    onSort      : PropTypes.func,
-    //是否列可移动
-    move        : PropTypes.bool,
-    //刷新事件
-    onRefresh   : PropTypes.func,
-    //刷新事件按钮文字
-    refreshText : PropTypes.string,
-    //是否漂浮
-    absolute    : PropTypes.bool,
-    //漂浮X坐标
-    x           : PropTypes.string,
-    //漂浮Y坐标
-    y           : PropTypes.string,
-    //表宽
-    width       : PropTypes.string,
-    //表高
-    height      : PropTypes.string,
-    // foot        : PropTypes.bool,
-    //是否显示列表尾
-    foot        : PropTypes.object,
-    //表自动随主体小设置
-    position    : PropTypes.object,
-    //显示的页码数
-    showPages   : PropTypes.number,
-    //显示的记录条数
-    showNumbers : PropTypes.number,
-    //翻页事件
-    onSelectPage: PropTypes.func,
-    //是否自动换行
-    noWrap      : PropTypes.bool,
-    //是否启用右键菜单
-    menu        : PropTypes.bool,
-    //是否显示每列记录总合数
-    total       : PropTypes.object,
-    //是否编辑模式
-    edit        : PropTypes.bool,
-    //数据删除事件
-    onDelete    : PropTypes.func,
-    //是否启用排序
-    sort        : PropTypes.bool,
-    //是否启用过滤
-    filter      : PropTypes.bool,
-    //自定义右键菜单
-    customMenu  : PropTypes.array,
-    //自定义显示语言
-    lang        : PropTypes.object,
-    source      : PropTypes.string,
-    sourceFunc  : PropTypes.func,
-    //是否显示全部选取
-    allSelect  : PropTypes.bool,
-    //focus 是否显示焦点
-    focus: PropTypes.bool,
-    //是否全行点选
-    rowCheck: PropTypes.bool,
-};
-
-CTable.defaultProps = {
-    data       : [],
-    dataCount  : 1,
-    select     : true,
-    header     : true,
-    foot       : true,
-    currentPage: 1,
-    hover      : true,
-    striped    : true,
-    align      : 'left',
-    sm         : true,
-    fontSm     : true,
-    headerTheme: 'primary',
-    noWrap     : true,
-    bordered   : true,
-    move       : true,
-    menu       : true,
-    showNumbers: 30,
-    showPages  : 10,
-    source     : null,
-    total      : null,
-    lang       : 'en',
-    allSelect  : true,
-    rowCheck   : false,
-    focus: true
-}
 
 export default CTable;

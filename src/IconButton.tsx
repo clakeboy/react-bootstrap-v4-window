@@ -1,10 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames/bind';
+import classNames from 'classnames';
 import './css/IconButton.less';
+import { ComponentProps } from '@clake/react-bootstrap4';
 
-class IconButton extends React.PureComponent {
-    constructor(props) {
+interface Props extends ComponentProps {
+    onClick?:(evt:any)=>void
+    iconType?:string //['solid', 'regular', 'light', 'brands']
+    icon?:string
+    color?:string
+}
+
+
+class IconButton extends React.PureComponent<Props,any> {
+    dom:HTMLElement
+    constructor(props:any) {
         super(props);
     }
 
@@ -42,7 +52,7 @@ class IconButton extends React.PureComponent {
     }
 
     getStyles() {
-        let base = {};
+        let base:any = {};
         if (this.props.color) {
             base.color = this.props.color;
         }
@@ -51,20 +61,11 @@ class IconButton extends React.PureComponent {
 
     render() {
         return (
-            <span ref={c=>this.dom=c} className={this.getClasses()} style={this.getStyles()}>
+            <span ref={(c:any)=>this.dom=c} className={this.getClasses()} style={this.getStyles()}>
 
             </span>
         );
     }
 }
-
-IconButton.propTypes = {
-    iconType: PropTypes.oneOf(['solid', 'regular', 'light', 'brands']),
-    icon    : PropTypes.string,
-    color   : PropTypes.string,
-    onClick: PropTypes.func
-};
-
-IconButton.defaultProps = {};
 
 export default IconButton;

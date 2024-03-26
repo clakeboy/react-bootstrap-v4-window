@@ -23,3 +23,4 @@ webpack.dev.js
 webpack.prod.js
 bower.json
 ISSUE_TEMPLATE.md
+tsconfig.*

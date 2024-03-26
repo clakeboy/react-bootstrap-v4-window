@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": false,
+    "target": "ES2022",
+    "module": "umd",
+    "jsx": "react",
+    "allowJs": true,
+    "declaration": true,
+    "checkJs": false,
+    "outDir": "./dist/",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "strictPropertyInitialization": false
+  },
+  "include": [
+    "./src/**/*",
+    "./exsrc/**/*",
+    "./gulpfile.babel.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

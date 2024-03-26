@@ -1,44 +1,106 @@
 /** @module react-bootstrap-v4-window/WModal */
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames/bind';
+import classNames from 'classnames';
 import {
     Button,
     Load,
     Common,
-    ButtonGroup
+    ButtonGroup,
+    ComponentProps,
+    StrObject,
+    AnyObject
 } from '@clake/react-bootstrap4';
 import './css/WModal.less';
 
-const ModalAlert = 0;
-const ModalConfirm = 1;
-const ModalLoading = 2;
-const ModalView = 3;
+// const ModalAlert = 0;
+// const ModalConfirm = 1;
+// const ModalLoading = 2;
+// const ModalView = 3;
+//基础INDEX值
 const BaseModal = 950;
 
-const defBtns = {
+enum ModalTypes {
+    ModalAlert, 
+    ModalConfirm, 
+    ModalLoading, 
+    ModalView
+}
+
+const defBtns:StrObject = {
     ok:'Ok',
     cancel:'Cancel',
 };
 
-class WModal extends React.Component {
-    constructor(props) {
+export interface ModalOptions {
+    content?: any
+    title?: any
+    isCloseBtn?: boolean
+    type?:number
+    callback?:()=>void
+    center?: boolean
+    fade?: boolean
+    header?: boolean
+    btns?: StrObject
+}
+
+interface Props extends ComponentProps {
+    onOpen: ()=>void,
+    onClose: ()=>void,
+    center: boolean,
+    fade: boolean,
+    blurSelector: string,
+    width: string
+}
+
+interface State {
+    content:string,
+    title:string,
+    isCloseBtn:boolean,
+    type:number,
+    center:boolean,
+    fade:boolean,
+    show:boolean,
+    header:boolean,
+    btns:StrObject,
+    width:string
+}
+
+export class WModal extends React.Component<Props,State> {
+    domId: string
+    offsetIndex:number
+    is_open:boolean
+    fadeTime:AnyObject
+    modalType:number
+    callback?:(flag?:any)=>void
+    _main: HTMLDivElement
+    _shadow: HTMLDivElement
+    _dialog: HTMLDivElement
+
+    defaultProps = {
+        center:false,
+        width: '300px',
+        fade:true,
+    };
+
+    constructor(props:any) {
         super(props);
         this.state = {
             content:'',
             title:'',
             isCloseBtn:true,
-            type:ModalAlert,
+            type:ModalTypes.ModalAlert,
             center:this.props.center,
             fade:this.props.fade,
             show:false,
             header:true,
             btns:defBtns,
+            width:''
         };
         //modal type
-        this.modalType = ModalAlert;
+        this.modalType = ModalTypes.ModalAlert;
         //alert confirm callback function
-        this.callback = null;
+        this.callback = undefined;
 
         this.domId = 'modal-'+Common.RandomString(16);
         if (this.props.id) {
@@ -52,7 +114,7 @@ class WModal extends React.Component {
         };
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
+    shouldComponentUpdate(nextProps:Props, nextState:State) {
         return this.state.content !== nextState.content
     }
 
@@ -95,13 +157,13 @@ class WModal extends React.Component {
         },150);
     }
 
-    closeHandler = (e)=>{
+    closeHandler = ()=>{
         if (typeof this.props.onClose === 'function') {
             this.props.onClose();
         }
     };
 
-    openHandler = (e) =>{
+    openHandler = () =>{
         if (typeof this.props.onOpen === 'function') {
             this.props.onOpen();
         }
@@ -117,23 +179,28 @@ class WModal extends React.Component {
      * }
      * @param opt object
      */
-    alert(opt,cb) {
-        this.callback = opt.callback||cb||null;
-        this.modalType = ModalAlert;
+    alert(args:ModalOptions|string,cb?:()=>void):void {
+        let opt:ModalOptions
+        if (typeof args === 'string') {
+            opt = {
+                content:args
+            }
+        } else {
+            opt = args
+        }
+        this.callback = opt.callback||cb||undefined;
+        this.modalType = ModalTypes.ModalAlert;
         this.setState({
             title:opt.title||'Prompt',
             content:opt.content||opt||'',
             isCloseBtn:true,
-            type:ModalAlert,
+            type:ModalTypes.ModalAlert,
             center:opt.center||this.props.center,
             fade:opt.fade||this.props.fade,
             header: typeof opt.header === 'undefined' ? true:opt.header,
             btns: typeof opt.btns != 'undefined' ? opt.btns:defBtns,
         },()=>{
-            this.open({
-                backdrop:'static',
-                keyboard:false,
-            });
+            this.open();
         });
     }
 
@@ -147,23 +214,28 @@ class WModal extends React.Component {
      * }
      * @param opt
      */
-    confirm(opt,cb) {
-        this.callback = opt.callback||cb||null;
-        this.modalType = ModalConfirm;
+    confirm(args:ModalOptions|string,cb?:()=>void) {
+        let opt:ModalOptions
+        if (typeof args === 'string') {
+            opt = {
+                content:args
+            }
+        } else {
+            opt = args
+        }
+        this.callback = opt.callback||cb||undefined;
+        this.modalType = ModalTypes.ModalConfirm;
         this.setState({
             title:opt.title||'Prompt',
             content:opt.content||'',
             isCloseBtn:true,
-            type:ModalConfirm,
+            type:ModalTypes.ModalConfirm,
             center:opt.center||this.props.center,
             fade:opt.fade||this.props.fade,
             header: typeof opt.header === 'undefined' ? true:opt.header,
             btns: typeof opt.btns != 'undefined' ? opt.btns:defBtns,
         },()=>{
-            this.open({
-                backdrop:'static',
-                keyboard:false,
-            });
+            this.open();
         });
     }
 
@@ -171,8 +243,16 @@ class WModal extends React.Component {
      * modal loading method
      * @param opt
      */
-    loading(opt) {
-        this.modalType = ModalLoading;
+    loading(args:ModalOptions|string) {
+        let opt:ModalOptions
+        if (typeof args === 'string') {
+            opt = {
+                content:args
+            }
+        } else {
+            opt = args
+        }
+        this.modalType = ModalTypes.ModalLoading;
         this.setState({
             title:opt.title||'Prompt',
             // content:(
@@ -182,15 +262,12 @@ class WModal extends React.Component {
             // ),
             content:opt.content||opt||'',
             isCloseBtn:false,
-            type:ModalLoading,
+            type:ModalTypes.ModalLoading,
             center:opt.center||this.props.center,
             fade:this.props.fade,
             header: opt.header||false,
         },()=>{
-            this.open({
-                backdrop:'static',
-                keyboard:false,
-            });
+            this.open();
         });
     }
 
@@ -204,22 +281,19 @@ class WModal extends React.Component {
      * }
      * @param opt
      */
-    view(opt) {
-        this.callback = opt.callback||null;
-        this.modalType = ModalView;
+    view(opt:ModalOptions) {
+        this.callback = opt.callback||undefined;
+        this.modalType = ModalTypes.ModalView;
         this.setState({
             title:opt.title||'Prompt',
             content:opt.content||'',
             isCloseBtn:true,
-            type:ModalView,
+            type:ModalTypes.ModalView,
             center:opt.center||this.props.center,
             fade:opt.fade||this.props.fade,
             header: typeof opt.header === 'undefined' ? true:opt.header
         },()=>{
-            this.open({
-                backdrop:'static',
-                keyboard:false,
-            });
+            this.open();
         });
     }
 
@@ -235,7 +309,7 @@ class WModal extends React.Component {
 
     getClasses() {
         let base = 'modal wmodal-sm d-block';
-        if (this.modalType === ModalView) {
+        if (this.modalType === ModalTypes.ModalView) {
             base = classNames(base,"bd-example-modal-lg");
         }
 
@@ -247,18 +321,18 @@ class WModal extends React.Component {
     }
 
     getDialogStyles() {
-        let base = {};
+        let base:any = {};
         if (this.state.width) {
-            base['maxWidth'] = this.state.width;
+            base.maxWidth = this.state.width;
         } else if (this.props.width) {
-            base['maxWidth'] = this.props.width;
+            base.maxWidth = this.props.width;
         }
         return base;
     }
 
     getDialogClasses() {
         let base = 'modal-dialog';
-        if (this.modalType === ModalView) {
+        if (this.modalType === ModalTypes.ModalView) {
             base = classNames(base,"modal-lg");
         }
         if (this.state.center) {
@@ -277,7 +351,7 @@ class WModal extends React.Component {
     renderFooter() {
         let content = null;
         switch (this.state.type) {
-            case ModalAlert:
+            case ModalTypes.ModalAlert:
                 content = (
                     <Button className="w-100" size='sm' data-dismiss="modal" onClick={e=>{
                         this.close();
@@ -287,7 +361,7 @@ class WModal extends React.Component {
                     }}>{this.state.btns['ok']}</Button>
                 );
                 break;
-            case ModalConfirm:
+            case ModalTypes.ModalConfirm:
                 content = (
                     <div className='row flex-grow-1 g-1 btn'>
                         <ButtonGroup>
@@ -322,10 +396,10 @@ class WModal extends React.Component {
         let modalIndex = {zIndex:BaseModal+this.offsetIndex+2};
         let shadowIndex = {zIndex:BaseModal+this.offsetIndex+1};
         return (
-            <div ref={c=>this._main=c} className={this.getMainClasses()}>
-                <div ref={c=>this._shadow=c} className={this.getShadowClasses()} style={shadowIndex} id={`${this.domId}-shadow`}/>
-                <div className={this.getClasses()} style={modalIndex} tabIndex="-1" id={this.domId} role="dialog">
-                    <div ref={c=>this._dialog=c} className={this.getDialogClasses()} style={this.getDialogStyles()} role="document">
+            <div ref={(c:any)=>this._main=c} className={this.getMainClasses()}>
+                <div ref={(c:any)=>this._shadow=c} className={this.getShadowClasses()} style={shadowIndex} id={`${this.domId}-shadow`}/>
+                <div className={this.getClasses()} style={modalIndex} tabIndex={-1} id={this.domId} role="dialog">
+                    <div ref={(c:any)=>this._dialog=c} className={this.getDialogClasses()} style={this.getDialogStyles()} role="document">
                         <div className="modal-content">
                             {this.state.header?<div className="modal-header">
                                 <h6 className="modal-title">{this.state.title}</h6>
@@ -335,7 +409,7 @@ class WModal extends React.Component {
                                 </button>:null}
                             </div>:null}
                             <div className="modal-body">
-                                {this.state.type === ModalLoading?<React.Fragment>
+                                {this.state.type === ModalTypes.ModalLoading?<React.Fragment>
                                     <Load/>&nbsp;&nbsp;&nbsp;{this.state.content}
                                 </React.Fragment>:this.state.content}
                             </div>
@@ -347,20 +421,5 @@ class WModal extends React.Component {
         );
     }
 }
-
-WModal.propTypes = {
-    onOpen: PropTypes.func,
-    onClose: PropTypes.func,
-    center: PropTypes.bool,
-    fade: PropTypes.bool,
-    blurSelector: PropTypes.string,
-    width: PropTypes.string
-};
-
-WModal.defaultProps = {
-    center:false,
-    width: '300px',
-    fade:true,
-};
 
 export default WModal;

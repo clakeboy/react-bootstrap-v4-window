@@ -1,15 +1,30 @@
 import React from 'react';
 import * as ReactDOM from "react-dom";
-import classNames from 'classnames/bind';
+import classNames from 'classnames';
 import {
     Combo,
-    Common
-// } from "../../../git_project/react-bootstrap-v4/src/index";
+    Common,
+    ComponentProps
 } from '@clake/react-bootstrap4';
 import './css/WCombo.less';
 
-class WCombo extends React.PureComponent {
-    constructor(props) {
+interface Props extends ComponentProps {
+    data?:any
+    combo?:any
+    noSearch?:boolean
+    onSelect?:(val:any,row:any,evt:any)=>void
+}
+
+interface State {
+
+}
+
+class WCombo extends React.PureComponent<Props,State> {
+    event:any
+    calDom:any
+    combo:any
+    dom:HTMLDivElement
+    constructor(props:any) {
         super(props);
 
         this.event = null;
@@ -24,7 +39,7 @@ class WCombo extends React.PureComponent {
         window.removeEventListener('mousedown',this.hide,false);
     }
 
-    show(search,e) {
+    show(search:string,e:any) {
         let xy = Common.GetDomXY(e.currentTarget);
         // let fixed = this.calculatePosition(e.currentTarget);
         // console.log(fixed);
@@ -33,10 +48,9 @@ class WCombo extends React.PureComponent {
         this.dom.classList.remove('d-none');
         this.event = e;
         this.combo.show(search,e.currentTarget);
-        if (positionTop + this.calDom.offsetHeight >
+        if (positionTop + this.calDom.offsetHeight <
             document.documentElement.scrollTop + document.documentElement.clientHeight) {
-        } else {
-            positionTop += 5;
+                positionTop += 5;
         }
         this.dom.style.top = (positionTop)+'px';
     }
@@ -45,7 +59,7 @@ class WCombo extends React.PureComponent {
         this.dom.classList.add('d-none');
     };
 
-    filter(val) {
+    filter(val:any) {
         this.combo.filter(val);
     }
 
@@ -55,7 +69,7 @@ class WCombo extends React.PureComponent {
         return classNames(base,this.props.className);
     }
 
-    selectHandler = (val,row)=>{
+    selectHandler = (val:any,row:any)=>{
         if (typeof this.props.onSelect === 'function') {
             this.props.onSelect(val,row,this.event);
         }
@@ -63,8 +77,8 @@ class WCombo extends React.PureComponent {
 
     render() {
         let content = (
-            <div ref={c=>this.dom=c} className={this.getClasses()}>
-                <Combo ref={c => this.combo = c} {...this.props.combo} sm
+            <div ref={(c:any)=>this.dom=c} className={this.getClasses()}>
+                <Combo ref={(c:any) => this.combo = c} {...this.props.combo} sm
                        data={this.props.data} noSearch={this.props.noSearch}
                        onSelect={this.selectHandler} onClose={this.hide}/>
             </div>
@@ -83,13 +97,5 @@ class WCombo extends React.PureComponent {
         );
     }
 }
-
-WCombo.propTypes = {
-
-};
-
-WCombo.defaultProps = {
-
-};
 
 export default WCombo;

@@ -1,9 +1,22 @@
+import { ComponentProps } from '@clake/react-bootstrap4';
 import React from 'react';
 
 const defIndex = 100;
 
-class WindowGroup extends React.Component {
-    constructor(props) {
+interface Props extends ComponentProps {
+    
+}
+
+interface State {
+    showWindows:any[]
+}
+
+export class WindowGroup extends React.Component<Props,State> {
+    windows:any
+    opens:string[]
+    windowList:any
+    currentActive:string
+    constructor(props:any) {
         super(props);
 
         this.state = {
@@ -16,7 +29,7 @@ class WindowGroup extends React.Component {
         //windows
         this.windowList = {};
         //current active window
-        this.currentActive = null;
+        this.currentActive = '';
 
         React.Children.map(this.props.children,(item)=>{
             this.windowList[item.props.name] = item;
@@ -32,7 +45,7 @@ class WindowGroup extends React.Component {
      * @param name string
      * @param params object
      */
-    open(name,params) {
+    open(name:string,params:any) {
         if (this.currentActive) {
             this.windows[this.currentActive].setActive(false);
             this.currentActive = name;
@@ -60,7 +73,7 @@ class WindowGroup extends React.Component {
         }
     }
 
-    show(name,params) {
+    show(name:string,params:any) {
         let option = {
             x:this.opens.length*20+10,
             y:this.opens.length*20+10,
@@ -71,7 +84,7 @@ class WindowGroup extends React.Component {
         this.changeWindowIndex(name);
     }
 
-    changeWindowIndex(name) {
+    changeWindowIndex(name:string) {
         if (this.currentActive) {
             this.windows[this.currentActive].setActive(false);
             this.currentActive = name;
@@ -84,7 +97,7 @@ class WindowGroup extends React.Component {
         });
     }
 
-    removeWindowOpens(name) {
+    removeWindowOpens(name:string) {
         this.opens.splice(this.opens.indexOf(name),1);
         this.opens.forEach((key,index)=>{
             this.windows[key].setIndex(defIndex+index);
@@ -96,7 +109,7 @@ class WindowGroup extends React.Component {
         // });
     }
 
-    close(name) {
+    close(name:string) {
         if (this.windows[name]) {
             this.windows[name].close();
         }
@@ -106,7 +119,7 @@ class WindowGroup extends React.Component {
         return this.state.showWindows.map((name)=>{
             let item = this.windowList[name];
             item.props.parent = this;
-            item.props.ref = c=>this.windows[name]=c;
+            item.props.ref = (c:any)=>this.windows[name]=c;
             return React.cloneElement(item,item.props);
         });
     }
@@ -119,13 +132,5 @@ class WindowGroup extends React.Component {
     //     })
     // }
 }
-
-WindowGroup.propTypes = {
-
-};
-
-WindowGroup.defaultProps = {
-
-};
 
 export default WindowGroup;

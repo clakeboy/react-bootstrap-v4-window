@@ -1,4 +1,4 @@
-const zh_cn = {
+const zh_cn:any = {
     "Copy":"复制",
     "Cut":"剪切",
     "Filter By Selection":"显示包括选择的字符",
@@ -15,7 +15,7 @@ const zh_cn = {
     "Condition Filter":"条件查询",
 };
 
-const en_us = {
+const en_us:any = {
     "Copy":"Copy",
     "Cut":"Cut",
     "Filter By Selection":"Filter By Selection",
@@ -32,7 +32,7 @@ const en_us = {
     "Condition Filter":"Condition Filter",
 };
 
-const CTableLang = {
+const CTableLang:any = {
     "zh":zh_cn,
     "en":en_us
 };

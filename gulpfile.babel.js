@@ -65,18 +65,25 @@ gulp.task('clean:build', (callback) => {
 gulp.task('clean',gulp.series('clean:build','clean:publish'));
 
 gulp.task('publish:pack',()=>{
-    return gulp.src(['src/**/*.js','src/**/*.jsx'])
+    return gulp.src(['src/**/*.js','src/**/*.ts','src/**/*.tsx'])
         .pipe(sourcemaps.init())
         .pipe(babel({
-            "presets": ["@babel/preset-env", "@babel/preset-react"],
+            "presets": [
+                "@babel/preset-env",
+                "@babel/preset-react",
+                "@babel/preset-typescript"
+            ],
             "plugins": [
                 "@babel/plugin-proposal-object-rest-spread",
                 ["@babel/plugin-transform-runtime",{
-                    "helpers": false
+                    "helpers": false,
+                    "useESModules": true,
                 }],
                 "@babel/plugin-proposal-class-properties",
                 "@babel/plugin-syntax-dynamic-import",
-                "@babel/plugin-proposal-export-default-from"
+                "@babel/plugin-proposal-export-default-from",
+                "@babel/plugin-proposal-nullish-coalescing-operator",
+                "@babel/plugin-proposal-optional-chaining"
             ]
         }))
         .pipe(sourcemaps.write('.'))

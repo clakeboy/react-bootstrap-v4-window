@@ -1,15 +1,42 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames/bind';
+import classNames from 'classnames';
 import './css/CTableInput.less';
 import {
+    Calendar,
+    Combo,
+    ComponentProps,
     i18n,
     Icon
 } from '@clake/react-bootstrap4';
 import WCombo from "./WCombo";
 import WCalendar from './WCalendar';
-class CTableInput extends React.Component {
-    constructor(props) {
+
+interface Props extends ComponentProps {
+    data?: any
+    align?: string
+    disabled?: boolean
+    combo?: any
+    comboData?: any
+    calendar?: any
+    onChange?: (evt:any,val:any,row?:any)=>void
+    onSelect?: ()=>void
+    onFocus?: (e:any)=>void
+    onBlur?:(e:any)=>void
+    readOnly?: boolean
+    calendarFormat?: string
+}
+
+interface State {
+    value: string
+    comboData:any
+}
+
+class CTableInput extends React.Component<Props,State> {
+    input: HTMLInputElement
+    calendar:Calendar
+    combo: Combo
+    constructor(props:any) {
         super(props);
         this.state={
             value:this.parseValue(this.props.data),
@@ -20,15 +47,15 @@ class CTableInput extends React.Component {
 
     componentDidMount(){
         if (this.props.calendar) {
-            this.input.addEventListener('focus', (e) => {
+            this.input.addEventListener('focus', (e:any) => {
                 this.calendar.show(e);
             }, false);
-            this.input.addEventListener('mousedown', (e) => {
+            this.input.addEventListener('mousedown', (e:any) => {
                 e.stopPropagation();
             }, false);
         }
         if (this.props.combo) {
-            this.input.addEventListener('focus', (e) => {
+            this.input.addEventListener('focus', (e:any) => {
                 this.combo.show(this.state.value,e);
             }, false);
             this.input.addEventListener('mousedown', (e) => {
@@ -37,7 +64,7 @@ class CTableInput extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps:Props) {
         this.setState({
             value: this.parseValue(nextProps.data),
             // value: nextProps.value || '',
@@ -45,7 +72,7 @@ class CTableInput extends React.Component {
         });
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
+    shouldComponentUpdate(nextProps:Props, nextState:State) {
         if (nextProps.comboData !== this.props.comboData) {
             return true;
         }
@@ -55,7 +82,7 @@ class CTableInput extends React.Component {
         return nextState.value !== this.state.value;
     }
 
-    parseValue(val) {
+    parseValue(val:any) {
         if (val === null || val === undefined) {
             return "";
         } else {
@@ -69,7 +96,7 @@ class CTableInput extends React.Component {
         return classNames(base,this.props.className);
     }
 
-    changeHandler = (e) => {
+    changeHandler = (e:any) => {
         this.setState({
             value: e.target.value
         });
@@ -82,7 +109,7 @@ class CTableInput extends React.Component {
         }
     };
 
-    dblHandler = (e)=> {
+    dblHandler = (e:any)=> {
         if (this.calendar && !this.state.value) {
             this.calendar.setCurrentDate(new Date());
             let val = this.calendar.format()
@@ -94,7 +121,7 @@ class CTableInput extends React.Component {
         }
     };
 
-    selectHandler = (val,row,e)=>{
+    selectHandler = (val:any,row:any,e:any)=>{
         this.setState({
             value:val
         });
@@ -103,7 +130,7 @@ class CTableInput extends React.Component {
         }
     };
 
-    calendarSelectHandler = (val,e)=>{
+    calendarSelectHandler = (val:any,e:any)=>{
         this.setState({
             value:val
         });
@@ -113,7 +140,7 @@ class CTableInput extends React.Component {
     };
 
     render() {
-        let inputStyle = {};
+        let inputStyle:any = {};
         if (this.props.align) {
             inputStyle.textAlign = this.props.align;
         }
@@ -123,10 +150,11 @@ class CTableInput extends React.Component {
         }
         return (
             <div className={this.getClasses()}>
-                <input ref={c=>this.input=c} type='text' {...this.props}
+                <input ref={(c:any)=>this.input=c} type='text'
                        onChange={this.changeHandler}
                        onDoubleClick={this.dblHandler}
                        disabled={this.props.disabled}
+                       onFocus={this.props.onFocus}
                        style={inputStyle}
                        className={inputClasses}
                        value={this.state.value}/>
@@ -143,7 +171,7 @@ class CTableInput extends React.Component {
         let input_icon = 'ck-wcombo-icon';
         return (
             <div className='ck-input-calendar'>
-                <WCombo ref={c => this.combo = c} combo={this.props.combo}
+                <WCombo ref={(c:any) => this.combo = c} combo={this.props.combo}
                        data={this.state.comboData} noSearch={this.props.readOnly}
                        onSelect={this.selectHandler}/>
                 <div className={input_icon} onClick={() => {
@@ -160,7 +188,7 @@ class CTableInput extends React.Component {
         let input_icon = 'ck-wcalendar-icon';
         return (
             <div className='ck-input-calendar'>
-                <WCalendar ref={c => this.calendar = c} onSelect={this.calendarSelectHandler}
+                <WCalendar ref={(c:any) => this.calendar = c} onSelect={this.calendarSelectHandler}
                            value={this.state.value}
                            format={this.props.calendarFormat}/>
                 <div className={input_icon} onClick={() => {
@@ -170,20 +198,5 @@ class CTableInput extends React.Component {
         )
     }
 }
-
-CTableInput.propTypes = {
-    data: PropTypes.any,
-    align: PropTypes.string,
-    disabled: PropTypes.bool,
-    combo: PropTypes.object,
-    comboData: PropTypes.any,
-    calendar: PropTypes.object,
-    onChange: PropTypes.func,
-    onSelect: PropTypes.func,
-};
-
-CTableInput.defaultProps = {
-
-};
 
 export default CTableInput;

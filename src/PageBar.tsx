@@ -1,12 +1,28 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames/bind';
+import classNames from 'classnames';
 import './css/PageBar.less';
 import {
+    ComponentProps,
     Icon
 } from '@clake/react-bootstrap4';
-class PageBar extends React.Component {
-    constructor(props) {
+
+interface Props extends ComponentProps {
+    page: number
+    dataCount: number
+    showNumbers: number
+    onSelect: (page:number)=>void
+    showPages: number
+    noPage: boolean
+}
+
+interface State {
+    page: number
+    dataCount: number
+    pages: number
+}
+
+class PageBar extends React.Component<Props,State> {
+    constructor(props:any) {
         super(props);
         this.state = {
             page:this.props.page,
@@ -19,7 +35,7 @@ class PageBar extends React.Component {
 
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    UNSAFE_componentWillReceiveProps(nextProps:Props, nextContext:any) {
         if (nextProps !== this.props) {
             this.setState({
                 page:nextProps.page,
@@ -29,8 +45,8 @@ class PageBar extends React.Component {
         }
     }
 
-    calPage(count,number) {
-        let pages = parseInt(count / number);
+    calPage(count:number,number:number) {
+        let pages = (count / number);
         if (count % number !== 0) {
             pages += 1;
         }
@@ -43,7 +59,7 @@ class PageBar extends React.Component {
         return classNames(base,this.props.className);
     }
 
-    changePage(page) {
+    changePage(page:number) {
         if (page < 1) {
             page = 1;
         }
@@ -69,11 +85,11 @@ class PageBar extends React.Component {
                     <div className='page-show'>
                         <input onChange={(e)=>{
                             this.setState({
-                                page:e.value
+                                page:parseInt(e.target.value)
                             })
                         }} onKeyUp={(e)=>{
                             if (e.keyCode === 13) {
-                                this.changePage(parseInt(e.target.value));
+                                this.changePage(parseInt((e.target as HTMLInputElement).value));
                             }
                         }} type="number" min="1" max={this.state.pages} value={this.state.page}/> / {this.state.pages}
                     </div>
@@ -85,18 +101,5 @@ class PageBar extends React.Component {
         );
     }
 }
-
-PageBar.propTypes = {
-    dataCount   : PropTypes.number,
-    page        : PropTypes.number,
-    showNumbers  : PropTypes.number,
-    showPages   : PropTypes.number,
-    onSelect: PropTypes.func,
-    noPage: PropTypes.bool,
-};
-
-PageBar.defaultProps = {
-
-};
 
 export default PageBar;

@@ -1,15 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames/bind';
+import classNames from 'classnames';
 import {
     Calendar,
     Common,
+    ComponentProps,
     i18n
-// } from "../../../git_project/react-bootstrap-v4/src/index";
 } from '@clake/react-bootstrap4';
-import * as ReactDOM from "react-dom";
-class WCalendar extends React.PureComponent {
-    constructor(props) {
+import ReactDOM from "react-dom";
+
+interface Props extends ComponentProps {
+    value?:any
+    combo?:any
+    noSearch?:boolean
+    format?:string
+    onSelect?:(val:any,row:any)=>void
+}
+
+interface State {
+
+}
+
+class WCalendar extends React.PureComponent<Props,State> {
+    event:any
+    calDom:any
+    calendar:any
+    dom:HTMLDivElement
+    constructor(props:any) {
         super(props);
         this.event = null;
         this.calDom = null;
@@ -19,7 +36,7 @@ class WCalendar extends React.PureComponent {
         this.calDom = ReactDOM.findDOMNode(this.calendar);
     }
 
-    show(e) {
+    show(e:any) {
         let xy = Common.GetDomXY(e.currentTarget);
         // let fixed = this.calculatePosition(e.currentTarget);
         let positionTop = (xy.top+xy.height);
@@ -27,11 +44,10 @@ class WCalendar extends React.PureComponent {
         this.dom.classList.remove('d-none');
         this.event = e;
         this.calendar.show(e.currentTarget);
-        if (positionTop + this.calDom.offsetHeight >
+        if (positionTop + this.calDom.offsetHeight <
             document.documentElement.scrollTop + document.documentElement.clientHeight) {
-        } else {
-            positionTop += 5;
-        }
+                positionTop += 5;
+        } 
         this.dom.style.top = positionTop+'px';
     }
 
@@ -39,7 +55,7 @@ class WCalendar extends React.PureComponent {
         this.dom.classList.add('d-none');
     };
 
-    calculatePosition(e) {
+    calculatePosition(e:any) {
         let scroll = {
             top: e.scrollTop||0,
             left: e.scrollLeft||0
@@ -55,7 +71,7 @@ class WCalendar extends React.PureComponent {
         return scroll;
     }
 
-    selectHandler = (val)=>{
+    selectHandler = (val:any)=>{
         if (typeof this.props.onSelect === 'function') {
             this.props.onSelect(val,this.event);
         }
@@ -71,15 +87,15 @@ class WCalendar extends React.PureComponent {
         return this.calendar?.format();
     }
 
-    setCurrentDate(d) {
+    setCurrentDate(d:any) {
         return this.calendar?.setCurrentDate(d);
     }
 
     render() {
         let lang = i18n.getLang();
         let content = (
-            <div ref={c=>this.dom=c} className={this.getClasses()}>
-                <Calendar ref={c => this.calendar = c} onSelect={this.selectHandler}
+            <div ref={(c:any)=>this.dom=c} className={this.getClasses()}>
+                <Calendar ref={(c:any)=> this.calendar = c} onSelect={this.selectHandler}
                           value={this.props.value}
                           format={this.props.format}
                           lang={lang.short} none shadow absolute triangular='up' sm/>
@@ -98,13 +114,5 @@ class WCalendar extends React.PureComponent {
         );
     }
 }
-
-WCalendar.propTypes = {
-    onSelect: PropTypes.func
-};
-
-WCalendar.defaultProps = {
-
-};
 
 export default WCalendar;

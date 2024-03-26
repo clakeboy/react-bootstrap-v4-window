@@ -1,15 +1,59 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames/bind';
+import classNames from 'classnames';
 import './css/Window.less';
 import ReactDOM from "react-dom";
 import Drag from './Drag';
 import IconButton from "./IconButton";
 import {
-    Common
+    Common,
+    ComponentProps
 } from '@clake/react-bootstrap4';
-class Window extends React.PureComponent {
-    constructor(props) {
+
+interface Props extends ComponentProps {
+    title?: string
+    width?: string
+    height?: string
+    x?: string
+    y?: string
+    backColor?: string
+    name?: string
+    parent?: any
+    marginTop?: any
+    isMaxBtn?: boolean
+    isCloseBtn?: boolean
+    isMinBtn?: boolean
+}
+
+interface State {
+    close:boolean
+}
+
+export interface ShowOptions {
+    params?: any
+    x?:number
+    y?:number
+}
+
+export class Window extends React.PureComponent<Props,State> {
+    static EVT_RESIZE:string
+    static EVT_MAXWINDOW:string
+    static EVT_SHOW:string
+    static EVT_CLOSE:string
+    static EVT_BEFORE_CLOSE:string
+
+    parent:any
+    data:any
+    evts:any
+    is_before:boolean
+    is_max:boolean
+    max_position:any
+    drag:Drag|undefined
+    dragDom:HTMLElement
+    domHeader:HTMLElement
+    dom:HTMLElement
+    params:any
+    constructor(props:any) {
         super(props);
         this.state = {
             close:true
@@ -25,7 +69,7 @@ class Window extends React.PureComponent {
     componentDidMount() {
         this.drag = new Drag(this.dragDom,this.domHeader,{
             start:()=>{
-                if (this.is_max) return;
+                if (this.is_max) return false;
                 this.dragDom.style.top = this.dom.style.top;
                 this.dragDom.style.left = this.dom.style.left;
                 this.dragDom.classList.remove('d-none');
@@ -53,18 +97,18 @@ class Window extends React.PureComponent {
     }
 
     componentWillUnmount() {
-        this.drag.unbind();
-        this.drag = null;
+        this.drag?.unbind();
+        this.drag = undefined;
     }
 
-    show(option) {
+    show(option:ShowOptions) {
         option = option || {
             x:20,
             y:20
         };
         this.params = option.params || null;
         this.dom.classList.remove('d-none');
-        this.move(option.x,option.y);
+        this.move(option.x??0,option.y??0);
         this.setState({
             close:false
         },()=>{
@@ -82,8 +126,8 @@ class Window extends React.PureComponent {
 
     hide = ()=>{
         this.max(false);
-        this.dom.style.top = 0;
-        this.dom.style.left = 0;
+        this.dom.style.top = "0";
+        this.dom.style.left = "0";
         this.dom.classList.add('d-none');
         this.setActive(false);
         this.is_max = false;
@@ -97,12 +141,12 @@ class Window extends React.PureComponent {
         });
     };
 
-    move(x,y) {
+    move(x:number,y:number) {
         this.dom.style.top = (y+this.props.marginTop)+'px';
         this.dom.style.left = x+'px';
     }
 
-    max(flag) {
+    max(flag:boolean) {
         if (flag) {
             this.max_position.y = this.dom.style.top;
             this.max_position.x = this.dom.style.left;
@@ -126,11 +170,11 @@ class Window extends React.PureComponent {
         }
     }
 
-    setIndex(index) {
+    setIndex(index:any) {
         this.dom.style.zIndex = index;
     }
 
-    setActive(active) {
+    setActive(active:boolean) {
         if (active) {
             this.dom.classList.add('ck-window-active');
         } else {
@@ -142,7 +186,7 @@ class Window extends React.PureComponent {
         return Common.GetDomXY(this.dom);
     }
 
-    maxHandler = (e)=>{
+    maxHandler = (e:any)=>{
         if (!this.props.isMaxBtn) {
             return
         }
@@ -150,28 +194,28 @@ class Window extends React.PureComponent {
         this.max(!this.is_max);
     };
 
-    showHandler = (e)=>{
+    showHandler = (e:any)=>{
         this.trigger(EVT_SHOW,e);
     };
 
-    closeHandler = (e)=>{
+    closeHandler = (e?:any)=>{
         this.trigger(EVT_CLOSE,e);
         this.clearEvent();
     };
 
-    beforeCloseHandler = (e)=>{
+    beforeCloseHandler = (e:any)=>{
         this.trigger(EVT_BEFORE_CLOSE,e);
     };
 
-    on(fn_name,fn) {
+    on(fn_name:string,fn:any) {
         this.evts[fn_name] = fn;
     }
 
-    off(fn_name) {
+    off(fn_name:string) {
         this.evts[fn_name] = undefined;
     }
 
-    trigger(fn_name,val) {
+    trigger(fn_name:string,val:any) {
         if (typeof this.evts[fn_name] === 'function') {
             this.evts[fn_name](val);
         }
@@ -186,8 +230,8 @@ class Window extends React.PureComponent {
         return classNames(base,this.props.className);
     }
 
-    getStyles(shadow) {
-        let base = {
+    getStyles(shadow?:boolean) {
+        let base:any = {
             width: "600px",
             height: "400px",
             top: '20px',
@@ -199,7 +243,9 @@ class Window extends React.PureComponent {
         if (this.props.height) {
             let reg = /(\d+)(px|rem|pt|cm|mm)/;
             let match = this.props.height.match(reg);
-            base.height = (35+parseInt(match[1]))+match[2];
+            if (match) {
+                base.height = (35+parseInt(match[1]))+match[2];
+            }
         }
         if (this.props.x) {
             base.left = this.props.x;
@@ -216,8 +262,8 @@ class Window extends React.PureComponent {
     render() {
         let content = (
             <React.Fragment>
-                <div ref={c=>this.dom=c} className={this.getClasses()} style={this.getStyles()}>
-                    <div ref={c=>this.domHeader=c} onDoubleClick={this.maxHandler} className='card-header'>
+                <div ref={(c:any)=>this.dom=c} className={this.getClasses()} style={this.getStyles()}>
+                    <div ref={(c:any)=>this.domHeader=c} onDoubleClick={this.maxHandler} className='card-header'>
                         {this.props.title}
                         <div className='window-btn'>
                             {/*<IconButton className='mr-1' iconType='regular' icon='window-minimize'/>*/}
@@ -230,7 +276,7 @@ class Window extends React.PureComponent {
                         {!this.state.close?this.renderContent():null}
                     </div>
                 </div>
-                <div ref={c=>this.dragDom=c} className='ck-window-drag-box d-none border border-secondary' style={this.getStyles(true)}/>
+                <div ref={(c:any)=>this.dragDom=c} className='ck-window-drag-box d-none border border-secondary' style={this.getStyles(true)}/>
             </React.Fragment>
         );
 
@@ -250,28 +296,6 @@ class Window extends React.PureComponent {
     }
 }
 
-Window.propTypes = {
-    title: PropTypes.string,
-    width: PropTypes.string,
-    height: PropTypes.string,
-    x: PropTypes.string,
-    y: PropTypes.string,
-    backColor: PropTypes.string,
-    name: PropTypes.string,
-    parent: PropTypes.any,
-    marginTop: PropTypes.any,
-    isMaxBtn: PropTypes.bool,
-    isCloseBtn: PropTypes.bool,
-    isMinBtn: PropTypes.bool,
-};
-
-Window.defaultProps = {
-    marginTop: 0,
-    isMaxBtn: true,
-    isCloseBtn: true,
-    isMinBtn: false,
-};
-
 const EVT_RESIZE = 'resize';
 const EVT_MAX_WINDOW = 'max_window';
 const EVT_SHOW = 'show';
@@ -285,6 +309,3 @@ Window.EVT_CLOSE = EVT_CLOSE;
 Window.EVT_BEFORE_CLOSE = EVT_BEFORE_CLOSE;
 
 export default Window;
-if (module.hot) {
-    module.hot.accept();
-}
