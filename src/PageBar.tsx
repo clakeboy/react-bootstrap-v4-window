@@ -46,7 +46,7 @@ class PageBar extends React.Component<Props,State> {
     }
 
     calPage(count:number,number:number) {
-        let pages = (count / number);
+        let pages = Math.floor(count / number);
         if (count % number !== 0) {
             pages += 1;
         }
