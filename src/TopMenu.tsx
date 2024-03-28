@@ -110,7 +110,7 @@ export class Item extends React.PureComponent<ItemProps,ItemState> {
     }
 }
 
-class TopMenu extends React.PureComponent<Props,State> {
+export class TopMenu extends React.PureComponent<Props,State> {
     static Item = Item
     
     cur_active:any

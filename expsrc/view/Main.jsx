@@ -24,11 +24,11 @@ import ReactBootstrap4,{
 // } from '../../../react-bootstrap-v4/src/index';
 } from '@clake/react-bootstrap4';
 import {
-    Window
+    Window,
+    WindowGroup,
+    TopMenu
 } from '../../src/index';
 import windowList from './window/windows';
-import WindowGroup from "../../src/WindowGroup";
-import TopMenu from "../../src/TopMenu";
 // import Loader from '../components/Loader';
 
 class Main extends React.Component {
