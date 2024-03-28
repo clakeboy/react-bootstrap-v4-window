@@ -180,14 +180,14 @@ class CTableTest extends React.Component {
     };
 
     sortHandler = (field,sort_type)=>{
-        let desc = sort_type === 'desc';
-        let data = this.state.table_data.slice(0);
-        data.sort((a,b)=>{
-            if (a[field] > b[field]) return desc?-1:1;
-            if (a[field] < b[field]) return desc?1:-1;
-            if (a[field] === b[field]) return 0;
-        });
-        this.setState({table_data:data})
+        // let desc = sort_type === 'desc';
+        // let data = this.state.table_data.slice(0);
+        // data.sort((a,b)=>{
+        //     if (a[field] > b[field]) return desc?-1:1;
+        //     if (a[field] < b[field]) return desc?1:-1;
+        //     if (a[field] === b[field]) return 0;
+        // });
+        // this.setState({table_data:data})
     };
 
     filterHandler = (text,field,type)=>{

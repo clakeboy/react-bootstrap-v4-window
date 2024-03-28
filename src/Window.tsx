@@ -42,6 +42,11 @@ export class Window extends React.PureComponent<Props,State> {
     static EVT_CLOSE:string
     static EVT_BEFORE_CLOSE:string
 
+    static defaultProps = {
+        isCloseBtn:true,
+        isMaxBtn: true
+    }
+
     parent:any
     data:any
     evts:any

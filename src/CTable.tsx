@@ -62,15 +62,15 @@ interface Props extends ComponentProps {
     //点击树事件
     onClickTree ?: ()=>void
     //点击事件
-    onClick     ?: (row:any,idx:number)=>void
+    onClick     ?: (row:any,idx:number,id?:string)=>void
     //选择事件
-    onCheck     ?: (chk:boolean,row:any)=>void
+    onCheck     ?: (chk:boolean,row:any,id?:string)=>void
     //选择所有
-    onCheckAll  ?: (chk:boolean,data:any[])=>void
+    onCheckAll  ?: (chk:boolean,data:any[],id?:string)=>void
     //过滤事件
-    onFilter    ?: (text:string, field:string, type:string)=>void
+    onFilter    ?: (text:string, field:string, type:string, id?:string)=>void
     //排序事件
-    onSort      ?: (field:string,sort_type:string)=>void
+    onSort      ?: (field:string,sort_type:string, id?:string)=>void
     //是否列可移动
     move        ?: boolean
     //刷新事件
@@ -97,7 +97,7 @@ interface Props extends ComponentProps {
     //显示的记录条数
     showNumbers ?: number
     //翻页事件
-    onSelectPage?: (page:number)=>void
+    onSelectPage?: (page:number,id?:string)=>void
     //是否自动换行
     noWrap      ?: boolean
     //是否启用右键菜单
@@ -107,7 +107,7 @@ interface Props extends ComponentProps {
     //是否编辑模式
     edit        ?: boolean
     //数据删除事件
-    onDelete    ?: (row:any,idx:number,callback:(row_index:number)=>void)=>void
+    onDelete    ?: (row:any,idx:number,callback:(row_index:number)=>void,id?:string)=>void
     //是否启用排序
     sort        ?: boolean
     //是否启用过滤
@@ -126,6 +126,8 @@ interface Props extends ComponentProps {
     rowCheck?: boolean
 
     columnStyle?:any
+    //唯一ID
+    jsxId?: string
 }
 
 interface State {
@@ -418,7 +420,7 @@ export class CTable extends React.Component<Props,State> {
                 selectHalf: half
             })
             if (typeof this.props.onCheck === "function") {
-                this.props.onCheck(checked, row);
+                this.props.onCheck(checked, row,this.props.jsxId);
             }
         };
     }
@@ -465,7 +467,7 @@ export class CTable extends React.Component<Props,State> {
             selectHalf: false
         },()=>{
             if (typeof this.props.onCheckAll === 'function') {
-                this.props.onCheckAll(this.state.selectAll,this.state.data)
+                this.props.onCheckAll(this.state.selectAll,this.state.data,this.props.jsxId)
             }
         })
     };
@@ -473,7 +475,7 @@ export class CTable extends React.Component<Props,State> {
     clickHandler(row:any, i:number) {
         return () => {
             if (typeof this.props.onClick === 'function') {
-                this.props.onClick(row, i);
+                this.props.onClick(row, i,this.props.jsxId);
             }
             if (this.props.select && this.props.rowCheck) {
                 let row:CCheckbox = this.refs['row_'+i] as CCheckbox;
@@ -517,7 +519,7 @@ export class CTable extends React.Component<Props,State> {
         child.classList.remove('fa-sort', 'fa-sort-alpha-up', 'fa-sort-alpha-down');
         child.classList.add('fa-sort-alpha-' + (sort_type === 'asc' ? 'down' : 'up'));
         if (typeof this.props.onSort === 'function') {
-            this.props.onSort(dom.dataset.field, sort_type);
+            this.props.onSort(dom.dataset.field, sort_type, this.props.jsxId);
         } else {
             // this.localSort(dom.dataset.field,sort_type)
         }
@@ -538,7 +540,9 @@ export class CTable extends React.Component<Props,State> {
             if (emitEvt && typeof this.props.onSort === 'function') {
                 this.props.onSort('','clear');
             } else {
-                this.setState({data:this.originalData.slice(0)})
+                if (this.props.edit) {
+                    this.setState({data:this.originalData.slice(0)})
+                }
             }
             return true;
         }
@@ -655,7 +659,7 @@ export class CTable extends React.Component<Props,State> {
         this.mainMenu.hide(undefined);
         this.numMenu.hide(undefined);
         if (typeof this.props.onFilter === 'function') {
-            this.props.onFilter(text, field, type);
+            this.props.onFilter(text, field, type,this.props.jsxId);
         } else {
             this.localFilter(text,field,type);
         }
@@ -692,7 +696,7 @@ export class CTable extends React.Component<Props,State> {
 
     selectPageHandler = (page:number) => {
         if (typeof this.props.onSelectPage === 'function') {
-            this.props.onSelectPage(page);
+            this.props.onSelectPage(page,this.props.jsxId);
         }
     };
 
@@ -757,7 +761,7 @@ export class CTable extends React.Component<Props,State> {
             return
         }
         if (typeof this.props.onDelete === 'function') {
-            this.props.onDelete(this.state.data[row_index], row_index,this.deleteRow);
+            this.props.onDelete(this.state.data[row_index], row_index,this.deleteRow,this.props.jsxId);
         } else {
             this.deleteRow(row_index)
         }
