@@ -156,39 +156,39 @@ class CTableTest extends React.Component {
 
     filterHandler = (text,field,type)=>{
         console.log(text,field,type);
-        let reg;
-        switch (type) {
-            case "start":
-                reg = new RegExp(`^${text}`);
-                break;
-            case "end":
-                reg = new RegExp(`${text}$`);
-                break;
-            case "clear":
-                this.setState({
-                    table_data:this.org_data.slice(0)
-                });
-                return;
-            default:
-                reg = new RegExp(`${text}`);
-        }
-        let data = this.state.table_data.slice(0);
-        let filter = [];
-        data.forEach((item)=>{
-            if (type === 'exclude') {
-                if (!reg.test(item[field])) {
-                    filter.push(item);
-                }
-            } else {
-                if (reg.test(item[field])) {
-                    filter.push(item);
-                }
-            }
-        });
+        // let reg;
+        // switch (type) {
+        //     case "start":
+        //         reg = new RegExp(`^${text}`);
+        //         break;
+        //     case "end":
+        //         reg = new RegExp(`${text}$`);
+        //         break;
+        //     case "clear":
+        //         this.setState({
+        //             table_data:this.org_data.slice(0)
+        //         });
+        //         return;
+        //     default:
+        //         reg = new RegExp(`${text}`);
+        // }
+        // let data = this.state.table_data.slice(0);
+        // let filter = [];
+        // data.forEach((item)=>{
+        //     if (type === 'exclude') {
+        //         if (!reg.test(item[field])) {
+        //             filter.push(item);
+        //         }
+        //     } else {
+        //         if (reg.test(item[field])) {
+        //             filter.push(item);
+        //         }
+        //     }
+        // });
 
-        this.setState({
-            table_data: filter
-        });
+        // this.setState({
+        //     table_data: filter
+        // });
     };
 
     testHandler = ()=>{

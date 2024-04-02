@@ -187,7 +187,7 @@ export class CTable extends React.Component<Props,State> {
     noClone:any
     lockColumns:any[]
     isLock:boolean
-    filter:any[]
+    filter:any
     
     width:string
     tableHeader:HTMLElement
@@ -239,7 +239,7 @@ export class CTable extends React.Component<Props,State> {
         this.current_sort = null;
 
         this.filter_list = [];
-
+        this.filter = {};
         this.editRows = [];
 
         this.cacheRow = {};
@@ -266,8 +266,8 @@ export class CTable extends React.Component<Props,State> {
                     return
                 }
                 this.editRows     = [];
-                this.originalData = Common.Clone(nextProps.data);
             }
+            this.originalData = Common.Clone(nextProps.data);
             // if (this.allchk) {
             //     this.allchk.setHalf(false);
             //     this.selectRows = [];
@@ -386,7 +386,7 @@ export class CTable extends React.Component<Props,State> {
                         flag:'like'
                     };
                 case "clear":
-                    this.filter = [];
+                    // this.filter = {};
                     break;
                 case "":
                     return {
@@ -668,11 +668,15 @@ export class CTable extends React.Component<Props,State> {
     clearFilter() {
         this.filter_list = [];
         let is_clean = this.clearSort(true);
+        Common.map(this.filter,(item:Input)=>{
+            item.setValue('')
+        })
         this.setState({
             filter: {
                 start  : '',
                 end    : '',
-                contain: ''
+                contain: '',
+                equal  :'',
             }
         });
         if (typeof this.props.onFilter === 'function') {
@@ -686,7 +690,7 @@ export class CTable extends React.Component<Props,State> {
 
     filterChangeHandler(field:string) {
         return (val:any) => {
-            let filter    = this.state.filter;
+            let filter    = {...this.state.filter};
             filter[field] = val;
             this.setState({
                 filter: filter
@@ -805,7 +809,6 @@ export class CTable extends React.Component<Props,State> {
 
     /**
      * 得到所有选中的行
-     * @returns {*}
      */
     getSelectRows() {
         return this.state.selectRows.map((item)=>{
@@ -815,8 +818,6 @@ export class CTable extends React.Component<Props,State> {
 
     /**
      * 设置选中的行
-     * @param {string} key 对应行数据的KEY值
-     * @param {array} list 要选中的数据值
      */
     setSelectRows(key:string, list:any[]) {
         let selectRows:any[] = []
@@ -1341,13 +1342,14 @@ export class CTable extends React.Component<Props,State> {
                 }}><span className='text-danger'><Icon className='me-1' icon='brush'/>{lang['Clear Filter / Sort']}</span></Menu.Item>:null}
                 {this.is_filter?<Menu.Item field='' step/>:null}
                 {this.is_filter?<Menu.Item field="equal">
+                    {this.state.filter.equal}
                     <span className='me-1' style={inputStyle}>{lang['Equal With']}</span>
-                    <Input className='me-1' size='xs' width='120px'
+                    <Input ref={(c:Input)=>this.filter.equal=c} className='me-1' size='xs' width='120px'
                            data={this.state.filter.equal}
                            onChange={this.filterChangeHandler('equal')}
                            onMouseDown={stopEvent}
                            onEnter={() => {
-                               this.filterHandler(this.state.filter.equal, this.mainMenu.data.field, 'equal');
+                                this.filterHandler(this.state.filter.equal, this.mainMenu.data.field, 'equal');
                            }}
                     />
                     <Button size='xs' onMouseDown={stopEvent} onClick={(e) => {
@@ -1356,7 +1358,7 @@ export class CTable extends React.Component<Props,State> {
                 </Menu.Item>:null}
                 {this.is_filter?<Menu.Item field="filter">
                     <span className='me-1' style={inputStyle}>{lang['Start With']}</span>
-                    <Input className='me-1' size='xs' width='120px'
+                    <Input ref={(c:Input)=>this.filter.start=c} className='me-1' size='xs' width='120px'
                            data={this.state.filter.start}
                            onChange={this.filterChangeHandler('start')}
                            onMouseDown={stopEvent}
@@ -1370,7 +1372,7 @@ export class CTable extends React.Component<Props,State> {
                 </Menu.Item>:null}
                 {this.is_filter?<Menu.Item field="filter">
                     <span className='me-1' style={inputStyle}>{lang['End With']}</span>
-                    <Input className='me-1' size='xs' width='120px'
+                    <Input ref={(c:Input)=>this.filter.end=c} className='me-1' size='xs' width='120px'
                            data={this.state.filter.end}
                            onChange={this.filterChangeHandler('end')}
                            onMouseDown={stopEvent}
@@ -1384,7 +1386,7 @@ export class CTable extends React.Component<Props,State> {
                 </Menu.Item>:null}
                 {this.is_filter?<Menu.Item field="filter">
                     <span className='me-1' style={inputStyle}>{lang['Contain with']}</span>
-                    <Input className='me-1' size='xs' width='120px'
+                    <Input ref={(c:Input)=>this.filter.contain=c} className='me-1' size='xs' width='120px'
                            data={this.state.filter.contain}
                            onChange={this.filterChangeHandler('contain')}
                            onMouseDown={stopEvent}
@@ -1432,6 +1434,8 @@ export class CTable extends React.Component<Props,State> {
                 lang = this.props.lang
             }
         }
+        
+        
         return <>
             <Menu ref={(c:any) => this.numMenu = c} onClick={this.menuClickHandler}>
                 <Menu.Item field="copy" onClick={() => {
