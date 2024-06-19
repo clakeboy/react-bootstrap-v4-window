@@ -196,6 +196,7 @@ export class CTable extends React.Component<Props,State> {
     table_head:HTMLElement
     table_body:HTMLElement
     table_total:HTMLElement
+    fullButton:HTMLElement
     split:HTMLElement
     mainDom:HTMLElement
     mainMenu:Menu
@@ -204,6 +205,7 @@ export class CTable extends React.Component<Props,State> {
     dragColumnLeft:number
     dragWidth:number
     allchk:CCheckbox
+    isFull:boolean
     constructor(props:any) {
         
         super(props);
@@ -251,7 +253,7 @@ export class CTable extends React.Component<Props,State> {
         this.lockColumns = [];
         //lock column flag
         this.isLock = false;
-
+        this.isFull = false;
         this.initTableWidth();
     }
 
@@ -804,6 +806,19 @@ export class CTable extends React.Component<Props,State> {
             dataCount: data.length,
         })
     }
+    //全屏查看
+    fullHandler = ()=>{
+        if (this.isFull) {
+            this.mainDom.classList.remove('ck-ctable-full')
+            this.fullButton.querySelector('i')?.classList.remove("fa-compress")
+            this.fullButton.querySelector('i')?.classList.add("fa-expand")
+        } else {
+            this.mainDom.classList.add('ck-ctable-full')
+            this.fullButton.querySelector('i')?.classList.add("fa-compress")
+            this.fullButton.querySelector('i')?.classList.remove("fa-expand")
+        }
+        this.isFull = !this.isFull
+    }
 
     //****************************
 
@@ -1093,7 +1108,7 @@ export class CTable extends React.Component<Props,State> {
         let focus = (i === this.state.focus && this.props.focus)
         let rowClass = focus ? 'ck-table-focus' : checked ? 'ck-table-selected' : undefined 
         return (
-            <React.Fragment>
+            <>
                 <tr className={rowClass} onClick={this.clickHandler(row, i)}>
                     {this.state.select ?
                         <th style={{width:'20px',textAlign:'center'}}>
@@ -1155,13 +1170,13 @@ export class CTable extends React.Component<Props,State> {
                         }
                     })}
                 </tr>
-            </React.Fragment>
+            </>
         );
     }
 
     renderEditRow(row:any, i:number) {
         return (
-            <React.Fragment>
+            <>
                 <tr className={this.props.onClick ? 'click-row' : undefined} onClick={this.clickHandler(row, i)}>
                     <th style={{width:'20px',textAlign:'center'}}>
                         {this.editRows.indexOf(i) === -1 ? null :
@@ -1202,7 +1217,7 @@ export class CTable extends React.Component<Props,State> {
                         );
                     })}
                 </tr>
-            </React.Fragment>
+            </>
         );
     }
 
@@ -1263,11 +1278,14 @@ export class CTable extends React.Component<Props,State> {
             return null;
         }
         return (
-            <div>
+            <div className='ck-ctable-foot d-flex align-items-center'>
                 <PageBar page={this.state.page} dataCount={this.state.dataCount}
                          onSelect={this.selectPageHandler}
                          showNumbers={this.props.showNumbers??0}
                          showPages={this.props.showPages??0} noPage={this.props.edit??false}/>
+                <div ref={(c:any)=>{this.fullButton = c}} className='full-btn align-self-center ms-auto pe-2 text-primary' onClick={()=>{
+                    this.fullHandler()
+                }}><Icon icon='expand'/></div>
             </div>
         )
     }
