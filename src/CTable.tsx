@@ -21,6 +21,15 @@ import CTableInput from "./CTableInput";
 import CTableLang from './i18n/CTable';
 import PageBar from "./PageBar";
 
+let numberCondition:{[propName:string]:string} = {
+    '=':'eq',
+    '!=':'ne',
+    '>':'gt',
+    '>=':'gte',
+    '<=':'lte',
+    '<':'lt'
+};
+
 interface Props extends ComponentProps {
     //主题 ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
     theme       ?: string
@@ -1481,7 +1490,13 @@ export class CTable extends React.Component<Props,State> {
                            onChange={this.filterChangeHandler('condition')}
                            onMouseDown={stopEvent}
                            onEnter={() => {
-                               this.filterHandler(this.state.filter.condition, this.numMenu.data.field, 'condition');
+                                let reg = /(>=|<=|<|>|=|!=)+\s*(\d+)/i
+                                let m = String(this.state.filter.condition).match(reg)
+                                if (m) {
+                                    this.filterHandler(m[2], this.numMenu.data.field, numberCondition[m[1]]);    
+                                } else {
+                                    this.filterHandler(this.state.filter.condition, this.numMenu.data.field, 'condition');    
+                                }
                            }}
                     />
                     <div>and,or,between,&gt;,&gt;=,&lt;,&lt;=,=</div>
