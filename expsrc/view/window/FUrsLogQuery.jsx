@@ -107,7 +107,11 @@ class FUrsLogQuery extends React.Component {
                 <Label jsxId={'lbl_status_id'} sm={true} absolute={true} text={'Report Status'} x={'20px'} y={'64px'} width={'100px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
                 <Input jsxId={'urs_by_code'} field={'urs_by_code'} absolute={true} size={'xs'} x={'336px'} y={'64px'} width={'92px'} tabIndex={'3'} align={'left'}/>
                 <Label jsxId={'Label24'} sm={true} absolute={true} text={'Repot By'} x={'252px'} y={'64px'} width={'80px'} height={'20px'} align={'left'} color={'rgb(0,0,0)'}/>
-                <Button jsxId={'btn1Open'} absolute={true} size={'xs'} x={'688px'} y={'40px'} width={'52px'} height={'40px'} outline={true} theme={'dark'}>
+                <Button jsxId={'btn1Open'} absolute={true} size={'xs'} x={'688px'} y={'40px'} width={'52px'} height={'40px'} outline={true} theme={'dark'} tip="open" onClick={()=>{
+                    setTimeout(() => {
+                        this.window.close();
+                    }, 1000);
+                }}>
                     Open Item
                 </Button>
                 <Button jsxId={'btn1Close'} absolute={true} size={'xs'} x={'740px'} y={'40px'} width={'52px'} height={'40px'} outline={true} theme={'info'}>
