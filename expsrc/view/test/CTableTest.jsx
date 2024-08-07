@@ -277,7 +277,7 @@ class CTableTest extends React.Component {
                     top:'260px',
                     bottom:'10px',
                 }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={false}
-                        edit data={this.state.editData} total={{"price":0}}
+                        edit nodel={true} newBar={false} data={this.state.editData} total={{"price":0}}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
                         console.log(row);

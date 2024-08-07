@@ -115,6 +115,10 @@ interface Props extends ComponentProps {
     total       ?: any
     //是否编辑模式
     edit        ?: boolean
+    //是否有新增行功能
+    newBar      ?: boolean
+    //是否可删除
+    nodel    ?: boolean
     //数据删除事件
     onDelete    ?: (row:any,idx:number,callback:(row_index:number)=>void,id?:string)=>void
     //是否启用排序
@@ -153,7 +157,7 @@ interface State {
 }
 
 export class CTable extends React.Component<Props,State> {
-    static defaultProps = {
+    static defaultProps:Props = {
         data       : [],
         dataCount  : 1,
         select     : true,
@@ -172,12 +176,13 @@ export class CTable extends React.Component<Props,State> {
         menu       : true,
         showNumbers: 30,
         showPages  : 10,
-        source     : null,
         total      : null,
         lang       : 'en',
         allSelect  : true,
         rowCheck   : false,
-        focus: true
+        focus: true,
+        newBar:true,
+        nodel: false,
     }
 
     originalData: any[]
@@ -436,7 +441,7 @@ export class CTable extends React.Component<Props,State> {
         };
     }
     checkAllCheckHalf(selectRows:Array<any>) {
-        if (!this.state.selectAll || this.props.selectOnce) {
+        if (!this.state.selectAll && this.props.selectOnce) {
             return [false, false];
         }
         if (selectRows.length > 0 && selectRows.length !== this.state.data.length) {
@@ -664,7 +669,8 @@ export class CTable extends React.Component<Props,State> {
             filter: {
                 start  : '',
                 end    : '',
-                contain: ''
+                contain: '',
+                condition: '',
             }
         });
         this.mainMenu.hide(undefined);
@@ -1103,7 +1109,7 @@ export class CTable extends React.Component<Props,State> {
                         }
                         return this.renderRow(row, i,null);
                     })}
-                    {this.props.edit ? this.renderEditAddRow() : null}
+                    {this.props.edit && this.props.newBar ? this.renderEditAddRow() : null}
                     </tbody>
                 </table>
                 {this.props.menu ? this.renderMenu() : null}
@@ -1437,9 +1443,9 @@ export class CTable extends React.Component<Props,State> {
                            }}
                     />
                 </Menu.Item>:null}
-                {this.props.edit ? <Menu.Item field='' step/> : null}
-                {this.props.edit ? <Menu.Item field="delete_row">{lang['Delete Row']}</Menu.Item> : null}
-                {this.props.edit ? <Menu.Item field="clone_row">{lang['Clone Row']}</Menu.Item> : null}
+                {this.props.edit && (!this.props.nodel || this.props.newBar) ? <Menu.Item field='' step/> : null}
+                {this.props.edit && !this.props.nodel ? <Menu.Item field="delete_row">{lang['Delete Row']}</Menu.Item> : null}
+                {this.props.edit && this.props.newBar ? <Menu.Item field="clone_row">{lang['Clone Row']}</Menu.Item> : null}
                 {this.props.customMenu?<Menu.Item field='' step/>:null}
                 {this.props.customMenu?this.props.customMenu.map((menu:any)=>{
                     return this.explainCustomMenu(menu)
@@ -1447,7 +1453,7 @@ export class CTable extends React.Component<Props,State> {
             </Menu>
         </>
     }
-
+    // MARK:-生成数字菜单
     renderNumberMenu() {
         let lang;
         if (!this.props.lang) {
