@@ -1140,6 +1140,14 @@ export class CTable extends React.Component<Props,State> {
                         if (item.props.width) {
                             style.width = item.props.width;
                         }
+                        //set color
+                        if (item.props.color) {
+                            style.color = item.props.color;
+                        }
+                        if (item.props.bgColor) {
+                            style.backgroundColor = item.props.bgColor;
+                        }
+
                         let dataType;
                         switch (item.props.dataType) {
                             case "number":

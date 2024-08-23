@@ -168,15 +168,15 @@ class CTableTest extends React.Component {
         //     fade:true
         // });
         // this.id ++;
-        // this.manage.open('f_abha_house_review',{id:this.id});
-        let mainDom = ReactDOM.findDOMNode(this.window)
+        this.manage.open('test-empty',{id:this.id});
+        // let mainDom = ReactDOM.findDOMNode(this.window)
         
-        html2canvas(mainDom).then((canvas)=>{
-            let dataURL = canvas.toDataURL("image/png")
-            this.modal.view({
-                content: <RImage  src={dataURL}/>
-            })
-        })
+        // html2canvas(mainDom).then((canvas)=>{
+        //     let dataURL = canvas.toDataURL("image/png")
+        //     this.modal.view({
+        //         content: <RImage  src={dataURL}/>
+        //     })
+        // })
     };
 
     sortHandler = (field,sort_type)=>{
@@ -265,7 +265,7 @@ class CTableTest extends React.Component {
                 >
                     <TableHeader field='id' text='ID' width='100px' dataType='number' onDoubleClick={(row)=>{
                         console.log(row);
-                    }}/>
+                    }} color="white" bgColor="blue"/>
                     <TableHeader field='name' text='Name' width='200px' onFormat={(val,row,key)=>{
                         return <span>{val}</span>
                     }}/>

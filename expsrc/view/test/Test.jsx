@@ -126,7 +126,9 @@ class CTableTest extends React.Component {
     }
 
     showHandler = ()=>{
-        this.getData();
+        // this.getData();
+        // this.modal.alert(this.params);
+        console.log(this.params);
     };
 
     closeHandler = ()=>{
