@@ -118,7 +118,8 @@ class CTableTest extends React.Component {
             this.setState({
                 table_data:data,
                 page:1,
-                data_count:data.length
+                data_count:data.length,
+                data:{arrival_date:'2024-05-06'}
             });
             this.modal.alert('loading ssussce');
             // this.smodal.alert()
@@ -219,6 +220,7 @@ class CTableTest extends React.Component {
                     this.modal.alert('dblclick');
                 }} readOnly value={'asdfasd'} style={{'position':'absolute','top':'50px'}}/>
                 <Input jsxId={'urs_log_no'} field={'urs_log_no'} disabled absolute={true} size={'xs'} x={'10px'} y={'80px'} width={'100px'} tabIndex={'0'} align={'left'} data={'clake'}/>
+                <Input jsxId={'arrival_date'} field={'arrival_date'} absolute={true} size={'xs'} lang={'en'} x={'456px'} y={'88px'} width={'124px'} tabIndex={'5'} align={'center'} calendar={{format:'MM-DD-YYYY'}} data={this.state.data?.arrival_date}/>
                 <CTable jsxId={'sub_wrk_detail_item'} absolute={true} x={'20px'} y={'309px'} width={'703px'} height={'139px'} scroll={true} headerTheme={'light'} hover={true} select={false} sm={true} fontSm={true} foot={false} source={'v_wrk_item'} data={this.state.tableData} ref={c=>this.queryTable=c} page={this.state.page} dataCount={this.state.dataCount} onSelectPage={this.getData} showNumbers={50} edit={true}>
                     <Table.Header field={'item_seq_no'} text={'Seq'} width={'36px'} align={'center'} type={''}/>
                     <Table.Header field={'item_desc'} text={'Item Desc'} width={'204px'} align={'left'} type={''}/>
