@@ -211,8 +211,10 @@ export class CTable extends React.Component<Props,State> {
     table_body:HTMLElement
     table_total:HTMLElement
     fullButton:HTMLElement
+    fullButton2:HTMLElement
     split:HTMLElement
     mainDom:HTMLElement
+    conDom: HTMLElement
     mainMenu:Menu
     numMenu:Menu
     drag: Drag
@@ -827,10 +829,16 @@ export class CTable extends React.Component<Props,State> {
             this.mainDom.classList.remove('ck-ctable-full')
             this.fullButton.querySelector('i')?.classList.remove("fa-compress")
             this.fullButton.querySelector('i')?.classList.add("fa-expand")
+            this.fullButton2.classList.add('d-none')
+            this.mainDom.querySelector('.ck-ctable-body')?.classList.remove('full-border-up')
+            this.mainDom.querySelector('.ck-ctable-foot')?.classList.remove('full-border-bottom')
         } else {
             this.mainDom.classList.add('ck-ctable-full')
             this.fullButton.querySelector('i')?.classList.add("fa-compress")
             this.fullButton.querySelector('i')?.classList.remove("fa-expand")
+            this.fullButton2.classList.remove('d-none')
+            this.mainDom.querySelector('.ck-ctable-body')?.classList.add('full-border-up')
+            this.mainDom.querySelector('.ck-ctable-foot')?.classList.add('full-border-bottom')
         }
         this.isFull = !this.isFull
     }
@@ -1038,7 +1046,7 @@ export class CTable extends React.Component<Props,State> {
     render() {
         return (
             <div ref={(c:any) => this.mainDom = c} className={this.getMainClasses()} style={this.getStyles()}>
-                <div className={this.getBodyClasses()}>
+                <div ref={(c:any) => this.conDom = c} className={this.getBodyClasses()}>
                     {this.renderHeader()}
                     {this.renderRows()}
                     {this.renderTotal()}
@@ -1309,6 +1317,9 @@ export class CTable extends React.Component<Props,State> {
                 <div ref={(c:any)=>{this.fullButton = c}} className='full-btn align-self-center ms-auto pe-2 text-primary' onClick={()=>{
                     this.fullHandler()
                 }}><Icon icon='expand'/></div>
+                <div ref={(c:any)=>{this.fullButton2 = c}} className='right-full-btn d-none' onClick={()=>{
+                    this.fullHandler()
+                }}><Icon icon='times'/></div>
             </div>
         )
     }
