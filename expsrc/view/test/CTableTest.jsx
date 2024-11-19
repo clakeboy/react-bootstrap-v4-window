@@ -25,24 +25,25 @@ class CTableTest extends React.Component {
             table_data:[],
             data_count:0,
             page:1,
-            editData:[
-                {
-                    "id":1,
-                    "price":500,
-                    "name":1,
-                    "date":"asdfasdf",
-                    "rule":"1aaasdf",
-                    "is_chk":1
-                },
-                {
-                    "id":1,
-                    "price":33.44,
-                    "name":1,
-                    "date":"2022-01-02",
-                    "rule":Common.RandomString(16),
-                    "is_chk":0
-                }
-            ],
+            // editData:[
+            //     {
+            //         "id":1,
+            //         "price":500,
+            //         "name":1,
+            //         "date":"asdfasdf",
+            //         "rule":"1aaasdf",
+            //         "is_chk":1
+            //     },
+            //     {
+            //         "id":1,
+            //         "price":33.44,
+            //         "name":1,
+            //         "date":"2022-01-02",
+            //         "rule":Common.RandomString(16),
+            //         "is_chk":0
+            //     }
+            // ],
+            editData:[],
             total:{}
         };
 
@@ -237,10 +238,8 @@ class CTableTest extends React.Component {
             <React.Fragment>
                 <Button absolute y='10px' x='10px' size='sm' onClick={this.clickHandler}>Alert</Button>
                 <Button absolute y='10px' x='110px' size='sm' onClick={this.testHandler}>Get Edit Data</Button>
-                <Button onClick={()=>{
-                    this.setState({
-                        "editData":[]
-                    })
+                <Button absolute y='10px' x='250px' onClick={()=>{
+                    this.edit_table.reset();
                 }}>Reset</Button>
                 <CTable ref={c=>this.table=c} position={{
                     right:'10px',
