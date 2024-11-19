@@ -778,6 +778,11 @@ export class CTable extends React.Component<Props,State> {
     clearEditRows() {
         this.editRows = [];
     }
+    //edit mode reset
+    reset() {
+        this.editRows = [];
+        this.setState({data:this.originalData.slice(0)})
+    }
 
     deleteRowHandler(row_index:number) {
         if (row_index < 0 || row_index >= this.state.data.length) {

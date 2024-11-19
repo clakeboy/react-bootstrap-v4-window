@@ -237,6 +237,11 @@ class CTableTest extends React.Component {
             <React.Fragment>
                 <Button absolute y='10px' x='10px' size='sm' onClick={this.clickHandler}>Alert</Button>
                 <Button absolute y='10px' x='110px' size='sm' onClick={this.testHandler}>Get Edit Data</Button>
+                <Button onClick={()=>{
+                    this.setState({
+                        "editData":[]
+                    })
+                }}>Reset</Button>
                 <CTable ref={c=>this.table=c} position={{
                     right:'10px',
                     left:'10px',
@@ -277,7 +282,7 @@ class CTableTest extends React.Component {
                     top:'260px',
                     bottom:'10px',
                 }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={false}
-                        edit nodel={true} newBar={false} data={this.state.editData} total={{"price":0}}
+                        edit nodel={true} data={this.state.editData} total={{"price":0}}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
                         console.log(row);
@@ -290,9 +295,7 @@ class CTableTest extends React.Component {
                         width:'600px'
                     }} comboData={this.combo_data} type='combo'
                         onEdit={(index,val,row,callback)=>{
-                            callback(index,{
-                                rule:row?.time_rule
-                            })
+                            console.log(index,val,row,callback);
                         }}/>
                     <TableHeader field='date' text='Date' width='100px' type='calendar' />
                     <TableHeader field='rule' text='Rule' width='100px' type='text' />
