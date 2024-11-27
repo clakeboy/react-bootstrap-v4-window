@@ -96,6 +96,8 @@ interface Props extends ComponentProps {
     width       ?: string
     //表高
     height      ?: string
+    //行高
+    rowHeight   ?: string
     // foot        : PropTypes.bool,
     //是否显示列表尾
     foot        ?: any
@@ -1077,7 +1079,7 @@ export class CTable extends React.Component<Props,State> {
                                     <CCheckbox ref={(c:any) => this.allchk=c} onChange={this.selectAll} checked={this.state.selectAll} half={this.state.selectHalf}/>}
                             </th> : null}
                         {React.Children.map(this.props.children, (item, key) => {
-                            this.cacheRow[item.props.field] = '';
+                            this.cacheRow[item.props.field] = item.props?.def ?? '';
                             if (!item || item.props.hide) {
                                 return null;
                             }

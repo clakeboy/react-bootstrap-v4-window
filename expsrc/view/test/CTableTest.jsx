@@ -136,7 +136,7 @@ class CTableTest extends React.Component {
             for (let i=0;i<5;i++) {
                 data.push({
                     'id': i+1, 
-                    'name': `${this.id}-${Common.RandomString(32)}`,
+                    'name': `${Common.RandomString(32*(i+1))}`,
                     'is_chk':i%2===0,
                     'set_chk':true,
                 });
@@ -286,7 +286,7 @@ class CTableTest extends React.Component {
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
                         console.log(row);
                     }} noClone/>
-                    <TableHeader field='price' text='Price' width='100px' align='right' />
+                    <TableHeader field='price' text='Price' width='100px' align='right' def="1.56"/>
                     <TableHeader field='name' text='Name' width='200px' combo={{
                         header:true,
                         searchColumn:'task_name',
@@ -295,10 +295,10 @@ class CTableTest extends React.Component {
                     }} comboData={this.combo_data} type='combo'
                         onEdit={(index,val,row,callback)=>{
                             console.log(index,val,row,callback);
-                        }}/>
+                        }} def="这是测试"/>
                     <TableHeader field='date' text='Date' width='100px' type='calendar' />
                     <TableHeader field='rule' text='Rule' width='100px' type='text' />
-                    <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center' />
+                    <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center' def={true}/>
                 </CTable>
                 <WModal ref={c=>this.modal=c} fade/>
             </React.Fragment>
