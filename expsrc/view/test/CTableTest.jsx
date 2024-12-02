@@ -281,12 +281,12 @@ class CTableTest extends React.Component {
                     top:'260px',
                     bottom:'10px',
                 }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={false}
-                        edit nodel={true} data={this.state.editData} total={{"price":0}}
+                        edit nodel={false} data={this.state.editData} total={{"price":0}}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
                         console.log(row);
                     }} noClone/>
-                    <TableHeader field='price' text='Price' width='100px' align='right' def="1.56"/>
+                    <TableHeader field='price' text='Price' width='100px' align='right' def="1.56" dataType='number'/>
                     <TableHeader field='name' text='Name' width='200px' combo={{
                         header:true,
                         searchColumn:'task_name',
@@ -295,10 +295,10 @@ class CTableTest extends React.Component {
                     }} comboData={this.combo_data} type='combo'
                         onEdit={(index,val,row,callback)=>{
                             console.log(index,val,row,callback);
-                        }} def="这是测试"/>
+                        }} />
                     <TableHeader field='date' text='Date' width='100px' type='calendar' />
                     <TableHeader field='rule' text='Rule' width='100px' type='text' />
-                    <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center' def={true}/>
+                    <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center'/>
                 </CTable>
                 <WModal ref={c=>this.modal=c} fade/>
             </React.Fragment>

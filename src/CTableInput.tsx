@@ -25,6 +25,7 @@ interface Props extends ComponentProps {
     onBlur?:(e:any)=>void
     readOnly?: boolean
     calendarFormat?: string
+    number?: boolean //只能输入数字
 }
 
 interface State {
@@ -148,9 +149,15 @@ class CTableInput extends React.Component<Props,State> {
         if (this.props.combo || this.props.calendar) {
             inputClasses = 'right-icon';
         }
+        let tp:any = {
+            type: this.props.number?'number':'text'
+        }
+        if (this.props.number) {
+            tp['step'] = 'any'
+        } 
         return (
             <div className={this.getClasses()}>
-                <input ref={(c:any)=>this.input=c} type='text' {...this.props} size={undefined}
+                <input ref={(c:any)=>this.input=c} {...tp} {...this.props} size={undefined}
                        onChange={this.changeHandler}
                        onDoubleClick={this.dblHandler}
                        disabled={this.props.disabled}

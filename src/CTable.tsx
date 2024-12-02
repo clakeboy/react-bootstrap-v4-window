@@ -1078,6 +1078,7 @@ export class CTable extends React.Component<Props,State> {
                                 {this.props.edit || this.props.selectOnce ? <Icon icon='list'/> :
                                     <CCheckbox ref={(c:any) => this.allchk=c} onChange={this.selectAll} checked={this.state.selectAll} half={this.state.selectHalf}/>}
                             </th> : null}
+                        {this.props.edit && !this.props.nodel?<th style={{width:'20px',textAlign:'center'}}/>:null}
                         {React.Children.map(this.props.children, (item, key) => {
                             this.cacheRow[item.props.field] = item.props?.def ?? '';
                             if (!item || item.props.hide) {
@@ -1219,8 +1220,13 @@ export class CTable extends React.Component<Props,State> {
                 <tr className={this.props.onClick ? 'click-row' : undefined} onClick={this.clickHandler(row, i)}>
                     <th style={{width:'20px',textAlign:'center'}}>
                         {this.editRows.indexOf(i) === -1 ? null :
-                            <Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className='text-danger'/>}
+                            <Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className='text-success'/>}
                     </th>
+                    {!this.props.nodel?<th style={{width:'20px',textAlign:'center',cursor:'pointer'}}>
+                        <Icon icon='trash' className='text-danger' text="delete" onClick={()=>{
+                            this.deleteRowHandler(i);
+                        }}/>
+                    </th>:null}
                     {React.Children.map(this.props.children, (item, key) => {
                         if (!item || item.props.hide) {
                             return null;
@@ -1264,6 +1270,7 @@ export class CTable extends React.Component<Props,State> {
         return (
             <tr id={this.domId + '-edit'}>
                 <th style={{width:'20px',textAlign:'center'}}><Icon icon='chevron-circle-right'/></th>
+                {!this.props.nodel?<th style={{width:'20px',textAlign:'center'}}/>:null}
                 {React.Children.map(this.props.children, (item, key) => {
                     if (!item || item.props.hide) {
                         return null;
@@ -1304,7 +1311,7 @@ export class CTable extends React.Component<Props,State> {
                 )
             default:
                 return (
-                    <CTableInput onChange={this.editHandler} data-row={i} data-field={item.field}
+                    <CTableInput onChange={this.editHandler} data-row={i} data-field={item.field} number={item.dataType==='number'}
                                  data={row[item.field]} align={item.align} disabled={item.disabled}
                                  onBlur={this.state.total&&this.state.total.hasOwnProperty(item.field)?this.calcLocalTotal(item.field):undefined}
                     />
