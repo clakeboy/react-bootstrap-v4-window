@@ -78,5 +78,13 @@
         "title": "Change HS Code - Goods Desc",
         "uname": "FHtsUsZzChangeHsCode",
         "width": "740px"
+    },
+    {
+        "height": "516px",
+        "name": "f_com_group",
+        "source": "s_urs",
+        "title": "Company Group Entry",
+        "uname": "FComGroup",
+        "width": "740px"
     }
 ]

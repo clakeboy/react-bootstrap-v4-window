@@ -337,6 +337,9 @@ export class CTable extends React.Component<Props,State> {
         if (this.props.focus && nextState.focus !== this.state.focus) {
             return true
         }
+        if (this.props.disabled !== nextProps.disabled) {
+            return true
+        }
         return nextState.data !== this.state.data;
     }
 
@@ -788,6 +791,7 @@ export class CTable extends React.Component<Props,State> {
     }
 
     deleteRowHandler(row_index:number) {
+        if (this.props.disabled) return
         if (row_index < 0 || row_index >= this.state.data.length) {
             return
         }
@@ -820,6 +824,7 @@ export class CTable extends React.Component<Props,State> {
     }
 
     cloneRow(row_index:number) {
+        if (this.props.disabled) return
         if (row_index < 0 || row_index >= this.state.data.length) {
             return
         }
@@ -1220,10 +1225,10 @@ export class CTable extends React.Component<Props,State> {
                 <tr className={this.props.onClick ? 'click-row' : undefined} onClick={this.clickHandler(row, i)}>
                     <th style={{width:'20px',textAlign:'center'}}>
                         {this.editRows.indexOf(i) === -1 ? null :
-                            <Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className='text-success'/>}
+                            <Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className={this.props.disabled?'text-secondary':'text-success'}/>}
                     </th>
                     {!this.props.nodel?<th style={{width:'20px',textAlign:'center',cursor:'pointer'}}>
-                        <Icon icon='trash' className='text-danger' text="delete" onClick={()=>{
+                        <Icon icon='trash' className={this.props.disabled?'text-secondary':'text-danger'} text="delete" onClick={()=>{
                             this.deleteRowHandler(i);
                         }}/>
                     </th>:null}
@@ -1267,6 +1272,9 @@ export class CTable extends React.Component<Props,State> {
     }
 
     renderEditAddRow() {
+        if (this.props.disabled) {
+            return null;
+        }
         return (
             <tr id={this.domId + '-edit'}>
                 <th style={{width:'20px',textAlign:'center'}}><Icon icon='chevron-circle-right'/></th>
@@ -1294,25 +1302,25 @@ export class CTable extends React.Component<Props,State> {
                 return (
                     <CTableInput onChange={this.editHandler} data-row={i}
                                  data-field={item.field} data={row[item.field]}
-                                 align={item.align} disabled={item.disabled}
+                                 align={item.align} disabled={item.disabled??this.props.disabled}
                                  combo={item.combo} comboData={item.comboData}/>
                 );
             case "calendar":
                 return (
                     <CTableInput onChange={this.editHandler} data-row={i}
                                  data-field={item.field} data={row[item.field]}
-                                 align={item.align} disabled={item.disabled}
+                                 align={item.align} disabled={item.disabled??this.props.disabled}
                                  calendarFormat={item.calendarFormat} calendar/>
                 );
             case "checkbox":
                 return (
                     <CCheckbox className='d-inline' width='20px' onChange={(chk,e)=>{this.editHandler(e,chk,'chk')}} data-row={i}
-                               data-field={item.field} checked={!!row[item.field]} disabled={item.disabled} tabIndex="0"/>
+                               data-field={item.field} checked={!!row[item.field]} disabled={item.disabled??this.props.disabled} tabIndex="0"/>
                 )
             default:
                 return (
                     <CTableInput onChange={this.editHandler} data-row={i} data-field={item.field} number={item.dataType==='number'}
-                                 data={row[item.field]} align={item.align} disabled={item.disabled}
+                                 data={row[item.field]} align={item.align} disabled={item.disabled??this.props.disabled}
                                  onBlur={this.state.total&&this.state.total.hasOwnProperty(item.field)?this.calcLocalTotal(item.field):undefined}
                     />
                 )

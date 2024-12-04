@@ -25,25 +25,25 @@ class CTableTest extends React.Component {
             table_data:[],
             data_count:0,
             page:1,
-            // editData:[
-            //     {
-            //         "id":1,
-            //         "price":500,
-            //         "name":1,
-            //         "date":"asdfasdf",
-            //         "rule":"1aaasdf",
-            //         "is_chk":1
-            //     },
-            //     {
-            //         "id":1,
-            //         "price":33.44,
-            //         "name":1,
-            //         "date":"2022-01-02",
-            //         "rule":Common.RandomString(16),
-            //         "is_chk":0
-            //     }
-            // ],
-            editData:[],
+            editDisabled:false,
+            editData:[
+                {
+                    "id":1,
+                    "price":500,
+                    "name":1,
+                    "date":"asdfasdf",
+                    "rule":"1aaasdf",
+                    "is_chk":1
+                },
+                {
+                    "id":1,
+                    "price":33.44,
+                    "name":1,
+                    "date":"2022-01-02",
+                    "rule":Common.RandomString(16),
+                    "is_chk":0
+                }
+            ],
             total:{}
         };
 
@@ -238,9 +238,14 @@ class CTableTest extends React.Component {
             <React.Fragment>
                 <Button absolute y='10px' x='10px' size='sm' onClick={this.clickHandler}>Alert</Button>
                 <Button absolute y='10px' x='110px' size='sm' onClick={this.testHandler}>Get Edit Data</Button>
-                <Button absolute y='10px' x='250px' onClick={()=>{
+                <Button absolute y='10px' x='250px' size='sm' onClick={()=>{
                     this.edit_table.reset();
                 }}>Reset</Button>
+                <Button absolute y='10px' x='320px' size='sm' onClick={()=>{
+                    this.setState({
+                        editDisabled:!this.state.editDisabled
+                    })
+                }}>Disabled edit</Button>
                 <CTable ref={c=>this.table=c} position={{
                     right:'10px',
                     left:'10px',
@@ -281,7 +286,7 @@ class CTableTest extends React.Component {
                     top:'260px',
                     bottom:'10px',
                 }} move absolute={true} y={'100px'} x={'10px'} width='250px' height='200px' bordered={true} select={false}
-                        edit nodel={false} data={this.state.editData} total={{"price":0}}
+                        edit nodel={false} data={this.state.editData} total={{"price":0}} disabled={this.state.editDisabled}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
                         console.log(row);
