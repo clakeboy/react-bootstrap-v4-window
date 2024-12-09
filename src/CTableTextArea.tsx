@@ -11,21 +11,16 @@ interface Props extends ComponentProps {
     data?: any
     align?: string
     disabled?: boolean
-    combo?: any
-    comboData?: any
-    calendar?: any
     onChange?: (evt:any,val:any,row?:any)=>void
     onSelect?: ()=>void
     onFocus?: (e:any)=>void
     onBlur?:(e:any)=>void
     readOnly?: boolean
-    calendarFormat?: string
-    number?: boolean //只能输入数字
+    rows?: number
 }
 
 interface State {
     value: string
-    comboData:any
 }
 
 class CTableTextArea extends React.Component<Props,State> {
@@ -34,8 +29,6 @@ class CTableTextArea extends React.Component<Props,State> {
         super(props);
         this.state={
             value:this.parseValue(this.props.data),
-            // value: this.props.data || '',
-            comboData:this.props.comboData
         };
     }
 
@@ -94,7 +87,7 @@ class CTableTextArea extends React.Component<Props,State> {
                 <TextArea size='sm' ref={(c:any)=>this.input=c} {...this.props} 
                     onChange={this.changeHandler} 
                     data={this.state.value}
-                    rows={2}
+                    rows={this.props.rows??1}
                     />
             </div>
         );

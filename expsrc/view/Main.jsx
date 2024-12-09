@@ -183,7 +183,7 @@ class Main extends React.Component {
                     <Window name='a_efc_console' marginTop={25} title='ETC Project  Convert Console' width='600px' height='536px' backColor={'#f3f3f4'}>
                         <LoaderComponent loadPath='/window/AEfcConsole.jsx' parent={this} import={GetComponent}/>
                     </Window>
-                    <Window name='test' marginTop={25} title='Test CTable - CTableTest' width='1000px' height='800px' backColor={'#f3f3f4'}>
+                    <Window name='test' marginTop={25} title='Test CTable - CTableTest' width='800px' height='600px' backColor={'#f3f3f4'}>
                         <LoaderComponent loadPath='/test/CTableTest' parent={this} import={GetComponent}/>
                     </Window>
                     <Window name='test-empty' marginTop={25} title='Test CTable - Test' width='1000px' height='800px' backColor={'#f3f3f4'}>
