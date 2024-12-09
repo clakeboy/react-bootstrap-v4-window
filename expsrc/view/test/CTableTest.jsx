@@ -293,7 +293,7 @@ class CTableTest extends React.Component {
                             right:'10px',
                             left:'10px',
                             top:'260px',
-                            // bottom:'10px',
+                            bottom:'10px',
                         }}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{

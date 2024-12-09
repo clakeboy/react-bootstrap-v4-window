@@ -280,6 +280,26 @@ export class CTable extends React.Component<Props,State> {
         this.bindSplit();
     }
 
+    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
+        if (this.table_head) {
+            this.table_body.style.width = this.width
+            let list = this.table_head.querySelectorAll('th');
+            list.forEach((item)=>{
+                if (!item.id) return
+                let td = this.table_body.querySelector<HTMLElement>(`#${item.id}`)
+                if (td) {
+                    td.style.width = item.style.width
+                }
+                if (this.table_total) {
+                    let td = this.table_total.querySelector<HTMLElement>(`#${item.id}`)
+                    if (td) {
+                        td.style.width = item.style.width
+                    }
+                }
+            })
+        }
+    }
+
     UNSAFE_componentWillReceiveProps(nextProps:Props) {
         if (this.state.data !== nextProps.data) {
             if (this.props.edit) {
@@ -1288,7 +1308,7 @@ export class CTable extends React.Component<Props,State> {
                         width: item.props.width
                     };
                     return (
-                        <td style={style}>
+                        <td style={style} id={this.domId + '-' + key}>
                             <CTableInput onFocus={this.addNewHandler}/>
                         </td>
                     );
@@ -1366,6 +1386,7 @@ export class CTable extends React.Component<Props,State> {
                     <tr>
                         {this.state.select || this.props.edit ?
                             <td width='20px'><Icon icon='chart-line'/></td> : null}
+                        {!this.props.nodel&&this.props.edit?<td style={{width:'20px',textAlign:'center'}}/>:null}
                         {React.Children.map(this.props.children, (item, key) => {
                             if (!item || item.props.hide) {
                                 return null;

@@ -91,7 +91,7 @@
     "whatwg-fetch": "^3.0.0"
   },
   "dependencies": {
-    "@clake/react-bootstrap4": "^2.2.21",
+    "@clake/react-bootstrap4": "^2.2.23",
     "classnames": "^2.2.5",
     "natives": "^1.1.6"
   }
