@@ -116,6 +116,10 @@ class CTableTest extends React.Component {
         ];
 
         this.id = 1;
+        /**
+         * @type {CTable}
+         */
+        this.edit_table = null;
     }
 
     componentDidMount() {
@@ -135,7 +139,7 @@ class CTableTest extends React.Component {
             let total = {'id':0}
             for (let i=0;i<5;i++) {
                 data.push({
-                    'id': i+1, 
+                    'id': "用地址格式就是modules by path ./node_modules/ 1.39 MiB 270 modulesmodule"+i+1, 
                     'name': `${Common.RandomString(32*(i+1))}`,
                     'is_chk':i%2===0,
                     'set_chk':true,
@@ -169,7 +173,7 @@ class CTableTest extends React.Component {
         //     fade:true
         // });
         // this.id ++;
-        this.manage.open('test-empty',{id:this.id});
+        // this.manage.open('test-empty',{id:this.id});
         // let mainDom = ReactDOM.findDOMNode(this.window)
         
         // html2canvas(mainDom).then((canvas)=>{
@@ -178,6 +182,9 @@ class CTableTest extends React.Component {
         //         content: <RImage  src={dataURL}/>
         //     })
         // })
+
+        let data = this.edit_table.getEditRows();
+        this.modal.alert(JSON.stringify(data))
     };
 
     sortHandler = (field,sort_type)=>{
@@ -246,7 +253,7 @@ class CTableTest extends React.Component {
                         editDisabled:!this.state.editDisabled
                     })
                 }}>Disabled edit</Button>
-                <CTable ref={c=>this.table=c} position={{
+                <CTable ref={c=>this.table=c} noWrap={false} position={{
                     right:'10px',
                     left:'10px',
                     top:'50px',
@@ -274,8 +281,8 @@ class CTableTest extends React.Component {
                 >
                     <TableHeader field='id' text='ID' width='100px' dataType='number' onDoubleClick={(row)=>{
                         console.log(row);
-                    }} color="white" bgColor="blue"/>
-                    <TableHeader field='name' text='Name' width='200px' onFormat={(val,row,key)=>{
+                    }} />
+                    <TableHeader field='name' text='Name' width='200px' color="white" bgColor="blue" onFormat={(val,row,key)=>{
                         return <span>{val}</span>
                     }}/>
                     <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center' />
@@ -291,6 +298,7 @@ class CTableTest extends React.Component {
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
                         console.log(row);
                     }} noClone/>
+                    <TableHeader field='desc' text='Desc' width='200px' align='right' def="1.56" type="textarea"/>
                     <TableHeader field='price' text='Price' width='100px' align='right' def="1.56" dataType='number'/>
                     <TableHeader field='name' text='Name' width='200px' combo={{
                         header:true,

@@ -20,6 +20,7 @@ import Drag from "./Drag";
 import CTableInput from "./CTableInput";
 import CTableLang from './i18n/CTable';
 import PageBar from "./PageBar";
+import CTableTextArea from './CTableTextArea';
 
 let numberCondition:{[propName:string]:string} = {
     '=':'eq',
@@ -1316,6 +1317,12 @@ export class CTable extends React.Component<Props,State> {
                 return (
                     <CCheckbox className='d-inline' width='20px' onChange={(chk,e)=>{this.editHandler(e,chk,'chk')}} data-row={i}
                                data-field={item.field} checked={!!row[item.field]} disabled={item.disabled??this.props.disabled} tabIndex="0"/>
+                )
+            case "textarea":
+                return (
+                    <CTableTextArea onChange={this.editHandler} data-row={i}
+                                    data-field={item.field} data={row[item.field]}
+                                    disabled={item.disabled??this.props.disabled}/>
                 )
             default:
                 return (
