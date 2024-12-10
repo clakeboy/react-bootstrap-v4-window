@@ -14,7 +14,8 @@ import {
     TableHeader,
     Button,
     Common,
-    RImage
+    RImage,
+    Modal
 } from '@clake/react-bootstrap4';
 // } from '@clake/react-bootstrap4';
 import html2canvas from 'html2canvas';
@@ -295,6 +296,16 @@ class CTableTest extends React.Component {
                             top:'260px',
                             bottom:'10px',
                         }}
+                        onDelete={(row,idx,callback)=>{
+                            this.allModal.confirm("确定删除？",(flag)=>{
+                                if (flag) {
+                                    //远程删除等
+                                    callback(idx); //删除控件上数据
+                                    console.log("已经删除数据",row)
+                                    this.allModal.close();
+                                }
+                            })
+                        }}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
                         console.log(row);
@@ -315,6 +326,7 @@ class CTableTest extends React.Component {
                     <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center'/>
                 </CTable>
                 <WModal ref={c=>this.modal=c} fade/>
+                <Modal ref={c=>this.allModal = c} fade/>
             </React.Fragment>
         );
     }

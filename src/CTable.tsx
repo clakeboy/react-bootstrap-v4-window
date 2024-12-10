@@ -823,7 +823,7 @@ export class CTable extends React.Component<Props,State> {
         }
     }
 
-    deleteRow(row_index:number) {
+    deleteRow = (row_index:number) => {
         if (row_index < 0 || row_index >= this.state.data.length) {
             return
         }
