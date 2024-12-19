@@ -1597,7 +1597,7 @@ export class CTable extends React.Component<Props,State> {
                                 }
                            }}
                     />
-                    <div>and,or,between,&gt;,&gt;=,&lt;,&lt;=,=</div>
+                    {/* <div>and,or,between,&gt;,&gt;=,&lt;,&lt;=,=</div> */}
                 </Menu.Item>:null}
             </Menu>
         </>
