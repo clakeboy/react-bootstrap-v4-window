@@ -21,7 +21,6 @@ import ReactBootstrap4,{
     Menu,
     Loader,
     LoaderComponent
-// } from '../../../react-bootstrap-v4/src/index';
 } from '@clake/react-bootstrap4';
 import {
     Window,

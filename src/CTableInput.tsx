@@ -157,7 +157,7 @@ class CTableInput extends React.Component<Props,State> {
         } 
         return (
             <div className={this.getClasses()}>
-                <input ref={(c:any)=>this.input=c} {...tp} {...this.props} size={undefined}
+                <input ref={(c:any)=>this.input=c} autoComplete='off' {...tp} {...this.props} size={undefined}
                        onChange={this.changeHandler}
                        onDoubleClick={this.dblHandler}
                        disabled={this.props.disabled}

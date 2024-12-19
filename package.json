@@ -1,6 +1,6 @@
 {
   "name": "@clake/react-bootstrap4-window",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "react bootstrap v4 window",
   "main": "lib/index.js",
   "unpkg": "./dist/react-bootstrap4-window.js",
@@ -91,7 +91,7 @@
     "whatwg-fetch": "^3.0.0"
   },
   "dependencies": {
-    "@clake/react-bootstrap4": "^2.2.23",
+    "@clake/react-bootstrap4": "^2.3.1",
     "classnames": "^2.2.5",
     "natives": "^1.1.6"
   }

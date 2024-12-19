@@ -631,9 +631,29 @@ export class CTable extends React.Component<Props,State> {
                 index: e.currentTarget.dataset.row
             };
             if (dataType === "text") {
-                this.mainMenu.show({evt: e, type: 'mouse', data: data});
+                this.mainMenu.show({evt: e, type: 'mouse', data: data,close:()=>{
+                    this.setState({
+                        filter: {
+                            start  : '',
+                            end    : '',
+                            contain: '',
+                            equal  :'',
+                            condition: ''
+                        }
+                    });
+                }});
             } else {
-                this.numMenu.show({evt: e, type: 'mouse', data: data});
+                this.numMenu.show({evt: e, type: 'mouse', data: data,close:()=>{
+                    this.setState({
+                        filter: {
+                            start  : '',
+                            end    : '',
+                            contain: '',
+                            equal  :'',
+                            condition: ''
+                        }
+                    });
+                }});
             }
         }
     }
@@ -698,7 +718,8 @@ export class CTable extends React.Component<Props,State> {
                 start  : '',
                 end    : '',
                 contain: '',
-                condition: '',
+                equal  :'',
+                condition: ''
             }
         });
         this.mainMenu.hide(undefined);
@@ -722,6 +743,7 @@ export class CTable extends React.Component<Props,State> {
                 end    : '',
                 contain: '',
                 equal  :'',
+                condition: ''
             }
         });
         if (typeof this.props.onFilter === 'function') {
@@ -1504,7 +1526,7 @@ export class CTable extends React.Component<Props,State> {
                 {this.is_filter? <Menu.Item field='' step/> : null}
                 {this.is_filter?<Menu.Item field="filter" className='flex-column'>
                     <div className='w-100'>{lang['Condition Filter']}</div>
-                    <Input size='xs' width='100%'
+                    <Input ref={(c:Input)=>this.filter.condition=c} size='xs' width='100%'
                            data={this.state.filter.condition}
                            onChange={this.filterChangeHandler('condition')}
                            onMouseDown={stopEvent}
