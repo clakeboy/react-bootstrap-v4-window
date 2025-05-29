@@ -747,7 +747,7 @@ export class CTable extends React.Component<Props,State> {
             }
         });
         if (typeof this.props.onFilter === 'function') {
-            this.props.onFilter('', '', 'clear');
+            this.props.onFilter('', '', 'clear',this.props.jsxId);
         } else {
             if (!is_clean) {
                 this.setState({data:this.originalData.slice(0)});
