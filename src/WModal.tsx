@@ -11,6 +11,7 @@ import {
     StrObject,
     AnyObject
 } from '@clake/react-bootstrap4';
+import Drag from './Drag';
 import './css/WModal.less';
 
 // const ModalAlert = 0;
@@ -76,7 +77,8 @@ export class WModal extends React.Component<Props,State> {
     _main: HTMLDivElement
     _shadow: HTMLDivElement
     _dialog: HTMLDivElement
-
+    _content: HTMLDivElement
+    drag?: Drag
     defaultProps = {
         center:false,
         width: '300px',
@@ -119,11 +121,14 @@ export class WModal extends React.Component<Props,State> {
     }
 
     componentDidMount() {
+        this.drag = new Drag(this._content,this._content,{
 
+        });
     }
 
     componentWillUnmount() {
-
+        this.drag?.unbind();
+        this.drag = undefined;
     }
 
     open() {
@@ -149,10 +154,13 @@ export class WModal extends React.Component<Props,State> {
             this._dialog.style.marginTop = '-1rem';
             this._shadow.classList.remove('modal-show');
         }
+        
         this.fadeTime.close = setTimeout(()=>{
             if (this?._main) {
                 this._main.classList.remove('d-block');
                 this.is_open = false;
+                this._content.style.top = '0';
+                this._content.style.left = '0';
             }
         },150);
     }
@@ -400,7 +408,7 @@ export class WModal extends React.Component<Props,State> {
                 <div ref={(c:any)=>this._shadow=c} className={this.getShadowClasses()} style={shadowIndex} id={`${this.domId}-shadow`}/>
                 <div className={this.getClasses()} style={modalIndex} tabIndex={-1} id={this.domId} role="dialog">
                     <div ref={(c:any)=>this._dialog=c} className={this.getDialogClasses()} style={this.getDialogStyles()} role="document">
-                        <div className="modal-content">
+                        <div className="modal-content" ref={(c:any)=>this._content=c}> 
                             {this.state.header?<div className="modal-header">
                                 <h6 className="modal-title">{this.state.title}</h6>
                                 {this.state.isCloseBtn?<button type="button" className="btn-close" onClick={()=>{

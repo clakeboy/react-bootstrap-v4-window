@@ -113,10 +113,11 @@ export class Drag {
         if (!this._evtStart(this.dragDom,this.eventDom,e)) {
             return false;
         }
-        this.domX = parseInt(this.dragDom?.style.left??'0');
-        this.domY = parseInt(this.dragDom?.style.top??'0');
+        this.domX = parseInt(this.dragDom?.style.left?this.dragDom?.style.left:'0');
+        this.domY = parseInt(this.dragDom?.style.top?this.dragDom?.style.top:'0');
         this.dragX = e.pageX;
         this.dragY = e.pageY;
+        // console.log('start drag',this.dragDom?.style.left,this.domX,this.domY,this.dragX,this.dragY)
         window.addEventListener('mousemove',this.moveDrag,false);
         window.addEventListener('mouseup',this.overDrag,false);
     };
