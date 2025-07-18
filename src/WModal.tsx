@@ -42,6 +42,7 @@ export interface ModalOptions {
     center?: boolean
     fade?: boolean
     header?: boolean
+    width?: string
     btns?: StrObject
 }
 
@@ -207,6 +208,7 @@ export class WModal extends React.Component<Props,State> {
             fade:opt.fade||this.props.fade,
             header: typeof opt.header === 'undefined' ? true:opt.header,
             btns: typeof opt.btns != 'undefined' ? opt.btns:defBtns,
+            width:opt.width||this.props.width,
         },()=>{
             this.open();
         });
@@ -242,6 +244,7 @@ export class WModal extends React.Component<Props,State> {
             fade:opt.fade||this.props.fade,
             header: typeof opt.header === 'undefined' ? true:opt.header,
             btns: typeof opt.btns != 'undefined' ? opt.btns:defBtns,
+            width:opt.width||this.props.width,
         },()=>{
             this.open();
         });
@@ -274,6 +277,7 @@ export class WModal extends React.Component<Props,State> {
             center:opt.center||this.props.center,
             fade:this.props.fade,
             header: opt.header||false,
+            width:opt.width||this.props.width,
         },()=>{
             this.open();
         });
@@ -299,7 +303,8 @@ export class WModal extends React.Component<Props,State> {
             type:ModalTypes.ModalView,
             center:opt.center||this.props.center,
             fade:opt.fade||this.props.fade,
-            header: typeof opt.header === 'undefined' ? true:opt.header
+            header: typeof opt.header === 'undefined' ? true:opt.header,
+            width:opt.width||this.props.width,
         },()=>{
             this.open();
         });

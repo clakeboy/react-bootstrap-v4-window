@@ -168,11 +168,13 @@ class CTableTest extends React.Component {
     };
 
     clickHandler = ()=>{
-        // this.modal.alert({
-        //     title:'Tips',
-        //     content:'Alert message',
-        //     fade:true
-        // });
+        let data = this.edit_table.getEditRows();
+        this.modal.alert(JSON.stringify(data))
+        this.modal.alert({
+            title:'Tips',
+            content:JSON.stringify(data),
+            width:'200px',
+        });
         // this.id ++;
         // this.manage.open('test-empty',{id:this.id});
         // let mainDom = ReactDOM.findDOMNode(this.window)
@@ -184,8 +186,7 @@ class CTableTest extends React.Component {
         //     })
         // })
 
-        let data = this.edit_table.getEditRows();
-        this.modal.alert(JSON.stringify(data))
+        
     };
 
     sortHandler = (field,sort_type)=>{
