@@ -16,7 +16,8 @@
     "strict": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "ignoreDeprecations":"6.0"
   },
   "include": [
     "./src/**/*",

@@ -255,7 +255,7 @@ class CTableTest extends React.Component {
                         editDisabled:!this.state.editDisabled
                     })
                 }}>Disabled edit</Button>
-                <CTable ref={c=>this.table=c} noWrap={false} position={{
+                <CTable hidden ref={c=>this.table=c} noWrap={false} position={{
                     right:'10px',
                     left:'10px',
                     top:'50px',
@@ -320,7 +320,8 @@ class CTableTest extends React.Component {
                         width:'600px'
                     }} comboData={this.combo_data} type='combo'
                         onEdit={(index,val,row,callback)=>{
-                            console.log(index,val,row,callback);
+                            //index 数据行索引，val 选中的显示数据，row combo 数据行，callback 回调函数
+                            callback(index,{'name':row.text})
                         }} />
                     <TableHeader field='date' text='Date' width='100px' type='calendar' />
                     <TableHeader field='rule' text='Rule' width='100px' type='text' />

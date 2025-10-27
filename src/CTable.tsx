@@ -144,6 +144,8 @@ interface Props extends ComponentProps {
     columnStyle?:any
     //唯一ID
     jsxId?: string
+    //隐藏表
+    hidden?: boolean
 }
 
 interface State {
@@ -1017,6 +1019,9 @@ export class CTable extends React.Component<Props,State> {
         let base = 'ck-ctable-main d-flex flex-column';
         if (this.props.bordered) {
             base = classNames(base, 'border');
+        }
+        if (this.props.hidden) {
+            base = classNames(base, 'd-none');
         }
         return classNames(base, this.props.className);
     }
