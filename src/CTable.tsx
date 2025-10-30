@@ -363,6 +363,9 @@ export class CTable extends React.Component<Props,State> {
         if (this.props.disabled !== nextProps.disabled) {
             return true
         }
+        if (this.props.hidden !== nextProps.hidden) {
+            return true
+        }
         return nextState.data !== this.state.data;
     }
 

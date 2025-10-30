@@ -15,7 +15,8 @@ import {
     Button,
     Common,
     RImage,
-    Modal
+    Modal,
+    ButtonGroup
 } from '@clake/react-bootstrap4';
 // } from '@clake/react-bootstrap4';
 import html2canvas from 'html2canvas';
@@ -23,6 +24,7 @@ class CTableTest extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            hidden:false,
             table_data:[],
             data_count:0,
             page:1,
@@ -245,17 +247,24 @@ class CTableTest extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <Button absolute y='10px' x='10px' size='sm' onClick={this.clickHandler}>Alert</Button>
-                <Button absolute y='10px' x='110px' size='sm' onClick={this.testHandler}>Get Edit Data</Button>
-                <Button absolute y='10px' x='250px' size='sm' onClick={()=>{
-                    this.edit_table.reset();
-                }}>Reset</Button>
-                <Button absolute y='10px' x='320px' size='sm' onClick={()=>{
-                    this.setState({
-                        editDisabled:!this.state.editDisabled
-                    })
-                }}>Disabled edit</Button>
-                <CTable hidden ref={c=>this.table=c} noWrap={false} position={{
+                <ButtonGroup absolute y='10px' x='10px'>
+                    <Button  size='sm' onClick={this.clickHandler}>Alert</Button>
+                    <Button  size='sm' onClick={this.testHandler}>Get Edit Data</Button>
+                    <Button  size='sm' onClick={()=>{
+                        this.edit_table.reset();
+                    }}>Reset</Button>
+                    <Button  size='sm' onClick={()=>{
+                        this.setState({
+                            editDisabled:!this.state.editDisabled
+                        })
+                    }}>Disabled edit</Button>
+                    <Button  size='sm' onClick={()=>{
+                        this.setState({
+                            hidden: !this.state.hidden
+                        })
+                    }}>Hide</Button>            
+                </ButtonGroup>
+                <CTable hidden={this.state.hidden} ref={c=>this.table=c} noWrap={false} position={{
                     right:'10px',
                     left:'10px',
                     top:'50px',
