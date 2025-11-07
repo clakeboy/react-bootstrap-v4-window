@@ -366,6 +366,12 @@ export class CTable extends React.Component<Props,State> {
         if (this.props.hidden !== nextProps.hidden) {
             return true
         }
+        if (this.props.edit !== nextProps.edit) {
+            return true
+        }
+        if (this.props.select !== nextProps.select) {
+            return true
+        }
         return nextState.data !== this.state.data;
     }
 
@@ -1129,12 +1135,11 @@ export class CTable extends React.Component<Props,State> {
                 <table ref={(c:any) => this.table_head = c} id={`table-head-${this.domId}`} className={this.getClasses('')} style={this.getTableStyles(null)}>
                     <thead className={this.getHeaderClasses()}>
                     <tr>
-                        {this.state.select || this.props.edit ?
+                        {this.props.select || this.props.edit ?
                             <th style={{width:'20px',textAlign:'center'}}>
                                 {this.props.edit || this.props.selectOnce ? <Icon icon='list'/> :
                                     <CCheckbox ref={(c:any) => this.allchk=c} onChange={this.selectAll} checked={this.state.selectAll} half={this.state.selectHalf}/>}
                             </th> : null}
-                        {this.props.edit && !this.props.nodel?<th style={{width:'20px',textAlign:'center'}}/>:null}
                         {React.Children.map(this.props.children, (item, key) => {
                             this.cacheRow[item.props.field] = item.props?.def ?? '';
                             if (!item || item.props.hide) {
@@ -1164,6 +1169,7 @@ export class CTable extends React.Component<Props,State> {
                                 </th>
                             );
                         })}
+                        {this.props.edit && !this.props.nodel?<th style={{width:'20px',textAlign:'center'}}/>:null}
                     </tr>
                     </thead>
                 </table>
@@ -1198,7 +1204,7 @@ export class CTable extends React.Component<Props,State> {
         return (
             <>
                 <tr className={rowClass} onClick={this.clickHandler(row, i)}>
-                    {this.state.select ?
+                    {this.props.select ?
                         <th style={{width:'20px',textAlign:'center'}}>
                             <CCheckbox ref={'row_' + i} onChange={this.changeHandler(row, i)} checked={checked}/>
                         </th> : null}
@@ -1278,11 +1284,6 @@ export class CTable extends React.Component<Props,State> {
                         {this.editRows.indexOf(i) === -1 ? null :
                             <Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className={this.props.disabled?'text-secondary':'text-success'}/>}
                     </th>
-                    {!this.props.nodel?<th style={{width:'20px',textAlign:'center',cursor:'pointer'}}>
-                        <Icon icon='trash' className={this.props.disabled?'text-secondary':'text-danger'} text="delete" onClick={()=>{
-                            this.deleteRowHandler(i);
-                        }}/>
-                    </th>:null}
                     {React.Children.map(this.props.children, (item, key) => {
                         if (!item || item.props.hide) {
                             return null;
@@ -1317,6 +1318,11 @@ export class CTable extends React.Component<Props,State> {
                             </td>
                         );
                     })}
+                    {!this.props.nodel?<th style={{width:'20px',textAlign:'center',cursor:'pointer'}}>
+                        <Icon icon='trash' className={this.props.disabled?'text-secondary':'text-danger'} text="delete" onClick={()=>{
+                            this.deleteRowHandler(i);
+                        }}/>
+                    </th>:null}
                 </tr>
             </>
         );
@@ -1414,9 +1420,8 @@ export class CTable extends React.Component<Props,State> {
                 <table ref={(c:any)  => this.table_total = c} id={`table-total-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
                     <tr>
-                        {this.state.select || this.props.edit ?
+                        {this.props.select || this.props.edit ?
                             <td width='20px'><Icon icon='chart-line'/></td> : null}
-                        {!this.props.nodel&&this.props.edit?<td style={{width:'20px',textAlign:'center'}}/>:null}
                         {React.Children.map(this.props.children, (item, key) => {
                             if (!item || item.props.hide) {
                                 return null;
@@ -1434,6 +1439,7 @@ export class CTable extends React.Component<Props,State> {
                                 </td>
                             );
                         })}
+                        {!this.props.nodel&&this.props.edit?<td style={{width:'20px',textAlign:'center'}}/>:null}
                     </tr>
                     </tbody>
                 </table>

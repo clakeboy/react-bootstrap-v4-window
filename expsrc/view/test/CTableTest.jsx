@@ -28,6 +28,7 @@ class CTableTest extends React.Component {
             table_data:[],
             data_count:0,
             page:1,
+            edit:true,
             editDisabled:false,
             editData:[
                 {
@@ -263,6 +264,11 @@ class CTableTest extends React.Component {
                             hidden: !this.state.hidden
                         })
                     }}>Hide</Button>            
+                    <Button  size='sm' onClick={()=>{
+                        this.setState({
+                            edit: !this.state.edit
+                        })
+                    }}>editor</Button>      
                 </ButtonGroup>
                 <CTable hidden={this.state.hidden} ref={c=>this.table=c} noWrap={false} position={{
                     right:'10px',
@@ -298,8 +304,8 @@ class CTableTest extends React.Component {
                     }}/>
                     <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center' />
                 </CTable>
-                <CTable ref={c=>this.edit_table=c} move absolute={true} y={'100px'} x={'10px'} width='250px' height='100px' bordered={true} select={false}
-                        edit nodel={false} data={this.state.editData} disabled={this.state.editDisabled} total={{'price':123}}
+                <CTable ref={c=>this.edit_table=c} move absolute={true} y={'100px'} x={'10px'} width='250px' height='100px' bordered={true} select={!this.state.edit}
+                        edit={this.state.edit} nodel={false} data={this.state.editData} disabled={this.state.editDisabled} total={{'price':123}}
                         position={{
                             right:'10px',
                             left:'10px',
