@@ -1436,7 +1436,8 @@ export class CTable extends React.Component<Props,State> {
                             if (item.props.width) {
                                 style.width = item.props.width;
                             }
-                            if ((fields && !fields.includes(item.props.field)) || !total[item.props.field]) {
+                            if ((fields && !fields.includes(item.props.field)) || 
+                                (total[item.props.field] === undefined || total[item.props.field] === null)) {
                                 return <td id={this.domId + '-' + key} data-field={item.props.field} style={style}/>
                             }
                             return (
