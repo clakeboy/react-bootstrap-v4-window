@@ -116,6 +116,8 @@ interface Props extends ComponentProps {
     menu        ?: boolean
     //是否显示每列记录总合数
     total       ?: any
+    //是否显示每列记录总合数
+    totalFields ?: string[]
     //是否编辑模式
     edit        ?: boolean
     //是否有新增行功能
@@ -1415,6 +1417,7 @@ export class CTable extends React.Component<Props,State> {
             return null;
         }
         let total = this.state.total;
+        let fields = this.props.totalFields;
         return (
             <div ref={(c:any) => this.tableTotal = c} className='ck-ctable-total'>
                 <table ref={(c:any)  => this.table_total = c} id={`table-total-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
@@ -1432,6 +1435,9 @@ export class CTable extends React.Component<Props,State> {
                             };
                             if (item.props.width) {
                                 style.width = item.props.width;
+                            }
+                            if ((fields && !fields.includes(item.props.field)) || !total[item.props.field]) {
+                                return <td id={this.domId + '-' + key} data-field={item.props.field} style={style}/>
                             }
                             return (
                                 <td id={this.domId + '-' + key} data-field={item.props.field} style={style}>

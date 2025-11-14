@@ -304,8 +304,10 @@ class CTableTest extends React.Component {
                     }}/>
                     <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center' />
                 </CTable>
-                <CTable ref={c=>this.edit_table=c} move absolute={true} y={'100px'} x={'10px'} width='250px' height='100px' bordered={true} select={!this.state.edit}
-                        edit={this.state.edit} nodel={false} data={this.state.editData} disabled={this.state.editDisabled} total={{'price':123}}
+                <CTable ref={c=>this.edit_table=c} move absolute={true} y={'100px'} x={'10px'} width='250px' height='100px' bordered={true} 
+                        select={!this.state.edit}
+                        edit={this.state.edit} 
+                        nodel={false} data={this.state.editData} disabled={this.state.editDisabled} total={{'price':123}}
                         position={{
                             right:'10px',
                             left:'10px',

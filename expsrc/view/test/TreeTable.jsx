@@ -66,7 +66,7 @@ class TreeTable extends React.Component {
                         page={this.state.page}
                         dataCount={this.state.data_count}
                         data={this.state.table_data}
-                        total={{id:10}}
+                        total={{id:10,name:null}}
                         customMenu={[{field:'test',text:'测试自定义菜单',click:(e,field,data)=>{
                                 console.log(e);
                                 console.log(field);
@@ -77,7 +77,7 @@ class TreeTable extends React.Component {
                         console.log(row);
                     }}/>
                     <TableHeader field='name' text='Name' width='300px' onFormat={(val,row,key)=>{
-                        return <span>{val}</span>
+                        return <span className='text-danger'>{val}</span>
                     }}/>
                     <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center' />
                 </CTable>
