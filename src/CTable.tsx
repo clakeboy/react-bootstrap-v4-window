@@ -889,6 +889,10 @@ export class CTable extends React.Component<Props,State> {
         this.setState({
             data: data,
             dataCount: data.length,
+        },()=>{
+            if (typeof(this.props.onChange) === 'function') {
+                this.props.onChange(row_index, "", this.state.data ,this.props.jsxId??"");
+            }
         });
     }
 
