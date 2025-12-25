@@ -127,7 +127,7 @@ interface Props extends ComponentProps {
     //数据删除事件
     onDelete    ?: (row:any,idx:number,callback:(row_index:number)=>void,id?:string)=>void
     //edit 模式数据修改事件
-    onChange    ?: (idx:number,field:string,all_data:any,jsxId:string)=>void
+    onChange    ?: (idx:number,field:string, row:any, all_data:any,jsxId:string)=>void
     //是否启用排序
     sort        ?: boolean
     //是否启用过滤
@@ -411,7 +411,11 @@ export class CTable extends React.Component<Props,State> {
             this.width = width + unit;
         }
     }
-
+    //设置值
+    setData(data:any) {
+        this.reset(data);
+    }
+ 
     //inner source ********************
     sourceLoad() {
         if (typeof this.props.sourceFunc !== 'function') return;
@@ -798,7 +802,7 @@ export class CTable extends React.Component<Props,State> {
             dataCount: data.length,
         }, () => {
             if (typeof(this.props.onChange) === 'function') {
-                this.props.onChange(this.state.data.length - 1, "", this.state.data ,this.props.jsxId??"");
+                this.props.onChange(this.state.data.length - 1, "", null, this.state.data ,this.props.jsxId??"");
             }
             document.querySelector<HTMLElement>(`#${this.domId}-edit`)?.previousElementSibling?.querySelector<HTMLInputElement>('input:not([disabled])')?.focus()
         })
@@ -819,13 +823,13 @@ export class CTable extends React.Component<Props,State> {
             data[index][field] = val;
             this.setState({data: data},()=>{
                 if (typeof(this.props.onChange) === 'function') {
-                    this.props.onChange(index, field, this.state.data ,this.props.jsxId??"");
+                    this.props.onChange(index, field , row, this.state.data ,this.props.jsxId??"");
                 }
             })
         } else {
             this.state.data[index][field] = val;
             if (typeof(this.props.onChange) === 'function') {
-                this.props.onChange(index, field, this.state.data ,this.props.jsxId??"");
+                this.props.onChange(index, field , row, this.state.data ,this.props.jsxId??"");
             }
         }
         if (this.headers[field] && typeof(this.headers[field].onEdit) === 'function') {
@@ -853,10 +857,10 @@ export class CTable extends React.Component<Props,State> {
         this.editRows = [];
     }
     //edit mode reset
-    reset() {
+    reset(data?:any[]) {
         this.editRows = [];
-        this.originalData = [];
-        this.setState({data:[]})
+        this.originalData = data??[];
+        this.setState({data:data??[]})
     }
 
     deleteRowHandler(row_index:number) {
@@ -891,7 +895,7 @@ export class CTable extends React.Component<Props,State> {
             dataCount: data.length,
         },()=>{
             if (typeof(this.props.onChange) === 'function') {
-                this.props.onChange(row_index, "", this.state.data ,this.props.jsxId??"");
+                this.props.onChange(row_index, "", null, this.state.data ,this.props.jsxId??"");
             }
         });
     }
