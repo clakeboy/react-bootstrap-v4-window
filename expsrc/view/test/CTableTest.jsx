@@ -131,7 +131,10 @@ class CTableTest extends React.Component {
         console.log(this.manage);
         console.log(this.params);
         this.window.on(Window.EVT_SHOW,this.showHandler);
-        this.window.on(Window.EVT_CLOSE,this.closeHandler);
+
+        // this.window.on(Window.EVT_CLOSE,this.closeHandler);
+        this.window.is_before = true;
+        this.window.on(Window.EVT_BEFORE_CLOSE,this.closeHandler);
         this.getData()
     }
 
@@ -158,7 +161,7 @@ class CTableTest extends React.Component {
                 data_count:data.length,
                 total:total
             });
-            this.modal.alert('loading ssussce');
+            this.modal.alert('loading success');
         },200)
     }
 
@@ -166,8 +169,13 @@ class CTableTest extends React.Component {
         this.getData();
     };
 
-    closeHandler = ()=>{
+    closeHandler = (callbackClose)=>{
         console.log('关闭窗体');
+        this.modal.confirm('确定要关闭吗？',(flag)=>{
+            if (flag) {
+                callbackClose();
+            }
+        });
     };
 
     clickHandler = ()=>{
@@ -323,6 +331,12 @@ class CTableTest extends React.Component {
                                     this.allModal.close();
                                 }
                             })
+                        }}
+                        onChange={(index,field,all_data,jsxId)=>{
+                            console.log(index,field,all_data,jsxId);
+                            this.setState({
+                                editData:all_data
+                            });
                         }}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{

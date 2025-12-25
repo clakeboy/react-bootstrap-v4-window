@@ -96,7 +96,11 @@ class FEfcWorkQuery extends React.Component {
                     <Table.Header field={'implement_date'} text={'Implement Date'} width={'88px'}/>
                     <Table.Header field={'work_note'} text={'Work Note'} width={'208px'}/>
                     <Table.Header field={'created_by_code'} text={'Created By'} width={'72px'}/>
-                    <Table.Header field={'created_date'} text={'Created Date'} width={'84px'}/>
+                    <Table.Header field={'created_date'} text={'Created Date'} width={'84px'} onFormat={(val,row)=>{
+                        return <CCheckbox checked={val} onChange={(chk)=>{
+                            console.log(chk,row.id);
+                        }}/>
+                    }}/>
                     <Table.Header field={'modified_by_code'} text={'Modified By'} width={'76px'}/>
                     <Table.Header field={'modified_date'} text={'Modified Date'} width={'84px'}/>
                 </CTable>

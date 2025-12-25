@@ -126,6 +126,8 @@ interface Props extends ComponentProps {
     nodel    ?: boolean
     //数据删除事件
     onDelete    ?: (row:any,idx:number,callback:(row_index:number)=>void,id?:string)=>void
+    //edit 模式数据修改事件
+    onChange    ?: (idx:number,field:string,all_data:any,jsxId:string)=>void
     //是否启用排序
     sort        ?: boolean
     //是否启用过滤
@@ -795,6 +797,9 @@ export class CTable extends React.Component<Props,State> {
             data: data,
             dataCount: data.length,
         }, () => {
+            if (typeof(this.props.onChange) === 'function') {
+                this.props.onChange(this.state.data.length - 1, "", this.state.data ,this.props.jsxId??"");
+            }
             document.querySelector<HTMLElement>(`#${this.domId}-edit`)?.previousElementSibling?.querySelector<HTMLInputElement>('input:not([disabled])')?.focus()
         })
     };
@@ -807,13 +812,21 @@ export class CTable extends React.Component<Props,State> {
         if (row === 'chk') {
             val = val?1:0;
         }
+
         if (this.editRows.indexOf(index) === -1) {
             this.editRows.push(index);
             let data           = this.state.data.slice(0);
             data[index][field] = val;
-            this.setState({data: data})
+            this.setState({data: data},()=>{
+                if (typeof(this.props.onChange) === 'function') {
+                    this.props.onChange(index, field, this.state.data ,this.props.jsxId??"");
+                }
+            })
         } else {
             this.state.data[index][field] = val;
+            if (typeof(this.props.onChange) === 'function') {
+                this.props.onChange(index, field, this.state.data ,this.props.jsxId??"");
+            }
         }
         if (this.headers[field] && typeof(this.headers[field].onEdit) === 'function') {
             this.headers[field].onEdit(index,val,row,this.editCallback)

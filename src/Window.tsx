@@ -26,6 +26,9 @@ interface Props extends ComponentProps {
 }
 
 interface State {
+    title: string
+    width: string
+    height: string
     close:boolean
 }
 
@@ -61,6 +64,9 @@ export class Window extends React.PureComponent<Props,State> {
     constructor(props:any) {
         super(props);
         this.state = {
+            title: this.props.title || 'Window',
+            width: this.props.width || '600px',
+            height: this.props.height || '400px',
             close:true
         };
         this.parent = this.props.parent || null;
@@ -242,12 +248,10 @@ export class Window extends React.PureComponent<Props,State> {
             top: '20px',
             left: '20px'
         };
-        if (this.props.width) {
-            base.width = this.props.width;
-        }
-        if (this.props.height) {
+        base.width = this.state.width;
+        if (this.state.height) {
             let reg = /(\d+)(px|rem|pt|cm|mm)/;
-            let match = this.props.height.match(reg);
+            let match = this.state.height.match(reg);
             if (match) {
                 base.height = (35+parseInt(match[1]))+match[2];
             }
