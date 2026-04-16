@@ -5,7 +5,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import {CTable, Window} from "../../../src";
-import {TableHeader,Common} from "@clake/react-bootstrap4";
+import {TableHeader,Common,Input} from "@clake/react-bootstrap4";
+
 
 class TreeTable extends React.Component {
     constructor(props) {
@@ -24,12 +25,18 @@ class TreeTable extends React.Component {
             page:1,
             data_count:0,
             table_data:this.generateData(),
+            data:{
+                column1_specific_rate:0.13
+            }
         };
     }
 
     componentDidMount() {
         this.window.on(Window.EVT_SHOW,this.showHandler);
         this.window.on(Window.EVT_CLOSE,this.closeHandler);
+        this.setState({data:{
+            column1_specific_rate: 9999.999999999
+        }});
     }
 
     generateData(id) {
@@ -54,6 +61,7 @@ class TreeTable extends React.Component {
     render() {
         return (
             <>
+                <Input jsxId={'column1_specific_rate'} field={'column1_specific_rate'} absolute={true} size={'xs'} lang={'en'} x={'10px'} y={'5px'} width={'150px'} tabIndex={'8'} color={'#000000'} disableClear={true} align={'center'} locked={true} data={this.state.data?.column1_specific_rate} onFormat={val=>val?Intl.NumberFormat("en-US",{style:"percent",minimumFractionDigits:2}).format(val):''} readOnly={true}/>
                 <CTable position={{
                     right:'10px',
                     left:'10px',

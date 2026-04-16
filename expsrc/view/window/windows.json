@@ -86,5 +86,13 @@
         "title": "Company Group Entry",
         "uname": "FComGroup",
         "width": "740px"
+    },
+    {
+        "height": "600px",
+        "name": "f_mbl_hbl",
+        "source": "s_mbl_oih",
+        "title": "MBL Entry",
+        "uname": "FMblHbl",
+        "width": "868px"
     }
 ]

@@ -152,6 +152,13 @@ export class Window extends React.PureComponent<Props,State> {
         });
     };
 
+    resize(width:number,height:number) {
+        this.setState({
+            width:width+'px',
+            height:height+'px'
+        });
+    }
+
     move(x:number,y:number) {
         this.dom.style.top = (y+this.props.marginTop)+'px';
         this.dom.style.left = x+'px';
@@ -183,6 +190,12 @@ export class Window extends React.PureComponent<Props,State> {
 
     setIndex(index:any) {
         this.dom.style.zIndex = index;
+    }
+
+    setTitle(title:string) {
+        this.setState({
+            title:title
+        });
     }
 
     setActive(active:boolean) {
@@ -273,14 +286,14 @@ export class Window extends React.PureComponent<Props,State> {
             <React.Fragment>
                 <div ref={(c:any)=>this.dom=c} className={this.getClasses()} style={this.getStyles()}>
                     <div ref={(c:any)=>this.domHeader=c} onDoubleClick={this.maxHandler} className='card-header'>
-                        {this.props.title}
+                        {this.state.title}
                         <div className='window-btn'>
                             {/*<IconButton className='mr-1' iconType='regular' icon='window-minimize'/>*/}
                             {this.props.isMaxBtn?<IconButton className='mr-1' iconType='regular' icon='window-maximize' onClick={this.maxHandler}/>:null}
                             {this.props.isCloseBtn?<IconButton icon='window-close' onClick={this.close}/>:null}
                         </div>
                     </div>
-                    <div className="card-body">
+                    <div className="card-body overflow-hidden">
                         {/*{this.props.children}*/}
                         {!this.state.close?this.renderContent():null}
                     </div>

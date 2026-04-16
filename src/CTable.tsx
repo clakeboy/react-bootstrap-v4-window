@@ -1358,7 +1358,6 @@ export class CTable extends React.Component<Props,State> {
         return (
             <tr id={this.domId + '-edit'}>
                 <th style={{width:'20px',textAlign:'center'}}><Icon icon='chevron-circle-right'/></th>
-                {!this.props.nodel?<th style={{width:'20px',textAlign:'center'}}/>:null}
                 {React.Children.map(this.props.children, (item, key) => {
                     if (!item || item.props.hide) {
                         return null;
@@ -1372,6 +1371,7 @@ export class CTable extends React.Component<Props,State> {
                         </td>
                     );
                 })}
+                {!this.props.nodel?<th style={{width:'20px',textAlign:'center'}}/>:null}
             </tr>
         )
     }
