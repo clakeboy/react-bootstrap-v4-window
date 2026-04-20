@@ -60,6 +60,7 @@ export class Window extends React.PureComponent<Props,State> {
     dragDom:HTMLElement
     domHeader:HTMLElement
     dom:HTMLElement
+    resizeDom:HTMLElement
     params:any
     constructor(props:any) {
         super(props);
@@ -100,6 +101,32 @@ export class Window extends React.PureComponent<Props,State> {
                 return true;
             }
         });
+        this.resizeDom.addEventListener('mousedown',(e)=>{
+            if (this.is_max) return;
+            e.preventDefault();
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const startWidth = parseInt(this.dom.style.width) || parseInt(this.state.width);
+            const startHeight = parseInt(this.dom.style.height) || parseInt(this.state.height);
+            const handleResize = (ev:MouseEvent)=>{
+                const newWidth = startWidth + (ev.clientX - startX);
+                const newHeight = startHeight + (ev.clientY - startY);
+                if (newWidth > 250) {
+                    this.dom.style.width = newWidth + 'px';
+                    this.dragDom.style.width = newWidth + 'px';
+                }
+                if (newHeight > 250) {
+                    this.dom.style.height = newHeight + 'px';
+                    this.dragDom.style.height = newHeight + 'px';
+                }
+            };
+            const handleMouseUp = ()=>{
+                document.removeEventListener('mousemove', handleResize);
+                document.removeEventListener('mouseup', handleMouseUp);
+            };
+            document.addEventListener('mousemove', handleResize);
+            document.addEventListener('mouseup', handleMouseUp);
+        },false);
         if (this.parent) {
             this.dom.addEventListener('mousedown',(e)=>{
                 this.parent.changeWindowIndex(this.props.name);
@@ -110,6 +137,7 @@ export class Window extends React.PureComponent<Props,State> {
     componentWillUnmount() {
         this.drag?.unbind();
         this.drag = undefined;
+        this.resizeDom = undefined as any;
     }
 
     show(option:ShowOptions) {
@@ -297,6 +325,7 @@ export class Window extends React.PureComponent<Props,State> {
                         {/*{this.props.children}*/}
                         {!this.state.close?this.renderContent():null}
                     </div>
+                    <div ref={(c:any)=>this.resizeDom=c} className='ck-window-resize'/>
                 </div>
                 <div ref={(c:any)=>this.dragDom=c} className='ck-window-drag-box d-none border border-secondary' style={this.getStyles(true)}/>
             </React.Fragment>

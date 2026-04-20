@@ -127,6 +127,7 @@ class FMblHbl extends React.Component {
 
     showHandler = ()=>{
         // this.getData(this.window?.params?.id||0)
+        this.window.max(true)
     };
 
     closeHandler = ()=>{
@@ -764,7 +765,7 @@ class FMblHbl extends React.Component {
                 }
             }
         }
-    };
+    }
     openWeightCalculator=()=>{
         if(this.state.data.abi_entry_id){
             this.manage.open('f_mbl_hbl_weight_calculator',{id:this.state.data.abi_entry_id,total_gross_weight:this.state.data.total_gross_weight,total_net_weight:this.state.data.total_net_weight,fun:()=>{
