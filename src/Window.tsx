@@ -321,7 +321,7 @@ export class Window extends React.PureComponent<Props,State> {
                             {this.props.isCloseBtn?<IconButton icon='window-close' onClick={this.close}/>:null}
                         </div>
                     </div>
-                    <div className="card-body overflow-hidden">
+                    <div className="card-body">
                         {/*{this.props.children}*/}
                         {!this.state.close?this.renderContent():null}
                     </div>
