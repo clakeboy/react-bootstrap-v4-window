@@ -1205,7 +1205,7 @@ export class CTable extends React.Component<Props,State> {
             <div ref={(c:any) => this.table_rows = c} id={`table-body-com-${this.domId}`} className='flex-grow-1 rows' onScroll={this.scrollHandler}>
                 <table ref={(c:any) => this.table_body = c} id={`table-body-${this.domId}`} className={this.getClasses()} style={this.getTableStyles()}>
                     <tbody>
-                    {this.state.data.map((row:any, i:number) => {
+                    {this.state.data && this.state.data.map((row:any, i:number) => {
                         if (this.props.edit) {
                             return this.renderEditRow(row, i)
                         }

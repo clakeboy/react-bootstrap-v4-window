@@ -332,8 +332,8 @@ class CTableTest extends React.Component {
                                 }
                             })
                         }}
-                        onChange={(index,field,all_data,jsxId)=>{
-                            console.log(index,field,all_data,jsxId);
+                        onChange={(index,field,row,all_data,jsxId)=>{
+                            console.log("onChange",index,field,all_data,jsxId);
                             this.setState({
                                 editData:all_data
                             });
@@ -352,15 +352,13 @@ class CTableTest extends React.Component {
                     }} comboData={this.combo_data} type='combo'
                         onEdit={(index,val,row,callback)=>{
                             switch (val) {
-                                default:
-                                    console.log("开始");
                                 case "name":
                                     console.log("name",index,"开始");
                                     break;
                             }
                             //index 数据行索引，val 选中的显示数据，row combo 数据行，callback 回调函数
-                            callback(index,{'name':row.text})
-
+                            console.log("onSelect",row)
+                            callback(index,{'name':row?.task_name || val})
                         }} />
                     <TableHeader field='date' text='Date' width='100px' type='calendar' />
                     <TableHeader field='rule' text='Rule' width='100px' type='text' />

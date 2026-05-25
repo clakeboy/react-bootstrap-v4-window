@@ -56,7 +56,7 @@ class WCombo extends React.PureComponent<Props,State> {
     }
 
     hide = ()=>{
-        this.dom.classList.add('d-none');
+        // this.dom.classList.add('d-none');
     };
 
     filter(val:any) {
