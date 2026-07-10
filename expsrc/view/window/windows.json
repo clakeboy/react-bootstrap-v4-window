@@ -89,10 +89,10 @@
     },
     {
         "height": "600px",
-        "name": "f_mbl_hbl",
+        "name": "f_imdb",
         "source": "s_mbl_oih",
-        "title": "MBL Entry",
-        "uname": "FMblHbl",
+        "title": "Importer Big Data",
+        "uname": "FImdb",
         "width": "868px"
     }
 ]

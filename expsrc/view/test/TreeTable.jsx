@@ -84,9 +84,18 @@ class TreeTable extends React.Component {
                     <TableHeader field='id' text='ID' width='100px' dataType='number' onDoubleClick={(row)=>{
                         console.log(row);
                     }}/>
-                    <TableHeader field='name' text='Name' width='300px' onFormat={(val,row,key)=>{
-                        return <span className='text-danger'>{val}</span>
-                    }}/>
+                    <TableHeader field='name' text='Name1' width='100px' color={"#ffffff"} bgColor={"#000000"}/>
+                    <TableHeader field='name' text='Name1' width='100px' color={"#ffffff"} bgColor={"#000000"}/>
+                    <TableHeader field='name' text='Name2' width='100px' color={"#000000"} bgColor={"#ffffff"}/>
+                    <TableHeader field='name' text='Name2' width='100px' color={"#000000"} bgColor={"#ffffff"}/>
+                    <TableHeader field='name' text='Name3' width='100px' color={"#00ffff"} bgColor={"#ff0000"}/>
+                    <TableHeader field='name' text='Name3' width='100px' color={"#00ffff"} bgColor={"#ff0000"}/>
+                    <TableHeader field='name' text='Name1' width='100px' HeaderColor={"#ffffff"} HeaderBgColor={"#000000"}/>
+                    <TableHeader field='name' text='Name1' width='100px' HeaderColor={"#ffffff"} HeaderBgColor={"#000000"}/>
+                    <TableHeader field='name' text='Name2' width='100px' HeaderColor={"#000000"} HeaderBgColor={"#ffffff"}/>
+                    <TableHeader field='name' text='Name2' width='100px' HeaderColor={"#000000"} HeaderBgColor={"#ffffff"}/>
+                    <TableHeader field='name' text='Name3' width='100px' HeaderColor={"#00ffff"} HeaderBgColor={"#ff0000"}/>
+                    <TableHeader field='name' text='Name3' width='100px' HeaderColor={"#00ffff"} HeaderBgColor={"#ff0000"}/>
                     <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center' />
                 </CTable>
             </>

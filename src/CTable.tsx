@@ -1175,6 +1175,12 @@ export class CTable extends React.Component<Props,State> {
                             if (item.props.width) {
                                 style.width = item.props.width;
                             }
+                            if (item.props.HeaderColor) {
+                                style.color = item.props.HeaderColor;
+                            }
+                            if (item.props.HeaderBgColor) {
+                                style.backgroundColor = item.props.HeaderBgColor;
+                            }
                             let sort_icon = '';
                             if (this.sortList[item.props.field]) {
                                 sort_icon = 'sort-alpha-' + (this.sortList[item.props.field] === 'asc' ? 'down' : 'up');

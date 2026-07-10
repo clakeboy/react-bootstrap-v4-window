@@ -29,6 +29,7 @@ class CTableTest extends React.Component {
             data_count:0,
             page:1,
             edit:true,
+            isEdit:false,
             editDisabled:false,
             editData:[
                 {
@@ -209,6 +210,7 @@ class CTableTest extends React.Component {
         //     if (a[field] === b[field]) return 0;
         // });
         // this.setState({table_data:data})
+
     };
 
     filterHandler = (text,field,type)=>{
@@ -249,7 +251,7 @@ class CTableTest extends React.Component {
     };
 
     testHandler = ()=>{
-        let list = this.table.getSelectRows();
+        let list = this.edit_table.getEditRows();
         this.modal.alert(JSON.stringify(list));
     }
 
@@ -258,7 +260,7 @@ class CTableTest extends React.Component {
             <React.Fragment>
                 <ButtonGroup absolute y='10px' x='10px'>
                     <Button  size='sm' onClick={this.clickHandler}>Alert</Button>
-                    <Button  size='sm' onClick={this.testHandler}>Get Edit Data</Button>
+                    <Button  size='sm' onClick={this.testHandler} disabled={!this.state.isEdit}>Get Edit Data</Button>
                     <Button  size='sm' onClick={()=>{
                         this.edit_table.reset();
                     }}>Reset</Button>
@@ -333,10 +335,13 @@ class CTableTest extends React.Component {
                             })
                         }}
                         onChange={(index,field,row,all_data,jsxId)=>{
-                            console.log("onChange",index,field,all_data,jsxId);
+                            console.log("onChange",index,field,all_data,row,jsxId);
+                            // this.setState({
+                            //     editData:all_data
+                            // });
                             this.setState({
-                                editData:all_data
-                            });
+                                isEdit:true
+                            })
                         }}
                 >
                     <TableHeader field='id' text='ID' width='100px' align='right' disabled={true} onDoubleClick={(row)=>{
