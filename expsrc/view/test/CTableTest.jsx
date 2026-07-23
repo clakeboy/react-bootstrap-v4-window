@@ -306,6 +306,11 @@ class CTableTest extends React.Component {
                                 console.log(data);
                             }}]}
                 >
+                    <CTable.Toolbar jsxId={'sub_mbl_hbl_1_container_list-toolbar'} noReplace={"Content"} align="center">
+                        <CTable.Btnbar icon="plus" text="新建" onClick={() => console.log('Toolbar: 新建被点击')} />
+                        <CTable.Btnbar icon="edit" text="编辑" onClick={() => console.log('Toolbar: 编辑被点击')} />
+                        <CTable.Btnbar text="删除" color="red" onClick={() => console.log('Toolbar: 删除被点击')} />
+                    </CTable.Toolbar>
                     <TableHeader field='id' text='ID' width='100px' dataType='number' onDoubleClick={(row)=>{
                         console.log(row);
                     }} />

@@ -94,5 +94,14 @@
         "title": "Importer Big Data",
         "uname": "FImdb",
         "width": "868px"
+    },
+    {
+        "title": "Query MAWB Manifest / ABI Status",
+        "width": "836px",
+        "height": "576px",
+        "uname": "FAbiaMaster",
+        "name": "f_abia_master",
+        "source": "s_abia_master",
+        "is_max": false
     }
 ]

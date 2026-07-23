@@ -31,6 +31,72 @@ let numberCondition:{[propName:string]:string} = {
     '<':'lt'
 };
 
+export interface ToolbarProps {
+    align?: 'left' | 'center' | 'right';
+    children?: React.ReactNode;
+}
+
+export class Toolbar extends React.Component<ToolbarProps> {
+    static isTableToolbar = true;
+    render() {
+        return (
+            <div className="ck-ctable-toolbar d-flex align-items-center">
+                {this.props.children}
+            </div>
+        );
+    }
+}
+
+export interface BtnbarProps {
+    icon?: string;
+    text?: string;
+    color?: string;
+    onClick?: (e: React.MouseEvent) => void;
+    onclick?: (e: React.MouseEvent) => void;
+    children?: React.ReactNode;
+}
+
+export class Btnbar extends React.Component<BtnbarProps, { hover: boolean }> {
+    constructor(props: BtnbarProps) {
+        super(props);
+        this.state = {
+            hover: false
+        };
+    }
+
+    render() {
+        const { icon, text, color, onClick, onclick } = this.props;
+        const { hover } = this.state;
+        const itemStyle: React.CSSProperties = {
+            cursor: 'pointer',
+            fontSize: '0.75rem',
+            marginRight: '8px',
+            padding: '2px 6px',
+            borderRadius: '3px',
+            backgroundColor: hover ? 'rgba(0, 123, 255, 0.1)' : 'transparent',
+            color: color || undefined,
+            transition: 'background-color 0.15s ease-in-out',
+        };
+        const className = classNames(
+            'align-self-center d-inline-flex align-items-center',
+            !color && 'text-primary'
+        );
+        return (
+            <div className={className} style={itemStyle} onClick={onClick || onclick}
+                 onMouseEnter={() => this.setState({ hover: true })}
+                 onMouseLeave={() => this.setState({ hover: false })}>
+                {icon && <Icon icon={icon} className={text ? 'me-1' : ''} />}
+                {text}
+                {this.props.children}
+            </div>
+        );
+    }
+}
+
+const isToolbar = (item: any) => {
+    return item && (item.type === Toolbar || (item.type && (item.type.isTableToolbar || item.type.name === 'Toolbar')));
+};
+
 interface Props extends ComponentProps {
     //主题 ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
     theme       ?: string
@@ -166,6 +232,8 @@ interface State {
 }
 
 export class CTable extends React.Component<Props,State> {
+    static Toolbar = Toolbar;
+    static Btnbar = Btnbar;
     static defaultProps:Props = {
         data       : [],
         dataCount  : 1,
@@ -396,6 +464,9 @@ export class CTable extends React.Component<Props,State> {
             let matchs = this.props.width.match(reg);
             let unit   = matchs?matchs[2]:'px';
             React.Children.map(this.props.children, (item, key) => {
+                if (isToolbar(item)) {
+                    return;
+                }
                 if (item.props.width) {
                     let matchs = item.props.width.match(reg);
                     width += parseInt(matchs[1]);
@@ -1164,8 +1235,11 @@ export class CTable extends React.Component<Props,State> {
                                     <CCheckbox ref={(c:any) => this.allchk=c} onChange={this.selectAll} checked={this.state.selectAll} half={this.state.selectHalf}/>}
                             </th> : null}
                         {React.Children.map(this.props.children, (item, key) => {
+                            if (!item || isToolbar(item)) {
+                                return null;
+                            }
                             this.cacheRow[item.props.field] = item.props?.def ?? '';
-                            if (!item || item.props.hide) {
+                            if (item.props.hide) {
                                 return null;
                             }
                             // let align = item.props.align || this.props.align;
@@ -1238,7 +1312,7 @@ export class CTable extends React.Component<Props,State> {
                             <CCheckbox ref={'row_' + i} onChange={this.changeHandler(row, i)} checked={checked}/>
                         </th> : null}
                     {React.Children.map(this.props.children, (item, key) => {
-                        if (!item || item.props.hide) {
+                        if (!item || isToolbar(item) || item.props.hide) {
                             return null;
                         }
                         //set style
@@ -1314,7 +1388,7 @@ export class CTable extends React.Component<Props,State> {
                             <Icon id={`${this.domId}-edit-row-icon-${i}`} icon='edit' className={this.props.disabled?'text-secondary':'text-success'}/>}
                     </th>
                     {React.Children.map(this.props.children, (item, key) => {
-                        if (!item || item.props.hide) {
+                        if (!item || isToolbar(item) || item.props.hide) {
                             return null;
                         }
                         //set style
@@ -1365,7 +1439,7 @@ export class CTable extends React.Component<Props,State> {
             <tr id={this.domId + '-edit'}>
                 <th style={{width:'20px',textAlign:'center'}}><Icon icon='chevron-circle-right'/></th>
                 {React.Children.map(this.props.children, (item, key) => {
-                    if (!item || item.props.hide) {
+                    if (!item || isToolbar(item) || item.props.hide) {
                         return null;
                     }
                     let style = {
@@ -1419,17 +1493,43 @@ export class CTable extends React.Component<Props,State> {
         }
     }
 
+    renderToolbar() {
+        let toolbar: any = null;
+        React.Children.forEach(this.props.children, (child: any) => {
+            if (isToolbar(child)) {
+                toolbar = child;
+            }
+        });
+        return toolbar;
+    }
+
     renderFoot() {
         if (!this.props.foot) {
             return null;
         }
+        const toolbar = this.renderToolbar();
+        const align = toolbar?.props?.align || 'right';
+        let justifyClass = 'justify-content-end';
+        if (align === 'left') {
+            justifyClass = 'justify-content-start';
+        } else if (align === 'center') {
+            justifyClass = 'justify-content-center';
+        }
+
         return (
             <div className='ck-ctable-foot d-flex align-items-center'>
                 <PageBar page={this.state.page} dataCount={this.state.dataCount}
                          onSelect={this.selectPageHandler}
                          showNumbers={this.props.showNumbers??0}
                          showPages={this.props.showPages??0} noPage={this.props.edit??false}/>
-                <div ref={(c:any)=>{this.fullButton = c}} className='full-btn align-self-center ms-auto pe-2 text-primary' onClick={()=>{
+                {toolbar ? <div style={{borderLeft: '1px solid #ccc', height: '14px', marginLeft: '10px', marginRight: '10px', alignSelf: 'center'}} /> : null}
+                {toolbar ? (
+                    <div className={`d-flex flex-grow-1 ${justifyClass}`}>
+                        {toolbar}
+                    </div>
+                ) : null}
+                {toolbar ? <div style={{borderLeft: '1px solid #ccc', height: '14px', marginLeft: '10px', marginRight: '10px', alignSelf: 'center'}} /> : null}
+                <div ref={(c:any)=>{this.fullButton = c}} className={classNames('full-btn align-self-center pe-2 text-primary', !toolbar && 'ms-auto')} onClick={()=>{
                     this.fullHandler()
                 }}><Icon icon='expand'/></div>
                 <div ref={(c:any)=>{this.fullButton2 = c}} className='right-full-btn d-none' onClick={()=>{
@@ -1453,7 +1553,7 @@ export class CTable extends React.Component<Props,State> {
                         {this.props.select || this.props.edit ?
                             <td width='20px'><Icon icon='chart-line'/></td> : null}
                         {React.Children.map(this.props.children, (item, key) => {
-                            if (!item || item.props.hide) {
+                            if (!item || isToolbar(item) || item.props.hide) {
                                 return null;
                             }
                             let align = item.props.align || this.props.align;
