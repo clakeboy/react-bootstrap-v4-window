@@ -1399,9 +1399,13 @@ export class CTable extends React.Component<Props,State> {
                             style.width = item.props.width;
                         }
                         let dataType = 'text';
+                        let disabled = item.props.disabled;
+                        if (typeof item.props.disabledFunc === 'function') {
+                            disabled = item.props.disabledFunc(row);
+                        }
                         return (
                             <td onContextMenu={this.menuContextHandler(dataType)}
-                                className={item.props.disabled ? 'disabled' : ''} id={this.domId + '-' + key}
+                                className={disabled ? 'disabled' : ''} id={this.domId + '-' + key}
                                 data-field={item.props.field}
                                 style={style}
                                 onClick={(e) => {
@@ -1415,7 +1419,7 @@ export class CTable extends React.Component<Props,State> {
                                     }
                                 }}
                                 data-row={`${i}`}>
-                                {item.props.disabled?
+                                {disabled?
                                     (item.props.onFormat ? item.props.onFormat(row[item.props.field], row, item.props.field) : row[item.props.field]):
                                     this.renderEditComponent(item.props, row, i)}
                             </td>

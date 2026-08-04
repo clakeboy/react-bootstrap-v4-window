@@ -359,6 +359,8 @@ class CTableTest extends React.Component {
                         searchColumn:'task_name',
                         filterColumns: [{field:'task_name',text:'Task Name'},{field:'time_rule',text:'Rule'},{field:'source',text:'Source'}],
                         width:'600px'
+                    }} disabledFunc={(row)=>{
+                        return row?.is_chk;
                     }} comboData={this.combo_data} type='combo'
                         onEdit={(index,val,row,callback)=>{
                             switch (val) {
