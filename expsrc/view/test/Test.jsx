@@ -220,7 +220,7 @@ class CTableTest extends React.Component {
                     this.modal.alert('dblclick');
                 }} readOnly value={'asdfasd'} style={{'position':'absolute','top':'50px'}}/>
                 <Input jsxId={'urs_log_no'} field={'urs_log_no'} disabled absolute={true} size={'xs'} x={'10px'} y={'80px'} width={'100px'} tabIndex={'0'} align={'left'} data={'clake'}/>
-                <Input jsxId={'arrival_date'} field={'arrival_date'} absolute={true} size={'xs'} lang={'en'} x={'456px'} y={'88px'} width={'124px'} tabIndex={'5'} align={'center'} calendar={{format:'MM-DD-YYYY'}} data={this.state.data?.arrival_date}/>
+                <Input jsxId={'arrival_date'} field={'arrival_date'} absolute={true} size={'xs'} lang={'en'} x={'456px'} y={'88px'} width={'124px'} tabIndex={'5'} align={'center'} calendar={{format:'MM-DD-YYYY'}} disableIcon data={this.state.data?.arrival_date}/>
                 <CTable jsxId={'sub_wrk_detail_item'} absolute={true} x={'20px'} y={'309px'} width={'703px'} height={'139px'} scroll={true} headerTheme={'light'} hover={true} select={false} sm={true} fontSm={true} foot={false} source={'v_wrk_item'} data={this.state.tableData} ref={c=>this.queryTable=c} page={this.state.page} dataCount={this.state.dataCount} onSelectPage={this.getData} showNumbers={50} edit={true}>
                     <Table.Header field={'item_seq_no'} text={'Seq'} width={'36px'} align={'center'} type={''}/>
                     <Table.Header field={'item_desc'} text={'Item Desc'} width={'204px'} align={'left'} type={''}/>
@@ -242,8 +242,8 @@ class CTableTest extends React.Component {
                     <Table.Header field={'ask_by_code'} text={'Ask By'} width={'68px'} align={'left'} type={''}/>
                     <Table.Header field={'item_hour'} text={'E-Hour'} width={'48px'} align={'center'} type={''}/>
                 </CTable>
-                <WModal ref={c=>this.modal=c} fade/>
-                <Modal ref={c=>this.smodal=c} />
+                <WModal ref={c=>this.modal=c} fade isCloseBtn={false}/>
+                <Modal ref={c=>this.smodal=c}/>
                 <Box></Box>
             </React.Fragment>
         );

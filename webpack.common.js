@@ -65,8 +65,8 @@ export default {
     },
     externals: {
         "jquery": "jQuery",
-        "react": "React",
-        "react-dom": "ReactDOM",
+        // "react": "React",
+        // "react-dom": "ReactDOM",
         "zepto": "Zepto",
         "marked":"Marked",
         "moment":"moment",

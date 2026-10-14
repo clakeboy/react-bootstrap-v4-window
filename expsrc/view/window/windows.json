@@ -103,5 +103,14 @@
         "name": "f_abia_master",
         "source": "s_abia_master",
         "is_max": false
+    },
+    {
+        "title": "Entry Model",
+        "width": "836px",
+        "height": "576px",
+        "uname": "FAbiEntryModel",
+        "name": "f_abi_entry_model",
+        "source": "s_abi_entry_model",
+        "is_max": false
     }
 ]

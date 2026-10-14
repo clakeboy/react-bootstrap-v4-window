@@ -52,7 +52,8 @@ interface Props extends ComponentProps {
     center: boolean,
     fade: boolean,
     blurSelector: string,
-    width: string
+    width: string,
+    isCloseBtn: boolean,
 }
 
 interface State {
@@ -84,6 +85,7 @@ export class WModal extends React.Component<Props,State> {
         center:false,
         width: '300px',
         fade:true,
+        isCloseBtn:true,
     };
 
     constructor(props:any) {
@@ -199,16 +201,17 @@ export class WModal extends React.Component<Props,State> {
         }
         this.callback = opt.callback||cb||undefined;
         this.modalType = ModalTypes.ModalAlert;
+        console.log(opt.isCloseBtn??this.props.isCloseBtn);
         this.setState({
-            title:opt.title||'Prompt',
-            content:opt.content||opt||'',
-            isCloseBtn:true,
+            title:opt.title??'Prompt',
+            content:opt.content??'',
+            isCloseBtn:opt.isCloseBtn??this.props.isCloseBtn,
             type:ModalTypes.ModalAlert,
-            center:opt.center||this.props.center,
-            fade:opt.fade||this.props.fade,
+            center:opt.center??this.props.center,
+            fade:opt.fade??this.props.fade,
             header: typeof opt.header === 'undefined' ? true:opt.header,
             btns: typeof opt.btns != 'undefined' ? opt.btns:defBtns,
-            width:opt.width||this.props.width,
+            width:opt.width??this.props.width,
         },()=>{
             this.open();
         });
@@ -236,15 +239,15 @@ export class WModal extends React.Component<Props,State> {
         this.callback = opt.callback||cb||undefined;
         this.modalType = ModalTypes.ModalConfirm;
         this.setState({
-            title:opt.title||'Prompt',
-            content:opt.content||'',
-            isCloseBtn:true,
+            title:opt.title??'Prompt',
+            content:opt.content??'',
+            isCloseBtn:opt.isCloseBtn??this.props.isCloseBtn,
             type:ModalTypes.ModalConfirm,
-            center:opt.center||this.props.center,
-            fade:opt.fade||this.props.fade,
+            center:opt.center??this.props.center,
+            fade:opt.fade??this.props.fade,
             header: typeof opt.header === 'undefined' ? true:opt.header,
             btns: typeof opt.btns != 'undefined' ? opt.btns:defBtns,
-            width:opt.width||this.props.width,
+            width:opt.width??this.props.width,
         },()=>{
             this.open();
         });
@@ -265,19 +268,19 @@ export class WModal extends React.Component<Props,State> {
         }
         this.modalType = ModalTypes.ModalLoading;
         this.setState({
-            title:opt.title||'Prompt',
+            title:opt.title??'Prompt',
             // content:(
             //     <React.Fragment>
             //         <Icon icon='spinner'/>&nbsp;&nbsp;&nbsp;{content}
             //     </React.Fragment>
             // ),
-            content:opt.content||opt||'',
+            content:opt.content??opt??'',
             isCloseBtn:false,
             type:ModalTypes.ModalLoading,
-            center:opt.center||this.props.center,
-            fade:this.props.fade,
-            header: opt.header||false,
-            width:opt.width||this.props.width,
+            center:opt.center??this.props.center,
+            fade:opt.fade??this.props.fade,
+            header: opt.header??false,
+            width:opt.width??this.props.width,
         },()=>{
             this.open();
         });
@@ -294,17 +297,17 @@ export class WModal extends React.Component<Props,State> {
      * @param opt
      */
     view(opt:ModalOptions) {
-        this.callback = opt.callback||undefined;
+        this.callback = opt.callback??undefined;
         this.modalType = ModalTypes.ModalView;
         this.setState({
-            title:opt.title||'Prompt',
-            content:opt.content||'',
-            isCloseBtn:true,
+            title:opt.title??'Prompt',
+            content:opt.content??'',
+            isCloseBtn:opt.isCloseBtn??this.props.isCloseBtn,
             type:ModalTypes.ModalView,
-            center:opt.center||this.props.center,
-            fade:opt.fade||this.props.fade,
+            center:opt.center??this.props.center,
+            fade:opt.fade??this.props.fade,
             header: typeof opt.header === 'undefined' ? true:opt.header,
-            width:opt.width||this.props.width,
+            width:opt.width??this.props.width,
         },()=>{
             this.open();
         });
