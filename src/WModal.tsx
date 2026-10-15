@@ -81,7 +81,7 @@ export class WModal extends React.Component<Props,State> {
     _dialog: HTMLDivElement
     _content: HTMLDivElement
     drag?: Drag
-    defaultProps = {
+    static defaultProps = {
         center:false,
         width: '300px',
         fade:true,

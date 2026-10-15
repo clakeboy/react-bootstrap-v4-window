@@ -8,6 +8,7 @@ import {
 
 interface Props extends ComponentProps {
     top?: boolean
+    autoActive?: boolean
     onClick?: (key:string)=>void
 }
 
@@ -20,6 +21,7 @@ interface ItemProps extends ComponentProps {
     parent?: any
     onClick?: (key:string)=>void
     name: string
+    autoActive?: boolean
 }
 
 interface ItemState {
@@ -31,6 +33,7 @@ export class Item extends React.PureComponent<ItemProps,ItemState> {
     domId:string
     menu:any
     dom:any
+    
     constructor(props:any) {
         super(props);
         this.parent = this.props.parent || null;
@@ -42,21 +45,19 @@ export class Item extends React.PureComponent<ItemProps,ItemState> {
     }
 
     clickHandler = (e:any)=>{
-        if (typeof this.props.onClick === 'function') {
+        if (this.menu) {
+            this.parent.is_active = true;
+            this.parent.cur_active = this.dom;
+            this.parent.cur_menu = this.menu;
+            this.dom.classList.add('active');
+            this.menu.show({
+                evt:e,
+                type:'dom-bottom',
+                data:'',
+                close:this.closeHandler
+            });
+        } else if (typeof this.props.onClick === 'function') {
             this.props.onClick(this.props.name);
-        } else {
-            if (this.menu) {
-                this.parent.is_active = true;
-                this.parent.cur_active = this.dom;
-                this.parent.cur_menu = this.menu;
-                this.dom.classList.add('active');
-                this.menu.show({
-                    evt:e,
-                    type:'dom-bottom',
-                    data:'',
-                    close:this.closeHandler
-                });
-            }
         }
     };
 
@@ -73,7 +74,9 @@ export class Item extends React.PureComponent<ItemProps,ItemState> {
                 this.parent.cur_active.classList.remove('active');
                 this.parent.cur_menu.hide();
             }
-            this.clickHandler(e);
+            if (this.menu) {
+                this.clickHandler(e);
+            }
         }
     };
 
@@ -114,6 +117,12 @@ export class TopMenu extends React.PureComponent<Props,State> {
     
     cur_active:any
     is_active:boolean
+
+    static defaultProps = {
+        top:false,
+        autoActive:true,
+    };
+
     constructor(props:any) {
         super(props);
         this.cur_active = null;
@@ -145,6 +154,7 @@ export class TopMenu extends React.PureComponent<Props,State> {
             <div className={this.getClasses()}>
                 {React.Children.map(this.props.children,(item)=>{
                     item.props.parent = this;
+                    item.props.autoActive = this.props.autoActive;
                     return React.cloneElement(item,item.props);
                 })}
             </div>

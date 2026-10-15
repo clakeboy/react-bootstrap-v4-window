@@ -376,7 +376,7 @@ class CTableTest extends React.Component {
                     <TableHeader field='rule' text='Rule' width='100px' type='text' />
                     <TableHeader field='is_chk' text='Chk' width='100px' type='checkbox' align='center'/>
                 </CTable>
-                <WModal ref={c=>this.modal=c} fade isCloseBtn/>
+                <WModal ref={c=>this.modal=c} fade/>
                 <Modal ref={c=>this.allModal = c} fade/>
             </React.Fragment>
         );

@@ -146,6 +146,9 @@ class Main extends React.Component {
                                 <Menu.Item field="tree-table">Tree Table</Menu.Item>
                             </Menu>
                         </TopMenu.Item>
+                        <TopMenu.Item text='Test Click' onClick={(key)=>{
+                            this.manage.open("test",{id:12});
+                        }}/>
                         <TopMenu.Item text='ABI'>
                             <Menu onClick={(key)=>{
                                 this.manage.open(key);
